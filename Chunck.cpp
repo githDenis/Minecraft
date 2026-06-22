@@ -8,7 +8,17 @@ void Chunck::LoadTexture(Texture* textures) noexcept
 void Chunck::Generate()
 {
 	vertexOffset = 0;
-	memset(blockTypes, static_cast<unsigned char>(BlockType::BT_AIR), sizeof(blockTypes));
+
+	for (int x = 0; x < CHUNK_WIDTH; x++)
+	{
+		for (int y = 0; y < CHUNK_HEIGHT; y++)
+		{
+			for (int z = 0; z < CHUNK_LENGTH; z++)
+			{
+				blockTypes[x][y][z] = static_cast<unsigned char>(BlockType::BT_AIR);
+			}
+		}
+	}
 
 	for (int x = 0; x < CHUNK_WIDTH; x++)
 	{
@@ -67,7 +77,8 @@ void Chunck::GenerateTree()
 	{
 		for (int z = 0; z < CHUNK_LENGTH; z++)
 		{
-			if (rand() % 300 < 1)
+			int h = Hash(x + position.x, z + position.z, WORLD_SEED);
+			if (h % 200 == 0)
 			{
 				//Нахождение позиции дерева
 				Vector3 pos{ x + position.x, 0, z + position.z };
@@ -82,17 +93,19 @@ void Chunck::GenerateTree()
 						if (topBloclType == BlockType::BT_AIR && downBloclType == BlockType::BT_GROUND_GRASS)
 						{
 							pos.y = position.y + i;
+							break;
 						}
 					}
 				}
 				//Нахождение позиции дерева
 
 
-				if (pos.y != 0) // Если позиция не была найдена
+				if (pos.y != 0) // Если позиция была найдена
 				{
 					// Генерация ствола
 					int treeY = int(pos.y - position.y);
-					int treeHeight = rand() % 10;
+					int hTree = Hash(x + position.x, z + position.z, WORLD_SEED);
+					int treeHeight = hTree % 10;
 
 					if (treeHeight < 5)
 					{
@@ -141,7 +154,9 @@ void Chunck::GenerateFolliageType(const BlockType& type, int intencity)
 	{
 		for (int z = 0; z < CHUNK_LENGTH; z++)
 		{
-			if (rand() % intencity < 1)
+			int h = Hash(x + position.x, z + position.z, WORLD_SEED);
+
+			if (h % intencity == 0)
 			{
 				//Нахождение позиции
 				for (int i = 0; i < CHUNK_HEIGHT; i++)
@@ -443,4 +458,11 @@ unsigned short Chunck::GetBlockType(const Vector3& blockPos) const
 Vector3& Chunck::GetPosition() noexcept
 {
 	return position;
+}
+
+int Chunck::Hash(int x, int z, int seed)
+{
+	uint32_t h = x * 374761393u + z * 668265263u + seed * 1442695041u;
+	h = (h ^ (h >> 13)) * 1274126177u;
+	return h ^ (h >> 16);
 }

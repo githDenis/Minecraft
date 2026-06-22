@@ -145,7 +145,7 @@ void Application::Run()
 		//player->UpdatePhysics(deltaTime);
 		player->ProcessCollision(&world);
 
-		std::cout << world.GetBlockType(pos) << '\n';
+		//std::cout << world.GetBlockType(pos) << '\n';
 
 		UIShaderProgram->Use();
 		targetActor.SetPenSize(3.f);

@@ -8,8 +8,8 @@ Player::Player(Camera* camera) noexcept
 void Player::ProcessCollision(World* world)
 {
 	Vector3 newPos = camera->GetPosition() + camera->GetMovementVector();
-	/*
-	if (isOnGround)
+	
+	/*if (isOnGround)
 	{
 		newPos.y = camera->GetOldPosition().y;
 	}

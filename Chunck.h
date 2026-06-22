@@ -24,9 +24,10 @@ public:
 	static const int BLOCKS_TYPES_COUNT = static_cast<int>(BlockType::BT_AIR);
 	static const int UVS_COUNT = 3;
 	static const int CHUNK_WIDTH = 16;
-	static const int CHUNK_HEIGHT = 48;
+	static const int CHUNK_HEIGHT = 32;
 	static const int CHUNK_LENGTH = 16;
 	static const int GROUND_LAYER_HEIGHT = 10;
+	static const int WORLD_SEED = 42;
 
 private:
 	unsigned char blockTypes[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_LENGTH];
@@ -54,6 +55,7 @@ public:
 
 	unsigned short GetBlockType(const Vector3& blockPos) const;
 	Vector3& GetPosition() noexcept;
+	int Hash(int x, int z, int seed);
 
 	Chunck() noexcept = default;
 	Chunck(const Chunck&) = delete;

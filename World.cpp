@@ -26,9 +26,9 @@ void World::GenerateFolliage()
 	for (int i = 0; i < CHUNCKS_COUNT; i++)
 	{
 		chunkcs[i].GenerateTree();
-		chunkcs[i].GenerateFolliageType(BlockType::BT_GRASS, 30);
-		chunkcs[i].GenerateFolliageType(BlockType::BT_YELLOW_FLOWER, 200);
-		chunkcs[i].GenerateFolliageType(BlockType::BT_RED_FLOWER, 200);
+		chunkcs[i].GenerateFolliageType(BlockType::BT_GRASS, 15);
+		chunkcs[i].GenerateFolliageType(BlockType::BT_YELLOW_FLOWER, 70);
+		chunkcs[i].GenerateFolliageType(BlockType::BT_RED_FLOWER, 50);
 	}
 }
 
@@ -44,22 +44,9 @@ void World::GenerateChuncksMeshes(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS
 void World::RegenerateWorld(const Vector2& newPos, int dx, int dy, UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT])
 {
 	static constexpr int leftX = CHUNKS_HORIZONTAL_COUNT - 1;
-	static constexpr int rightX = 0;
+	static int rightX = 0;
 	static constexpr int upY = CHUNKS_VERTICAL_COUNT - 1;
-	static constexpr int downY = 0;
-
-	for (int x = 0; x < CHUNKS_HORIZONTAL_COUNT; x++)
-	{
-		for (int y = 0; y < CHUNKS_VERTICAL_COUNT; y++)
-		{
-			Vector3 pos = {
-				(x + newPos.x) * Chunck::CHUNK_WIDTH,
-				0,
-				(y + newPos.y) * Chunck::CHUNK_LENGTH
-			};
-			chunkcs[x + y * CHUNKS_HORIZONTAL_COUNT].SetPosition(pos);
-		}
-	}
+	static int downY = 0;
 
 	if (dx > 0)
 	{
@@ -71,13 +58,11 @@ void World::RegenerateWorld(const Vector2& newPos, int dx, int dy, UV uvs[Chunck
 			}
 		}
 
-		for (int y = 0; y < CHUNKS_VERTICAL_COUNT; y++)
-		{
-			RegenerateChunckContent(chunkcs[leftX + y * CHUNKS_HORIZONTAL_COUNT]);
-		}
+		ReneretateChunckPosition(newPos);
 
 		for (int y = 0; y < CHUNKS_VERTICAL_COUNT; y++)
 		{
+			RegenerateChunckContent(chunkcs[leftX + y * CHUNKS_HORIZONTAL_COUNT]);
 			chunkcs[leftX + y * CHUNKS_HORIZONTAL_COUNT].GenerateMeshVerteciesAndTextCoords(uvs);
 			chunkcs[leftX + y * CHUNKS_HORIZONTAL_COUNT].InitMesh();
 		}
@@ -93,13 +78,11 @@ void World::RegenerateWorld(const Vector2& newPos, int dx, int dy, UV uvs[Chunck
 			}
 		}
 
-		for (int y = 0; y < CHUNKS_VERTICAL_COUNT; y++)
-		{
-			RegenerateChunckContent(chunkcs[rightX + y * CHUNKS_HORIZONTAL_COUNT]);
-		}
+		ReneretateChunckPosition(newPos);
 
 		for (int y = 0; y < CHUNKS_VERTICAL_COUNT; y++)
 		{
+			RegenerateChunckContent(chunkcs[rightX + y * CHUNKS_HORIZONTAL_COUNT]);
 			chunkcs[rightX + y * CHUNKS_HORIZONTAL_COUNT].GenerateMeshVerteciesAndTextCoords(uvs);
 			chunkcs[rightX + y * CHUNKS_HORIZONTAL_COUNT].InitMesh();
 		}
@@ -115,13 +98,11 @@ void World::RegenerateWorld(const Vector2& newPos, int dx, int dy, UV uvs[Chunck
 			}
 		}
 
-		for (int x = 0; x < CHUNKS_HORIZONTAL_COUNT; x++)
-		{
-			RegenerateChunckContent(chunkcs[x + downY * CHUNKS_HORIZONTAL_COUNT]);
-		}
+		ReneretateChunckPosition(newPos);
 
 		for (int x = 0; x < CHUNKS_HORIZONTAL_COUNT; x++)
 		{
+			RegenerateChunckContent(chunkcs[x + downY * CHUNKS_HORIZONTAL_COUNT]);
 			chunkcs[x + downY * CHUNKS_HORIZONTAL_COUNT].GenerateMeshVerteciesAndTextCoords(uvs);
 			chunkcs[x + downY * CHUNKS_HORIZONTAL_COUNT].InitMesh();
 		}
@@ -137,13 +118,11 @@ void World::RegenerateWorld(const Vector2& newPos, int dx, int dy, UV uvs[Chunck
 			}
 		}
 
-		for (int x = 0; x < CHUNKS_HORIZONTAL_COUNT; x++)
-		{
-			RegenerateChunckContent(chunkcs[x + upY * CHUNKS_HORIZONTAL_COUNT]);
-		}
+		ReneretateChunckPosition(newPos);
 
 		for (int x = 0; x < CHUNKS_HORIZONTAL_COUNT; x++)
 		{
+			RegenerateChunckContent(chunkcs[x + upY * CHUNKS_HORIZONTAL_COUNT]);
 			chunkcs[x + upY * CHUNKS_HORIZONTAL_COUNT].GenerateMeshVerteciesAndTextCoords(uvs);
 			chunkcs[x + upY * CHUNKS_HORIZONTAL_COUNT].InitMesh();
 		}
@@ -154,9 +133,25 @@ void World::RegenerateChunckContent(Chunck& chunck)
 {
 	chunck.Generate();
 	chunck.GenerateTree();
-	chunck.GenerateFolliageType(BlockType::BT_GRASS, 30);
-	chunck.GenerateFolliageType(BlockType::BT_YELLOW_FLOWER, 200);
-	chunck.GenerateFolliageType(BlockType::BT_RED_FLOWER, 200);
+	chunck.GenerateFolliageType(BlockType::BT_GRASS, 15);
+	chunck.GenerateFolliageType(BlockType::BT_YELLOW_FLOWER, 70);
+	chunck.GenerateFolliageType(BlockType::BT_RED_FLOWER, 50);
+}
+
+void World::ReneretateChunckPosition(const Vector2& newPos)
+{
+	for (int x = 0; x < CHUNKS_HORIZONTAL_COUNT; x++)
+	{
+		for (int y = 0; y < CHUNKS_VERTICAL_COUNT; y++)
+		{
+			Vector3 pos = {
+				(x + newPos.x) * Chunck::CHUNK_WIDTH,
+				0,
+				(y + newPos.y) * Chunck::CHUNK_LENGTH
+			};
+			chunkcs[x + y * CHUNKS_HORIZONTAL_COUNT].SetPosition(pos);
+		}
+	}
 }
 
 void World::DrawChunck(Render* render, int index)
@@ -169,14 +164,20 @@ unsigned short World::GetBlockType(const Vector3& blockPos) const
 	int xChunck = (int)blockPos.x / Chunck::CHUNK_WIDTH;
 	int yChunck = (int)blockPos.z / Chunck::CHUNK_LENGTH;
 
-	if ((xChunck >= 0 && xChunck < CHUNKS_HORIZONTAL_COUNT) && (yChunck >= 0 && yChunck < CHUNKS_VERTICAL_COUNT))
+	int blockX = blockPos.x - xChunck * Chunck::CHUNK_WIDTH;
+	int blockY = (int)blockPos.y;
+	int blockZ = blockPos.z - yChunck * Chunck::CHUNK_LENGTH;
+
+	if (blockX < 0)
 	{
-		Vector3 pos {
-			blockPos.x - xChunck * Chunck::CHUNK_WIDTH,
-			blockPos.y,
-			blockPos.z - yChunck * Chunck::CHUNK_LENGTH
-		};
-		return chunkcs[xChunck + yChunck * CHUNKS_HORIZONTAL_COUNT].GetBlockType(pos);
+		blockX += Chunck::CHUNK_WIDTH;
 	}
-	return static_cast<unsigned short>(BlockType::BT_AIR);
+
+	if (blockZ < 0)
+	{
+		blockZ += Chunck::CHUNK_LENGTH;
+	}
+
+	Vector3 pos{ blockX, blockY, blockZ };
+	return chunkcs[xChunck + yChunck * CHUNKS_HORIZONTAL_COUNT].GetBlockType(pos);
 }

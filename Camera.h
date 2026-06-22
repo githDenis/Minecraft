@@ -14,9 +14,9 @@ enum class AxisDirection : unsigned char
 class Camera
 {
 public:
-	static constexpr float CAMERA_SPEED = 12.f;
+	static constexpr float CAMERA_SPEED = 22.f;
 	static constexpr float SENSITIVITY = 0.05f;
-	static constexpr float DRAWING_DISTANCE = 160.f;
+	static constexpr float DRAWING_DISTANCE = 200.f;
 
 private:
 	InputManager* inputManager;
