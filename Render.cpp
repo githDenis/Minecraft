@@ -26,12 +26,23 @@ void Render::SetViewport()
 	glViewport(0, 0, window->GetWidth(), window->GetHeight());
 }
 
-void Render::DrawActor(Actor& actor)
+void Render::DrawActor(Actor& actor, bool isTransparent)
 {
 	shaderProgram->SetMatrix4VariableValue("model", actor.GetModelMattrix());
+
+	if (isTransparent)
+	{
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
 	glBindTexture(GL_TEXTURE_2D, actor.GetTexture());
 	glBindVertexArray(actor.GetMesh()->GetVAO());
 	glDrawElements(GL_TRIANGLES, actor.GetMesh()->GetIndeciesArraySize(), GL_UNSIGNED_INT, NULL);
+
+	if (isTransparent)
+	{
+		glDisable(GL_BLEND);
+	}
 }
 
 void Render::DrawUIActor(UIActor& actor)

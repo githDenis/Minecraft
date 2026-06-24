@@ -7,7 +7,8 @@ void Chunck::LoadTexture(Texture* textures) noexcept
 
 void Chunck::Generate()
 {
-	vertexOffset = 0;
+	opaqueMeshVertexOffset = 0;
+	transparentMeshVertexOffset = 0;
 
 	for (int x = 0; x < CHUNK_WIDTH; x++)
 	{
@@ -66,6 +67,14 @@ void Chunck::Generate()
 			else
 			{
 				blockTypes[x][y][z] = static_cast<unsigned char>(BlockType::BT_SAND);
+			}
+
+			if (groundBlockType == BlockType::BT_SAND)
+			{
+				for (y; y < 8; y++)
+				{
+					blockTypes[x][y][z] = static_cast<unsigned char>(BlockType::BT_WATER);
+				}
 			}
 		}
 	}
@@ -192,22 +201,32 @@ void Chunck::GenerateMeshVerteciesAndTextCoords(UV uvs[Chunck::BLOCKS_TYPES_COUN
 				{
 					continue;
 				}
-				if (blockType >= BlockType::BT_GRASS && blockType <= BlockType::BT_RED_FLOWER)
+				
+				BlockClass blockClass = GetBlockClass(Vector3{ float(x), float(y), float(z) });
+
+				if (blockClass == BlockClass::BC_OPAQUE)
 				{
-					AddCrossPlanesToMesh(Vector3{ float(x), float(y), float(z) });
+					AddCubeToMesh(Vector3{ float(x), float(y), float(z) }, opaqueMesh, opaqueMeshVertexOffset);
+					AddCubeTextureCoords(uvs[(int)blockType][0], uvs[(int)blockType][1], uvs[(int)blockType][2], 
+						opaqueMesh);
+				}
+				else if (blockClass == BlockClass::BC_FOLLIAGE)
+				{
+					AddCrossPlanesToMesh(Vector3{ float(x), float(y), float(z) }, opaqueMesh);
 					AddCrossPlanesTextureCoords(uvs[(int)blockType][0]);
 				}
 				else
 				{
-					AddCubeToMesh(Vector3{ float(x), float(y), float(z) });
-					AddCubeTextureCoords(uvs[(int)blockType][0], uvs[(int)blockType][1], uvs[(int)blockType][2]);
+					AddCubeToMesh(Vector3{ float(x), float(y), float(z) }, transparentMesh, transparentMeshVertexOffset);
+					AddCubeTextureCoords(uvs[(int)blockType][0], uvs[(int)blockType][1], uvs[(int)blockType][2],
+						transparentMesh);
 				}
 			}
 		}
 	}
 }
 
-void Chunck::AddCubeToMesh(const Vector3& pos)
+void Chunck::AddCubeToMesh(const Vector3& pos, Mesh& mesh, unsigned int& vertexOffset)
 {
 	float vertecies[] =
 	{
@@ -294,7 +313,7 @@ void Chunck::AddCubeToMesh(const Vector3& pos)
 	vertexOffset += 24;
 }
 
-void Chunck::AddCrossPlanesToMesh(const Vector3& pos)
+void Chunck::AddCrossPlanesToMesh(const Vector3& pos, Mesh& mesh)
 {
 	float vertecies[] =
 	{
@@ -326,20 +345,20 @@ void Chunck::AddCrossPlanesToMesh(const Vector3& pos)
 	unsigned int indecies[] =
 	{
 		// Plane 1
-		0 + vertexOffset, 1 + vertexOffset, 2 + vertexOffset,
-		2 + vertexOffset, 3 + vertexOffset, 0 + vertexOffset,
+		0 + opaqueMeshVertexOffset, 1 + opaqueMeshVertexOffset, 2 + opaqueMeshVertexOffset,
+		2 + opaqueMeshVertexOffset, 3 + opaqueMeshVertexOffset, 0 + opaqueMeshVertexOffset,
 
 		//(обратная Plane 1)
-		8 + vertexOffset, 9 + vertexOffset, 10 + vertexOffset,
-		10 + vertexOffset, 11 + vertexOffset, 8 + vertexOffset,
+		8 + opaqueMeshVertexOffset, 9 + opaqueMeshVertexOffset, 10 + opaqueMeshVertexOffset,
+		10 + opaqueMeshVertexOffset, 11 + opaqueMeshVertexOffset, 8 + opaqueMeshVertexOffset,
 
 		// Plane 2
-		4 + vertexOffset, 5 + vertexOffset, 6 + vertexOffset,
-		6 + vertexOffset, 7 + vertexOffset, 4 + vertexOffset,
+		4 + opaqueMeshVertexOffset, 5 + opaqueMeshVertexOffset, 6 + opaqueMeshVertexOffset,
+		6 + opaqueMeshVertexOffset, 7 + opaqueMeshVertexOffset, 4 + opaqueMeshVertexOffset,
 
 		//(обратная Plane 2)
-		12 + vertexOffset, 13 + vertexOffset, 14 + vertexOffset,
-		14 + vertexOffset, 15 + vertexOffset, 12 + vertexOffset,
+		12 + opaqueMeshVertexOffset, 13 + opaqueMeshVertexOffset, 14 + opaqueMeshVertexOffset,
+		14 + opaqueMeshVertexOffset, 15 + opaqueMeshVertexOffset, 12 + opaqueMeshVertexOffset,
 	};
 	static constexpr int vertSize = sizeof(vertecies) / sizeof(float);
 	static constexpr int indSize = sizeof(indecies) / sizeof(unsigned int);
@@ -347,10 +366,10 @@ void Chunck::AddCrossPlanesToMesh(const Vector3& pos)
 	mesh.GetVertecies().AddArray(vertecies, vertSize);
 	mesh.GetIndecies().AddArray(indecies, indSize);
 
-	vertexOffset += 16;
+	opaqueMeshVertexOffset += 16;
 }
 
-void Chunck::AddCubeTextureCoords(const UV& up, const UV& front, const UV& down)
+void Chunck::AddCubeTextureCoords(const UV& up, const UV& front, const UV& down, Mesh& mesh)
 {
 	float cubeTextureCoords[] =
 	{
@@ -429,25 +448,49 @@ void Chunck::AddCrossPlanesTextureCoords(const UV& front)
 		front.u0, front.v0,
 	};
 	static constexpr int size = sizeof(coords) / sizeof(float);
-	mesh.GetTextCoords().AddArray(coords, size);
+	opaqueMesh.GetTextCoords().AddArray(coords, size);
 }
 
 void Chunck::InitMesh()
 {
-	mesh.InitMesh();
+	opaqueMesh.InitMesh();
+	transparentMesh.InitMesh();
 }
 
 void Chunck::Draw(Render* render)
 {
-	actor.SetTexture(textures);
-	actor.SetMesh(&mesh);
-	actor.SetPosition(position);
-	render->DrawActor(actor);
+	opaqueActor.SetTexture(textures);
+	opaqueActor.SetMesh(&opaqueMesh);
+	opaqueActor.SetPosition(position);
+	render->DrawActor(opaqueActor, false);
+
+	transparentActor.SetTexture(textures);
+	transparentActor.SetMesh(&transparentMesh);
+	transparentActor.SetPosition(position);
+	render->DrawActor(transparentActor, true);
 }
 
 void Chunck::SetPosition(const Vector3& vector) noexcept
 {
 	position = vector;
+}
+
+BlockClass Chunck::GetBlockClass(const Vector3& blockPos) const
+{
+	BlockType blockType = static_cast<BlockType>(blockTypes[(int)blockPos.x][(int)blockPos.y][(int)blockPos.z]);
+	
+	if (blockType >= BlockType::BT_GROUND_GRASS && blockType <= BlockType::BT_SAND)
+	{
+		return BlockClass::BC_OPAQUE;
+	}
+	else if (blockType >= BlockType::BT_GRASS && blockType <= BlockType::BT_RED_FLOWER)
+	{
+		return BlockClass::BC_FOLLIAGE;
+	}
+	else
+	{
+		return BlockClass::BC_TRANSPARENT;
+	}
 }
 
 unsigned short Chunck::GetBlockType(const Vector3& blockPos) const

@@ -15,7 +15,14 @@ enum class BlockType : unsigned char {
 	BT_GRASS,
 	BT_YELLOW_FLOWER,
 	BT_RED_FLOWER,
+	BT_WATER,
 	BT_AIR,
+};
+
+enum class BlockClass : unsigned char {
+	BC_OPAQUE,
+	BC_FOLLIAGE,
+	BC_TRANSPARENT
 };
 
 class Chunck
@@ -31,13 +38,16 @@ public:
 
 private:
 	unsigned char blockTypes[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_LENGTH];
-	unsigned int vertexOffset;
+	unsigned int opaqueMeshVertexOffset;
+	unsigned int transparentMeshVertexOffset;
 
-	Mesh mesh;
+	Mesh opaqueMesh;
+	Mesh transparentMesh;
 
 	Vector3 position;
 	Texture* textures;
-	Actor actor;
+	Actor opaqueActor;
+	Actor transparentActor;
 
 public:
 	void LoadTexture(Texture* textures) noexcept;
@@ -45,14 +55,15 @@ public:
 	void GenerateTree();
 	void GenerateFolliageType(const BlockType& type, int intencity);
 	void GenerateMeshVerteciesAndTextCoords(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT]);
-	void AddCubeToMesh(const Vector3& pos);
-	void AddCrossPlanesToMesh(const Vector3& pos);
-	void AddCubeTextureCoords(const UV& up, const UV& front, const UV& down);
+	void AddCubeToMesh(const Vector3& pos, Mesh& mesh, unsigned int& vertexOffset);
+	void AddCrossPlanesToMesh(const Vector3& pos, Mesh& mesh);
+	void AddCubeTextureCoords(const UV& up, const UV& front, const UV& down, Mesh& mesh);
 	void AddCrossPlanesTextureCoords(const UV& front);
 	void InitMesh();
 	void Draw(Render* render);
 	void SetPosition(const Vector3& vector) noexcept;
 
+	BlockClass GetBlockClass(const Vector3& blockPos) const;
 	unsigned short GetBlockType(const Vector3& blockPos) const;
 	Vector3& GetPosition() noexcept;
 	int Hash(int x, int z, int seed);
@@ -64,10 +75,12 @@ public:
 	Chunck& operator=(Chunck&& another) noexcept
 	{
 		memcpy(blockTypes, another.blockTypes, sizeof(blockTypes));
-		vertexOffset = another.vertexOffset;
+		opaqueMeshVertexOffset = another.opaqueMeshVertexOffset;
+		transparentMeshVertexOffset = another.transparentMeshVertexOffset;
 		position = another.position;
 		textures = another.textures;
-		mesh = std::move(another.mesh);
+		opaqueMesh = std::move(another.opaqueMesh);
+		transparentMesh = std::move(another.transparentMesh);
 		return *this;
 	}
 };

@@ -1,5 +1,6 @@
 #version 330 core
 
+out vec4 FragColor;
 in vec2 TexCoord;
 
 uniform sampler2D aTexture;
@@ -12,5 +13,6 @@ void main()
 	{
 		discard;
 	}
-	gl_FragColor = color;
+	color.a *= 0.4;
+	FragColor = color;
 }

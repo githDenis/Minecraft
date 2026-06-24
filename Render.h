@@ -21,7 +21,7 @@ public:
 	void Init();
 	void Clear(const Color& color);
 	void SetViewport();
-	void DrawActor(Actor& actor);
+	void DrawActor(Actor& actor, bool isTransparent);
 	void DrawUIActor(UIActor& actor);
 	void ApplyCameraData(Camera& camera);
 };

@@ -63,15 +63,16 @@ void Application::Run()
 	texture.SetImage("E:\\C++\\Minecraft\\Textures\\Textures.jpg");
 
 	UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT] = {
-		{ texture.GetUV(0, 16), texture.GetUV(3, 16), texture.GetUV(2, 16) },    //Ground with grass
-		{ texture.GetUV(2, 16), texture.GetUV(2, 16), texture.GetUV(2, 16) },    //Ground
-		{ texture.GetUV(21, 16), texture.GetUV(20, 16), texture.GetUV(21, 16) }, //Tree
-		{ texture.GetUV(53, 16), texture.GetUV(53, 16), texture.GetUV(53, 16) }, //Leaves
-		{ texture.GetUV(16, 16), texture.GetUV(16, 16), texture.GetUV(16, 16) }, //Stone
+		{ texture.GetUV(0, 16), texture.GetUV(3, 16), texture.GetUV(2, 16) },      //Ground with grass
+		{ texture.GetUV(2, 16), texture.GetUV(2, 16), texture.GetUV(2, 16) },      //Ground
+		{ texture.GetUV(21, 16), texture.GetUV(20, 16), texture.GetUV(21, 16) },   //Tree
+		{ texture.GetUV(53, 16), texture.GetUV(53, 16), texture.GetUV(53, 16) },   //Leaves
+		{ texture.GetUV(16, 16), texture.GetUV(16, 16), texture.GetUV(16, 16) },   //Stone
 		{ texture.GetUV(142, 16), texture.GetUV(142, 16), texture.GetUV(142, 16) }, //Sand
-		{ texture.GetUV(39, 16), texture.GetUV(39, 16), texture.GetUV(53, 16) }, //Grass
-		{ texture.GetUV(13, 16), texture.GetUV(13, 16), texture.GetUV(13, 16) }, //Yellow flower
-		{ texture.GetUV(12, 16), texture.GetUV(12, 16), texture.GetUV(12, 16) }, //Red flower
+		{ texture.GetUV(39, 16), texture.GetUV(39, 16), texture.GetUV(53, 16) },   //Grass
+		{ texture.GetUV(13, 16), texture.GetUV(13, 16), texture.GetUV(13, 16) },   //Yellow flower
+		{ texture.GetUV(12, 16), texture.GetUV(12, 16), texture.GetUV(12, 16) },   //Red flower
+		{ texture.GetUV(177, 16), texture.GetUV(177, 16), texture.GetUV(177, 16) },   //Water
 	};
 
 	UIMesh targetMesh;
