@@ -26,16 +26,17 @@ void Chunck::Generate()
 		for (int z = 0; z < CHUNK_LENGTH; z++)
 		{
 			float y1 = sin((x + position.x) * 0.03f) * 6 + cos((z + position.z) * 0.03f) * 6;
-			int y2 = sin((x + position.x) * 0.03f) * 15 + cos((z + position.z) * 0.02f) * 15;
+			float y2 = sin((x + position.x) * 0.03f) * 15 + cos((z + position.z) * 0.02f) * 15;
 			float y3 = cos((x + position.x) * 0.005f) * 10 + cos((z + position.z) * 0.007f) * 20;
-			int y4 = sin((x + position.x) * 0.015f) * 18 + sin((z + position.z) * 0.015f) * 20;
+			float y4 = sin((x + position.x) * 0.015f) * 18 + sin((z + position.z) * 0.015f) * 20;
 			float y5 = sin((x + position.x) * 0.14f) * 2 + cos((z + position.z) * 0.1f) * 2;
-			int y6 = sin((x + position.x) * 0.01f) * 4 + sin((z + position.z) * 0.02f) * 5;
+			float y6 = sin((x + position.x) * 0.01f) * 4 + sin((z + position.z) * 0.02f) * 5;
 			int y = y1 + y2 + y3 + y4 + y5 + y6;
+
+			constexpr int groundHeight = CHUNK_HEIGHT - GROUND_LAYER_HEIGHT;
 
 			y += CHUNK_HEIGHT / 2;
 
-			constexpr int groundHeight = CHUNK_HEIGHT - GROUND_LAYER_HEIGHT;
 			if (y >= groundHeight)
 			{
 				y = groundHeight - 1;
@@ -92,17 +93,20 @@ void Chunck::GenerateTree()
 				//Нахождение позиции дерева
 				Vector3 pos{ x + position.x, 0, z + position.z };
 
-				for (int i = 0; i < CHUNK_HEIGHT; i++)
+				if ((x != 0 && x != CHUNK_WIDTH - 1) && (z != 0 && z != CHUNK_LENGTH - 1))
 				{
-					if (i - 1 >= 0)
+					for (int i = GROUND_LAYER_HEIGHT; i < CHUNK_HEIGHT; i++)
 					{
-						BlockType topBloclType = static_cast<BlockType>(blockTypes[x][i][z]);
-						BlockType downBloclType = static_cast<BlockType>(blockTypes[x][i - 1][z]);
-
-						if (topBloclType == BlockType::BT_AIR && downBloclType == BlockType::BT_GROUND_GRASS)
+						if (i - 1 >= 0)
 						{
-							pos.y = position.y + i;
-							break;
+							BlockType topBloclType = static_cast<BlockType>(blockTypes[x][i][z]);
+							BlockType downBloclType = static_cast<BlockType>(blockTypes[x][i - 1][z]);
+
+							if (topBloclType == BlockType::BT_AIR && downBloclType == BlockType::BT_GROUND_GRASS)
+							{
+								pos.y = position.y + i;
+								break;
+							}
 						}
 					}
 				}
@@ -112,7 +116,7 @@ void Chunck::GenerateTree()
 				if (pos.y != 0) // Если позиция была найдена
 				{
 					// Генерация ствола
-					int treeY = int(pos.y - position.y);
+					int treeY = static_cast<int>(pos.y - position.y);
 					int hTree = Hash(x + position.x, z + position.z, WORLD_SEED);
 					int treeHeight = hTree % 10;
 
@@ -168,7 +172,7 @@ void Chunck::GenerateFolliageType(const BlockType& type, int intencity)
 			if (h % intencity == 0)
 			{
 				//Нахождение позиции
-				for (int i = 0; i < CHUNK_HEIGHT; i++)
+				for (int i = GROUND_LAYER_HEIGHT; i < CHUNK_HEIGHT; i++)
 				{
 					if (i - 1 >= 0)
 					{
@@ -178,6 +182,7 @@ void Chunck::GenerateFolliageType(const BlockType& type, int intencity)
 						if (topbloclType == BlockType::BT_AIR && downBloclType == BlockType::BT_GROUND_GRASS)
 						{
 							blockTypes[x][i][z] = static_cast<unsigned char>(type);
+							break;
 						}
 					}
 				}
@@ -201,24 +206,35 @@ void Chunck::GenerateMeshVerteciesAndTextCoords(UV uvs[Chunck::BLOCKS_TYPES_COUN
 				{
 					continue;
 				}
-				
-				BlockClass blockClass = GetBlockClass(Vector3{ float(x), float(y), float(z) });
+				Vector3 blockPos{
+					static_cast<float>(x),
+					static_cast<float>(y),
+					static_cast<float>(z),
+				};
+
+				BlockClass blockClass = GetBlockClass(Vector3{ blockPos });
 
 				if (blockClass == BlockClass::BC_OPAQUE)
 				{
-					AddCubeToMesh(Vector3{ float(x), float(y), float(z) }, opaqueMesh, opaqueMeshVertexOffset);
-					AddCubeTextureCoords(uvs[(int)blockType][0], uvs[(int)blockType][1], uvs[(int)blockType][2], 
+					AddCubeToMesh(Vector3{ blockPos }, opaqueMesh, opaqueMeshVertexOffset);
+					AddCubeTextureCoords(
+						uvs[static_cast<int>(blockType)][0],
+						uvs[static_cast<int>(blockType)][1],
+						uvs[static_cast<int>(blockType)][2],
 						opaqueMesh);
 				}
 				else if (blockClass == BlockClass::BC_FOLLIAGE)
 				{
-					AddCrossPlanesToMesh(Vector3{ float(x), float(y), float(z) }, opaqueMesh);
-					AddCrossPlanesTextureCoords(uvs[(int)blockType][0]);
+					AddCrossPlanesToMesh(Vector3{ blockPos }, opaqueMesh);
+					AddCrossPlanesTextureCoords(uvs[static_cast<int>(blockType)][0]);
 				}
 				else
 				{
-					AddCubeToMesh(Vector3{ float(x), float(y), float(z) }, transparentMesh, transparentMeshVertexOffset);
-					AddCubeTextureCoords(uvs[(int)blockType][0], uvs[(int)blockType][1], uvs[(int)blockType][2],
+					AddCubeToMesh(Vector3{ blockPos }, transparentMesh, transparentMeshVertexOffset);
+					AddCubeTextureCoords(
+						uvs[static_cast<int>(blockType)][0],
+						uvs[static_cast<int>(blockType)][1],
+						uvs[static_cast<int>(blockType)][2],
 						transparentMesh);
 				}
 			}
@@ -475,9 +491,13 @@ void Chunck::SetPosition(const Vector3& vector) noexcept
 	position = vector;
 }
 
-BlockClass Chunck::GetBlockClass(const Vector3& blockPos) const
+BlockClass Chunck::GetBlockClass(const Vector3& blockPos) const noexcept
 {
-	BlockType blockType = static_cast<BlockType>(blockTypes[(int)blockPos.x][(int)blockPos.y][(int)blockPos.z]);
+	BlockType blockType = static_cast<BlockType>(blockTypes
+		[static_cast<int>(blockPos.x)]
+		[static_cast<int>(blockPos.y)]
+		[static_cast<int>(blockPos.z)]
+	);
 	
 	if (blockType >= BlockType::BT_GROUND_GRASS && blockType <= BlockType::BT_SAND)
 	{
@@ -493,9 +513,15 @@ BlockClass Chunck::GetBlockClass(const Vector3& blockPos) const
 	}
 }
 
-unsigned short Chunck::GetBlockType(const Vector3& blockPos) const
+unsigned char Chunck::GetBlockType(const Vector3& blockPos) const noexcept
 {
-	return blockTypes[(int)blockPos.x][(int)blockPos.y][(int)blockPos.z];
+	if ((blockPos.x >= 0.f && blockPos.x < CHUNK_WIDTH) &&
+		(blockPos.y >= 0.f && blockPos.y < CHUNK_HEIGHT) &&
+		(blockPos.z >= 0.f && blockPos.z < CHUNK_LENGTH))
+	{
+		return blockTypes[static_cast<int>(blockPos.x)][static_cast<int>(blockPos.y)][static_cast<int>(blockPos.z)];
+	}
+	return static_cast<unsigned char>(BlockType::BT_AIR);
 }
 
 Vector3& Chunck::GetPosition() noexcept
@@ -503,9 +529,9 @@ Vector3& Chunck::GetPosition() noexcept
 	return position;
 }
 
-int Chunck::Hash(int x, int z, int seed)
+unsigned int Chunck::Hash(int x, int z, int seed) const noexcept
 {
-	uint32_t h = x * 374761393u + z * 668265263u + seed * 1442695041u;
+	unsigned int h = x * 374761393u + z * 668265263u + seed * 1442695041u;
 	h = (h ^ (h >> 13)) * 1274126177u;
 	return h ^ (h >> 16);
 }

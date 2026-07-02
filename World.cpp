@@ -1,12 +1,16 @@
 #include "World.h"
 
-void World::GenerateChuncksPositions()
+void World::GenerateChuncksPositions(const Vector3& playerPos)
 {
 	for (int x = 0; x < CHUNKS_HORIZONTAL_COUNT; x++)
 	{
 		for (int y = 0; y < CHUNKS_VERTICAL_COUNT; y++)
 		{
-			Vector3 pos = { x * Chunck::CHUNK_WIDTH, 0, y * Chunck::CHUNK_LENGTH };
+			Vector3 pos{
+				x * Chunck::CHUNK_WIDTH + playerPos.x,
+				0,
+				y * Chunck::CHUNK_LENGTH + playerPos.z
+			};
 			chunkcs[x + y * CHUNKS_HORIZONTAL_COUNT].SetPosition(pos);
 		}
 	}
@@ -44,9 +48,9 @@ void World::GenerateChuncksMeshes(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS
 void World::RegenerateWorld(const Vector2& newPos, int dx, int dy, UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT])
 {
 	static constexpr int leftX = CHUNKS_HORIZONTAL_COUNT - 1;
-	static int rightX = 0;
+	static const int rightX = 0;
 	static constexpr int upY = CHUNKS_VERTICAL_COUNT - 1;
-	static int downY = 0;
+	static const int downY = 0;
 
 	if (dx > 0)
 	{
@@ -159,25 +163,29 @@ void World::DrawChunck(Render* render, int index)
 	chunkcs[index].Draw(render);
 }
 
-unsigned short World::GetBlockType(const Vector3& blockPos) const
+unsigned char World::GetBlockType(const Vector3& blockPos, const Vector3& playerPos) const
 {
-	int xChunck = (int)blockPos.x / Chunck::CHUNK_WIDTH;
-	int yChunck = (int)blockPos.z / Chunck::CHUNK_LENGTH;
+	int xChunck = floor(blockPos.x / Chunck::CHUNK_WIDTH);
+	int zChunck = floor(blockPos.z / Chunck::CHUNK_LENGTH);
+	
+	int xPlayerChunck = floor(playerPos.x / Chunck::CHUNK_WIDTH);
+	int zPlayerChunck = floor(playerPos.z / Chunck::CHUNK_LENGTH);
 
-	int blockX = blockPos.x - xChunck * Chunck::CHUNK_WIDTH;
-	int blockY = (int)blockPos.y;
-	int blockZ = blockPos.z - yChunck * Chunck::CHUNK_LENGTH;
+	int localX = xChunck - xPlayerChunck + DRAW_CHUNK_RADIUS;
+	int localZ = zChunck - zPlayerChunck + DRAW_CHUNK_RADIUS;
 
-	if (blockX < 0)
-	{
-		blockX += Chunck::CHUNK_WIDTH;
-	}
+	std::cout << "X: " << localX << "  Y: " << localZ << '\n';
 
-	if (blockZ < 0)
-	{
-		blockZ += Chunck::CHUNK_LENGTH;
-	}
+	int blockX = floor(blockPos.x) - xChunck * Chunck::CHUNK_WIDTH;
+	int blockY = floor(blockPos.y);
+	int blockZ = floor(blockPos.z) - zChunck * Chunck::CHUNK_LENGTH;
+	
+	int chunckIndex = localX + localZ * CHUNKS_HORIZONTAL_COUNT;
 
-	Vector3 pos{ blockX, blockY, blockZ };
-	return chunkcs[xChunck + yChunck * CHUNKS_HORIZONTAL_COUNT].GetBlockType(pos);
+	Vector3 pos{
+		static_cast<float>(blockX),
+		static_cast<float>(blockY),
+		static_cast<float>(blockZ)
+	};
+	return chunkcs[chunckIndex].GetBlockType(pos);
 }

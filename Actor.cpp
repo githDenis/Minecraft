@@ -22,7 +22,7 @@ void Actor::SetTexture(Texture* texture) noexcept
 	this->texture = texture;
 }
 
-glm::mat4 Actor::GetModelMattrix()
+glm::mat4 Actor::GetModelMattrix() noexcept
 {
 	glm::mat4 model = glm::mat4(1.f);
 

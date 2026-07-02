@@ -8,9 +8,9 @@
 class Actor
 {
 private:
-	Mesh* mesh;
-	Texture* texture;
-	Vector3 position;
+	Mesh* mesh = nullptr;
+	Texture* texture = nullptr;
+	Vector3 position = { 0, 0, 0 };
 	Rotator rotation = { 0, 0, 0 };
 
 public:
@@ -21,7 +21,7 @@ public:
 	void SetRotation(const Rotator& rotation) noexcept;
 	void SetTexture(Texture* texture) noexcept;
 
-	glm::mat4 GetModelMattrix();
+	glm::mat4 GetModelMattrix() noexcept;
 	Mesh* GetMesh() noexcept;
 	unsigned int GetTexture() const noexcept;
 };

@@ -9,7 +9,7 @@ private:
 	UIMesh* mesh;
 
 public:
-	UIActor() {};
+	UIActor() noexcept {};
 
 	void SetMesh(UIMesh* mesh) noexcept;
 	void SetPenSize(float size) const;

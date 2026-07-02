@@ -19,10 +19,10 @@ void Camera::OnMouseMove(double x, double y)
 {
 	static float xLast = 0;
 	static float yLast = 0;
-	float xOffset = x - xLast;
-	float yOffset = yLast - y;
-	xLast = x;
-	yLast = y;
+	float xOffset = static_cast<float>(x) - xLast;
+	float yOffset = yLast - static_cast<float>(y);
+	xLast = static_cast<float>(x);
+	yLast = static_cast<float>(y);
 
 	xOffset *= SENSITIVITY;
 	yOffset *= SENSITIVITY;
@@ -59,24 +59,28 @@ void Camera::UpdateTranslation(float deltaTime)
 	if (inputManager->GetKeyState(GLFW_KEY_W))
 	{
 		movement += glm::normalize(front) * CAMERA_SPEED * deltaTime;
+		movement.y = 0;
 		oldPos = pos;
 	}
 
 	if (inputManager->GetKeyState(GLFW_KEY_S))
 	{
 		movement -= glm::normalize(front) * CAMERA_SPEED * deltaTime;
+		movement.y = 0;
 		oldPos = pos;
 	}
 
 	if (inputManager->GetKeyState(GLFW_KEY_A))
 	{
 		movement += glm::normalize(glm::cross(up, front)) * CAMERA_SPEED * deltaTime;
+		movement.y = 0;
 		oldPos = pos;
 	}
 
 	if (inputManager->GetKeyState(GLFW_KEY_D))
 	{
 		movement -= glm::normalize(glm::cross(up, front)) * CAMERA_SPEED * deltaTime;
+		movement.y = 0;
 		oldPos = pos;
 	}
 }
@@ -88,16 +92,26 @@ void Camera::SetFOV(float angle) noexcept
 
 void Camera::SetPosition(const Vector3& vector) noexcept
 {
+	oldPos = pos;
 	pos.x = vector.x;
 	pos.y = vector.y;
 	pos.z = vector.z;
 }
 
-void Camera::SetOldPosition(const Vector3& vector) noexcept
+void Camera::SetAxisValue(char axis, float value) noexcept
 {
-	oldPos.x = vector.x;
-	oldPos.y = vector.y;
-	oldPos.z = vector.z;
+	if (axis == 'X' || axis == 'x')
+	{
+		pos.x = value;
+	}
+	else if (axis == 'Y' || axis == 'y')
+	{
+		pos.y = value;
+	}
+	else if (axis == 'Z' || axis == 'z')
+	{
+		pos.z = value;
+	}
 }
 
 glm::mat4 Camera::GetViewMatrix() const noexcept
@@ -118,6 +132,24 @@ Vector3 Camera::GetPosition() const noexcept
 Vector3 Camera::GetMovementVector() const noexcept
 {
 	return Vector3{ movement.x, movement.y, movement.z };
+}
+
+Vector3 Camera::GetSignMovementVector() const noexcept
+{
+	Vector3 newVec{ movement.x, movement.y, movement.z };
+	if (newVec.x >= 0.08) newVec.x = 1.f;
+	else if (newVec.x <= -0.08) newVec.x = -1.f;
+	else newVec.x = 0;
+
+	if (newVec.y >= 0.08) newVec.y = 1.f;
+	else if (newVec.y <= -0.08) newVec.y = -1.f;
+	else newVec.y = 0.f;
+
+	if (newVec.z >= 0.08) newVec.z = 1.f;
+	else if (newVec.z <= -0.08) newVec.z = -1.f;
+	else newVec.z = 0.f;
+
+	return newVec;
 }
 
 Vector3 Camera::GetOldPosition() const noexcept

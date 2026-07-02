@@ -16,7 +16,7 @@ private:
 	ShaderProgram* UIShaderProgram;
 
 public:
-	Render(Window* window, ShaderProgram* shaderProgram, ShaderProgram* UIshaderProgram) noexcept;
+	explicit Render(Window* window, ShaderProgram* shaderProgram, ShaderProgram* UIshaderProgram) noexcept;
 
 	void Init();
 	void Clear(const Color& color);

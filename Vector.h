@@ -10,15 +10,16 @@ private:
 	unsigned int capacity;
 
 public:
-	Vector() noexcept : ptr(nullptr), size(0), capacity(0) {}
+	explicit Vector() noexcept : ptr(nullptr), size(0), capacity(0) {}
 	Vector(Vector&& vector) noexcept : ptr(vector.ptr), size(vector.size), capacity(vector.capacity)
 	{
 		vector.ptr = nullptr;
 		vector.size = 0;
 		vector.capacity = 0;
 	}
+	Vector(const Vector& vector) = delete;
 
-	~Vector()
+	~Vector() noexcept
 	{
 		if (ptr)
 		{
@@ -27,7 +28,7 @@ public:
 		}
 	}
 
-	void Add(const T& value)
+	void Add(const T& value) noexcept
 	{
 		size++;
 		if (size >= capacity)
@@ -45,7 +46,7 @@ public:
 		ptr[size - 1] = value;
 	}
 
-	void AddArray(const T* arr, unsigned int arrSize)
+	void AddArray(const T* arr, unsigned int arrSize) noexcept
 	{
 		unsigned int newSize = size + arrSize;
 
@@ -88,7 +89,7 @@ public:
 		return size;
 	}
 
-	T& operator[](int index)
+	T& operator[](int index) noexcept
 	{
 		return ptr[index];
 	}

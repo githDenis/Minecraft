@@ -16,7 +16,7 @@ private:
 	int height;
 
 public:
-	Window(const char* title, int width, int height) noexcept;
+	explicit Window(const char* title, int width, int height) noexcept;
 
 	GLFWwindow* GetHandle() const noexcept;
 	int GetWidth() const noexcept;

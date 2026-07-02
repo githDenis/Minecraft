@@ -10,8 +10,8 @@ private:
 	UV uv;
 
 public:
-	Texture() {};
-	Texture(const char* filePath);
+	Texture() noexcept {};
+	explicit Texture(const char* filePath);
 	~Texture();
 
 	void Create();

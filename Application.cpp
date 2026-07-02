@@ -81,7 +81,7 @@ void Application::Run()
 	UIActor targetActor;
 	targetActor.SetMesh(&targetMesh);
 
-	world.GenerateChuncksPositions();
+	world.GenerateChuncksPositions(player->GetPosition());
 	world.GenerateChuncks(&texture);
 	world.GenerateFolliage();
 	world.GenerateChuncksMeshes(uvs);
@@ -99,6 +99,20 @@ void Application::Run()
 			break;
 		}
 
+		if (inputManager->GetKeyState(GLFW_KEY_SPACE) && player->IsOnGroundState())
+		{
+			player->Jump();
+		}
+
+		if (inputManager->GetKeyState(GLFW_KEY_R))
+		{
+			player->Respawn();
+		}
+
+		if (inputManager->IsKeyHoldForTime(GLFW_KEY_B, 2))
+		{
+		}
+
 		static const Color clearColor = { 0.f, 0.5f, 0.8f };
 		render->Clear(clearColor);
 
@@ -110,23 +124,23 @@ void Application::Run()
 
 		Vector3 pos{ player->GetPosition() };
 
-		int chunckX = (int)pos.x / Chunck::CHUNK_WIDTH;
-		int chunckY = (int)pos.z / Chunck::CHUNK_LENGTH;
+		int chunkX = static_cast<int>(std::floor(pos.x / (float)Chunck::CHUNK_WIDTH));
+		int chunkY = static_cast<int>(std::floor(pos.z / (float)Chunck::CHUNK_LENGTH));
 
-		static int oldChunckX = chunckX;
-		static int oldChunckY = chunckY;
+		static int oldChunckX = chunkX;
+		static int oldChunckY = chunkY;
 
-		int dx = chunckX - oldChunckX;
-		int dy = chunckY - oldChunckY;
+		int chunckDx = chunkX - oldChunckX;
+		int chunckDy = chunkY - oldChunckY;
 
-		if (dx != 0 || dy != 0)
+		if (chunckDx != 0 || chunckDy != 0)
 		{
-			Vector2 newPos{ chunckX - World::DRAW_CHUNK_RADIUS, chunckY - World::DRAW_CHUNK_RADIUS };
+			Vector2 newPos{ chunkX - World::DRAW_CHUNK_RADIUS, chunkY - World::DRAW_CHUNK_RADIUS };
 
-			world.RegenerateWorld(newPos, dx, dy, uvs);
+			world.RegenerateWorld(newPos, chunckDx, chunckDy, uvs);
 
-			oldChunckX = chunckX;
-			oldChunckY = chunckY;
+			oldChunckX = chunkX;
+			oldChunckY = chunkY;
 		}
 
 		for (int i = 0; i < World::CHUNCKS_COUNT; i++)
@@ -134,19 +148,8 @@ void Application::Run()
 			world.DrawChunck(render, i);
 		}
 
-		if (inputManager->GetKeyState(GLFW_KEY_SPACE) && player->IsOnGroundState())
-		{
-			player->Jump();
-		}
-
-		if (inputManager->IsKeyHoldForTime(GLFW_KEY_B, 2))
-		{
-		}
-		
-		//player->UpdatePhysics(deltaTime);
+		player->UpdatePhysics(deltaTime);
 		player->ProcessCollision(&world);
-
-		//std::cout << world.GetBlockType(pos) << '\n';
 
 		UIShaderProgram->Use();
 		targetActor.SetPenSize(3.f);

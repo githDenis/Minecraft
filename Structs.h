@@ -21,12 +21,12 @@ struct Vector3
 		return *this;
 	}
 
-	Vector3 operator+(const Vector3& another) noexcept
+	inline Vector3 operator+(const Vector3& another) noexcept
 	{
 		return Vector3{ x + another.x, y + another.y, z + another.z };
 	}
 
-	Vector3 operator-(const Vector3& another) noexcept
+	inline Vector3 operator-(const Vector3& another) noexcept
 	{
 		return Vector3{ x - another.x, y - another.y, z - another.z };
 	}
@@ -44,12 +44,12 @@ struct Vector2
 		return *this;
 	}
 
-	Vector2 operator+(const Vector2& another) noexcept
+	inline Vector2 operator+(const Vector2& another) noexcept
 	{
 		return Vector2{ x + another.x, y + another.y };
 	}
 
-	Vector2 operator-(const Vector2& another) noexcept
+	inline Vector2 operator-(const Vector2& another) noexcept
 	{
 		return Vector2{ x - another.x, y - another.y };
 	}

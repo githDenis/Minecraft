@@ -9,7 +9,7 @@ private:
 	Window* window;
 
 public:
-	InputManager(Window* window) noexcept;
+	explicit InputManager(Window* window) noexcept;
 
 	void BindMouseCallback(void(*event)(GLFWwindow* window, double x, double y));
 	void EnableGamemode();

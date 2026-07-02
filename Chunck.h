@@ -62,11 +62,11 @@ public:
 	void InitMesh();
 	void Draw(Render* render);
 	void SetPosition(const Vector3& vector) noexcept;
-
-	BlockClass GetBlockClass(const Vector3& blockPos) const;
-	unsigned short GetBlockType(const Vector3& blockPos) const;
+	
+	BlockClass GetBlockClass(const Vector3& blockPos) const noexcept;
+	unsigned char GetBlockType(const Vector3& blockPos) const noexcept;
 	Vector3& GetPosition() noexcept;
-	int Hash(int x, int z, int seed);
+	unsigned int Hash(int x, int z, int seed) const noexcept;
 
 	Chunck() noexcept = default;
 	Chunck(const Chunck&) = delete;
@@ -74,13 +74,34 @@ public:
 	Chunck& operator=(const Chunck&) = delete;
 	Chunck& operator=(Chunck&& another) noexcept
 	{
-		memcpy(blockTypes, another.blockTypes, sizeof(blockTypes));
+		for (int x = 0; x < CHUNK_WIDTH; x++)
+		{
+			for (int y = 0; y < CHUNK_HEIGHT; y++)
+			{
+				for (int z = 0; z < CHUNK_LENGTH; z++)
+				{
+					blockTypes[x][y][z] = another.blockTypes[x][y][z];
+				}
+			}
+		}
+
 		opaqueMeshVertexOffset = another.opaqueMeshVertexOffset;
 		transparentMeshVertexOffset = another.transparentMeshVertexOffset;
 		position = another.position;
 		textures = another.textures;
 		opaqueMesh = std::move(another.opaqueMesh);
 		transparentMesh = std::move(another.transparentMesh);
+
+		for (int x = 0; x < CHUNK_WIDTH; x++)
+		{
+			for (int y = 0; y < CHUNK_HEIGHT; y++)
+			{
+				for (int z = 0; z < CHUNK_LENGTH; z++)
+				{
+					another.blockTypes[x][y][z] = static_cast<unsigned char>(BlockType::BT_AIR);
+				}
+			}
+		}
 		return *this;
 	}
 };

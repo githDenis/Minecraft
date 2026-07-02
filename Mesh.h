@@ -18,8 +18,8 @@ private:
 
 public:
 	~Mesh();
-	void GenerateCube();
-	void SetUV(const UV& upUV, const UV& frontUV, const UV& downUV);
+	//void GenerateCube();
+	//void SetUV(const UV& upUV, const UV& frontUV, const UV& downUV);
 
 	void InitMesh();
 	unsigned int GetVAO() const;
