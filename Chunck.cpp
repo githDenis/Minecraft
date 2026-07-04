@@ -7,9 +7,6 @@ void Chunck::LoadTexture(Texture* textures) noexcept
 
 void Chunck::Generate()
 {
-	opaqueMeshVertexOffset = 0;
-	transparentMeshVertexOffset = 0;
-
 	for (int x = 0; x < CHUNK_WIDTH; x++)
 	{
 		for (int y = 0; y < CHUNK_HEIGHT; y++)
@@ -194,6 +191,9 @@ void Chunck::GenerateFolliageType(const BlockType& type, int intencity)
 
 void Chunck::GenerateMeshVerteciesAndTextCoords(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT])
 {
+	opaqueMeshVertexOffset = 0;
+	transparentMeshVertexOffset = 0;
+
 	for (int x = 0; x < CHUNK_WIDTH; x++)
 	{
 		for (int y = 0; y < CHUNK_HEIGHT; y++)
@@ -206,11 +206,7 @@ void Chunck::GenerateMeshVerteciesAndTextCoords(UV uvs[Chunck::BLOCKS_TYPES_COUN
 				{
 					continue;
 				}
-				Vector3 blockPos{
-					static_cast<float>(x),
-					static_cast<float>(y),
-					static_cast<float>(z),
-				};
+				Vector3 blockPos{ static_cast<float>(x), static_cast<float>(y), static_cast<float>(z) };
 
 				BlockClass blockClass = GetBlockClass(Vector3{ blockPos });
 
@@ -489,6 +485,18 @@ void Chunck::Draw(Render* render)
 void Chunck::SetPosition(const Vector3& vector) noexcept
 {
 	position = vector;
+}
+
+void Chunck::PlaceBlock(const Vector3& blockPos, const BlockType& blockType)
+{
+	blockTypes[static_cast<int>(blockPos.x)][static_cast<int>(blockPos.y)][static_cast<int>(blockPos.z)] =
+		static_cast<unsigned char>(blockType);
+}
+
+void Chunck::SetBlockType(const Vector3& blockPos, const BlockType& newType)
+{
+	blockTypes[static_cast<int>(blockPos.x)][static_cast<int>(blockPos.y)][static_cast<int>(blockPos.z)] =
+		static_cast<unsigned char>(newType);
 }
 
 BlockClass Chunck::GetBlockClass(const Vector3& blockPos) const noexcept

@@ -48,5 +48,6 @@ public:
 	Vector3 GetPosition() const noexcept;
 	Vector3 GetMovementVector() const noexcept;
 	Vector3 GetSignMovementVector() const noexcept;
+	Vector3 GetFrontMovementVector() const noexcept;
 	Vector3 GetOldPosition() const noexcept;
 };

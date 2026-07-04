@@ -62,7 +62,9 @@ public:
 	void InitMesh();
 	void Draw(Render* render);
 	void SetPosition(const Vector3& vector) noexcept;
-	
+	void PlaceBlock(const Vector3& blockPos, const BlockType& blockType);
+	void SetBlockType(const Vector3& blockPos, const BlockType& newType);
+
 	BlockClass GetBlockClass(const Vector3& blockPos) const noexcept;
 	unsigned char GetBlockType(const Vector3& blockPos) const noexcept;
 	Vector3& GetPosition() noexcept;

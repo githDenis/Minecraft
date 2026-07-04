@@ -152,6 +152,11 @@ Vector3 Camera::GetSignMovementVector() const noexcept
 	return newVec;
 }
 
+Vector3 Camera::GetFrontMovementVector() const noexcept
+{
+	return Vector3{ front.x, front.y, front.z };
+}
+
 Vector3 Camera::GetOldPosition() const noexcept
 {
 	return Vector3{ oldPos.x, oldPos.y, oldPos.z };

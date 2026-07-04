@@ -99,18 +99,19 @@ void Application::Run()
 			break;
 		}
 
-		if (inputManager->GetKeyState(GLFW_KEY_SPACE) && player->IsOnGroundState())
+		if (inputManager->IsKeyHoldForTime(GLFW_KEY_SPACE, 10) && player->IsOnGroundState())
 		{
 			player->Jump();
 		}
 
-		if (inputManager->GetKeyState(GLFW_KEY_R))
+		if (inputManager->IsMouseButtonHoldForTime(GLFW_MOUSE_BUTTON_LEFT, 800))
 		{
-			player->Respawn();
+			player->PlaceBlock(&world, render, uvs, BlockType::BT_AIR);
 		}
 
-		if (inputManager->IsKeyHoldForTime(GLFW_KEY_B, 2))
+		if (inputManager->GetMouseButtonState(GLFW_MOUSE_BUTTON_RIGHT))
 		{
+			player->PlaceBlock(&world, render, uvs, BlockType::BT_GROUND);
 		}
 
 		static const Color clearColor = { 0.f, 0.5f, 0.8f };
@@ -137,13 +138,13 @@ void Application::Run()
 		{
 			Vector2 newPos{ chunkX - World::DRAW_CHUNK_RADIUS, chunkY - World::DRAW_CHUNK_RADIUS };
 
-			world.RegenerateWorld(newPos, chunckDx, chunckDy, uvs);
+			world.RegenerateWorld(newPos, pos, chunckDx, chunckDy, uvs);
 
 			oldChunckX = chunkX;
 			oldChunckY = chunkY;
 		}
 
-		for (int i = 0; i < World::CHUNCKS_COUNT; i++)
+		for (int i = 0; i < World::CHUNKS_COUNT; i++)
 		{
 			world.DrawChunck(render, i);
 		}

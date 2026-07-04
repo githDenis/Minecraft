@@ -11,41 +11,68 @@ void World::GenerateChuncksPositions(const Vector3& playerPos)
 				0,
 				y * Chunck::CHUNK_LENGTH + playerPos.z
 			};
-			chunkcs[x + y * CHUNKS_HORIZONTAL_COUNT].SetPosition(pos);
+			chunks[x + y * CHUNKS_HORIZONTAL_COUNT].SetPosition(pos);
 		}
 	}
 }
 
 void World::GenerateChuncks(Texture* textures)
 {
-	for (int i = 0; i < CHUNCKS_COUNT; i++)
+	for (int i = 0; i < CHUNKS_COUNT; i++)
 	{
-		chunkcs[i].LoadTexture(textures);
-		chunkcs[i].Generate();
+		chunks[i].LoadTexture(textures);
+		chunks[i].Generate();
 	}
 }
 
 void World::GenerateFolliage()
 {
-	for (int i = 0; i < CHUNCKS_COUNT; i++)
+	for (int i = 0; i < CHUNKS_COUNT; i++)
 	{
-		chunkcs[i].GenerateTree();
-		chunkcs[i].GenerateFolliageType(BlockType::BT_GRASS, 15);
-		chunkcs[i].GenerateFolliageType(BlockType::BT_YELLOW_FLOWER, 70);
-		chunkcs[i].GenerateFolliageType(BlockType::BT_RED_FLOWER, 50);
+		chunks[i].GenerateTree();
+		chunks[i].GenerateFolliageType(BlockType::BT_GRASS, 15);
+		chunks[i].GenerateFolliageType(BlockType::BT_YELLOW_FLOWER, 70);
+		chunks[i].GenerateFolliageType(BlockType::BT_RED_FLOWER, 50);
+	}
+}
+
+void World::ApplyChanchedBlocks(const Vector3& newPos)
+{
+	for (int i = 0; i < blocksInfo.GetSize(); i++)
+	{
+		Vector3 pos{ GetBlockPos(blocksInfo[i].pos, newPos) };
+		Vector2 changedChunkPos{ GetChunckPos(blocksInfo[i].pos) };
+		Vector2 playerChunkPos{ GetChunckPos(newPos) };
+
+		int minXChunk = playerChunkPos.x - DRAW_CHUNK_RADIUS;
+		int maxXChunk = playerChunkPos.x + DRAW_CHUNK_RADIUS;
+		int minZChunk = playerChunkPos.y - DRAW_CHUNK_RADIUS;
+		int maxZChunk = playerChunkPos.y + DRAW_CHUNK_RADIUS;
+
+		int chunckIndex = GetChunckIndex(blocksInfo[i].pos, newPos);
+
+		if (chunckIndex >= 0 && chunckIndex <= CHUNKS_COUNT)
+		{
+			if ((changedChunkPos.x >= minXChunk && changedChunkPos.x <= maxXChunk) &&
+				(changedChunkPos.y >= minZChunk && changedChunkPos.y <= maxZChunk))
+			{
+				chunks[chunckIndex].SetBlockType(pos, blocksInfo[i].blockType);
+			}
+		}
 	}
 }
 
 void World::GenerateChuncksMeshes(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT])
 {
-	for (int i = 0; i < CHUNCKS_COUNT; i++)
+	for (int i = 0; i < CHUNKS_COUNT; i++)
 	{
-		chunkcs[i].GenerateMeshVerteciesAndTextCoords(uvs);
-		chunkcs[i].InitMesh();
+		chunks[i].GenerateMeshVerteciesAndTextCoords(uvs);
+		chunks[i].InitMesh();
 	}
 }
 
-void World::RegenerateWorld(const Vector2& newPos, int dx, int dy, UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT])
+void World::RegenerateWorld(const Vector2& newPos, const Vector3& playerPos, int dx, int dy, 
+	UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT])
 {
 	static constexpr int leftX = CHUNKS_HORIZONTAL_COUNT - 1;
 	static const int rightX = 0;
@@ -58,7 +85,7 @@ void World::RegenerateWorld(const Vector2& newPos, int dx, int dy, UV uvs[Chunck
 		{
 			for (int y = 0; y < CHUNKS_VERTICAL_COUNT; y++)
 			{
-				chunkcs[x + y * CHUNKS_HORIZONTAL_COUNT] = std::move(chunkcs[(x + 1) + y * CHUNKS_HORIZONTAL_COUNT]);
+				chunks[x + y * CHUNKS_HORIZONTAL_COUNT] = std::move(chunks[(x + 1) + y * CHUNKS_HORIZONTAL_COUNT]);
 			}
 		}
 
@@ -66,9 +93,14 @@ void World::RegenerateWorld(const Vector2& newPos, int dx, int dy, UV uvs[Chunck
 
 		for (int y = 0; y < CHUNKS_VERTICAL_COUNT; y++)
 		{
-			RegenerateChunckContent(chunkcs[leftX + y * CHUNKS_HORIZONTAL_COUNT]);
-			chunkcs[leftX + y * CHUNKS_HORIZONTAL_COUNT].GenerateMeshVerteciesAndTextCoords(uvs);
-			chunkcs[leftX + y * CHUNKS_HORIZONTAL_COUNT].InitMesh();
+			RegenerateChunckContent(chunks[leftX + y * CHUNKS_HORIZONTAL_COUNT]);
+			
+			if (blocksInfo.GetSize() > 0)
+			{
+				ApplyChanchedBlocks(playerPos);
+			}
+			chunks[leftX + y * CHUNKS_HORIZONTAL_COUNT].GenerateMeshVerteciesAndTextCoords(uvs);
+			chunks[leftX + y * CHUNKS_HORIZONTAL_COUNT].InitMesh();
 		}
 	}
 
@@ -78,7 +110,7 @@ void World::RegenerateWorld(const Vector2& newPos, int dx, int dy, UV uvs[Chunck
 		{
 			for (int y = 0; y < CHUNKS_VERTICAL_COUNT; y++)
 			{
-				chunkcs[x + y * CHUNKS_HORIZONTAL_COUNT] = std::move(chunkcs[(x - 1) + y * CHUNKS_HORIZONTAL_COUNT]);
+				chunks[x + y * CHUNKS_HORIZONTAL_COUNT] = std::move(chunks[(x - 1) + y * CHUNKS_HORIZONTAL_COUNT]);
 			}
 		}
 
@@ -86,9 +118,14 @@ void World::RegenerateWorld(const Vector2& newPos, int dx, int dy, UV uvs[Chunck
 
 		for (int y = 0; y < CHUNKS_VERTICAL_COUNT; y++)
 		{
-			RegenerateChunckContent(chunkcs[rightX + y * CHUNKS_HORIZONTAL_COUNT]);
-			chunkcs[rightX + y * CHUNKS_HORIZONTAL_COUNT].GenerateMeshVerteciesAndTextCoords(uvs);
-			chunkcs[rightX + y * CHUNKS_HORIZONTAL_COUNT].InitMesh();
+			RegenerateChunckContent(chunks[rightX + y * CHUNKS_HORIZONTAL_COUNT]);
+			
+			if (blocksInfo.GetSize() > 0)
+			{
+				ApplyChanchedBlocks(playerPos);
+			}
+			chunks[rightX + y * CHUNKS_HORIZONTAL_COUNT].GenerateMeshVerteciesAndTextCoords(uvs);
+			chunks[rightX + y * CHUNKS_HORIZONTAL_COUNT].InitMesh();
 		}
 	}
 
@@ -98,7 +135,7 @@ void World::RegenerateWorld(const Vector2& newPos, int dx, int dy, UV uvs[Chunck
 		{
 			for (int x = 0; x < CHUNKS_HORIZONTAL_COUNT; x++)
 			{
-				chunkcs[x + y * CHUNKS_HORIZONTAL_COUNT] = std::move(chunkcs[x + (y - 1) * CHUNKS_HORIZONTAL_COUNT]);
+				chunks[x + y * CHUNKS_HORIZONTAL_COUNT] = std::move(chunks[x + (y - 1) * CHUNKS_HORIZONTAL_COUNT]);
 			}
 		}
 
@@ -106,9 +143,14 @@ void World::RegenerateWorld(const Vector2& newPos, int dx, int dy, UV uvs[Chunck
 
 		for (int x = 0; x < CHUNKS_HORIZONTAL_COUNT; x++)
 		{
-			RegenerateChunckContent(chunkcs[x + downY * CHUNKS_HORIZONTAL_COUNT]);
-			chunkcs[x + downY * CHUNKS_HORIZONTAL_COUNT].GenerateMeshVerteciesAndTextCoords(uvs);
-			chunkcs[x + downY * CHUNKS_HORIZONTAL_COUNT].InitMesh();
+			RegenerateChunckContent(chunks[x + downY * CHUNKS_HORIZONTAL_COUNT]);
+			
+			if (blocksInfo.GetSize() > 0)
+			{
+				ApplyChanchedBlocks(playerPos);
+			}
+			chunks[x + downY * CHUNKS_HORIZONTAL_COUNT].GenerateMeshVerteciesAndTextCoords(uvs);
+			chunks[x + downY * CHUNKS_HORIZONTAL_COUNT].InitMesh();
 		}
 	}
 
@@ -118,7 +160,7 @@ void World::RegenerateWorld(const Vector2& newPos, int dx, int dy, UV uvs[Chunck
 		{
 			for (int x = 0; x < CHUNKS_HORIZONTAL_COUNT; x++)
 			{
-				chunkcs[x + y * CHUNKS_HORIZONTAL_COUNT] = std::move(chunkcs[x + (y + 1) * CHUNKS_HORIZONTAL_COUNT]);
+				chunks[x + y * CHUNKS_HORIZONTAL_COUNT] = std::move(chunks[x + (y + 1) * CHUNKS_HORIZONTAL_COUNT]);
 			}
 		}
 
@@ -126,9 +168,14 @@ void World::RegenerateWorld(const Vector2& newPos, int dx, int dy, UV uvs[Chunck
 
 		for (int x = 0; x < CHUNKS_HORIZONTAL_COUNT; x++)
 		{
-			RegenerateChunckContent(chunkcs[x + upY * CHUNKS_HORIZONTAL_COUNT]);
-			chunkcs[x + upY * CHUNKS_HORIZONTAL_COUNT].GenerateMeshVerteciesAndTextCoords(uvs);
-			chunkcs[x + upY * CHUNKS_HORIZONTAL_COUNT].InitMesh();
+			RegenerateChunckContent(chunks[x + upY * CHUNKS_HORIZONTAL_COUNT]);
+			
+			if (blocksInfo.GetSize() > 0)
+			{
+				ApplyChanchedBlocks(playerPos);
+			}
+			chunks[x + upY * CHUNKS_HORIZONTAL_COUNT].GenerateMeshVerteciesAndTextCoords(uvs);
+			chunks[x + upY * CHUNKS_HORIZONTAL_COUNT].InitMesh();
 		}
 	}
 }
@@ -153,39 +200,92 @@ void World::ReneretateChunckPosition(const Vector2& newPos)
 				0,
 				(y + newPos.y) * Chunck::CHUNK_LENGTH
 			};
-			chunkcs[x + y * CHUNKS_HORIZONTAL_COUNT].SetPosition(pos);
+			chunks[x + y * CHUNKS_HORIZONTAL_COUNT].SetPosition(pos);
 		}
 	}
 }
 
 void World::DrawChunck(Render* render, int index)
 {
-	chunkcs[index].Draw(render);
+	chunks[index].Draw(render);
+}
+
+void World::PlaceBlock(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], Render* render, const Vector3& pos,
+	Vector3& forwardVector, const BlockType& blockType)
+{
+	Vector3 start = pos;
+	Vector3 direction = forwardVector;
+
+	for (float i = 1.f; i < BREAK_BLOCK_DISTANCE; i++)
+	{
+		Vector3 checkPos = start + direction * i;
+		Vector3 blockPos{ GetBlockPos(checkPos, pos) };
+		int chunckIndex = GetChunckIndex(checkPos, pos);
+
+		if (chunks[chunckIndex].GetBlockType(blockPos) != static_cast<unsigned char>(BlockType::BT_AIR) &&
+			chunks[chunckIndex].GetBlockType(blockPos) != static_cast<unsigned char>(BlockType::BT_WATER))
+		{
+			int k = blockType == BlockType::BT_AIR ? i : i - 1;
+			checkPos = start + direction * k;
+			
+			Vector3 placePos{ GetBlockPos(checkPos, pos) };
+			chunckIndex = GetChunckIndex(checkPos, pos);
+
+			chunks[chunckIndex].PlaceBlock(placePos, blockType);
+			chunks[chunckIndex].GenerateMeshVerteciesAndTextCoords(uvs);
+			chunks[chunckIndex].InitMesh();
+			chunks[chunckIndex].Draw(render);
+
+			BlockInfoInWorld blockInfo{
+				.pos = checkPos,
+				.blockType = blockType,
+			};
+			blocksInfo.Add(blockInfo);
+			return;
+		}
+	}
 }
 
 unsigned char World::GetBlockType(const Vector3& blockPos, const Vector3& playerPos) const
 {
-	int xChunck = floor(blockPos.x / Chunck::CHUNK_WIDTH);
-	int zChunck = floor(blockPos.z / Chunck::CHUNK_LENGTH);
-	
+	Vector3 pos{ GetBlockPos(blockPos, playerPos) };
+	int chunckIndex = GetChunckIndex(blockPos, playerPos);
+	return chunks[chunckIndex].GetBlockType(pos);
+}
+
+Vector3 World::GetBlockPos(const Vector3& pos, const Vector3& playerPos) const noexcept
+{
+	int xChunck = floor(pos.x / Chunck::CHUNK_WIDTH);
+	int zChunck = floor(pos.z / Chunck::CHUNK_LENGTH);
+
 	int xPlayerChunck = floor(playerPos.x / Chunck::CHUNK_WIDTH);
 	int zPlayerChunck = floor(playerPos.z / Chunck::CHUNK_LENGTH);
 
 	int localX = xChunck - xPlayerChunck + DRAW_CHUNK_RADIUS;
 	int localZ = zChunck - zPlayerChunck + DRAW_CHUNK_RADIUS;
 
-	std::cout << "X: " << localX << "  Y: " << localZ << '\n';
+	int blockX = floor(pos.x) - xChunck * Chunck::CHUNK_WIDTH;
+	int blockY = floor(pos.y);
+	int blockZ = floor(pos.z) - zChunck * Chunck::CHUNK_LENGTH;
 
-	int blockX = floor(blockPos.x) - xChunck * Chunck::CHUNK_WIDTH;
-	int blockY = floor(blockPos.y);
-	int blockZ = floor(blockPos.z) - zChunck * Chunck::CHUNK_LENGTH;
-	
-	int chunckIndex = localX + localZ * CHUNKS_HORIZONTAL_COUNT;
+	return Vector3{ static_cast<float>(blockX), static_cast<float>(blockY), static_cast<float>(blockZ) };
+}
 
-	Vector3 pos{
-		static_cast<float>(blockX),
-		static_cast<float>(blockY),
-		static_cast<float>(blockZ)
-	};
-	return chunkcs[chunckIndex].GetBlockType(pos);
+Vector2 World::GetChunckPos(const Vector3& pos) const noexcept
+{
+	return Vector2{ floor(pos.x / Chunck::CHUNK_WIDTH), floor(pos.z / Chunck::CHUNK_LENGTH) };
+}
+
+int World::GetChunckIndex(const Vector3& pos, const Vector3& playerPos) const noexcept
+{
+	int xChunck = floor(pos.x / Chunck::CHUNK_WIDTH);
+	int zChunck = floor(pos.z / Chunck::CHUNK_LENGTH);
+
+	int xPlayerChunck = floor(playerPos.x / Chunck::CHUNK_WIDTH);
+	int zPlayerChunck = floor(playerPos.z / Chunck::CHUNK_LENGTH);
+
+	int localX = xChunck - xPlayerChunck + DRAW_CHUNK_RADIUS;
+	int localZ = zChunck - zPlayerChunck + DRAW_CHUNK_RADIUS;
+
+	return localX + localZ * CHUNKS_HORIZONTAL_COUNT;
 }

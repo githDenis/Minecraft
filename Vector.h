@@ -30,20 +30,22 @@ public:
 
 	void Add(const T& value) noexcept
 	{
-		size++;
 		if (size >= capacity)
 		{
-			capacity = capacity == 0 ? 8 : capacity * 2;
+			capacity = (capacity == 0) ? 8 : capacity * 2;
+
 			T* newPtr = new T[capacity];
 
-			for (int i = 0; i < size - 1; i++)
+			for (int i = 0; i < size; i++)
 			{
 				newPtr[i] = ptr[i];
 			}
+
 			delete[] ptr;
 			ptr = newPtr;
 		}
-		ptr[size - 1] = value;
+		ptr[size] = value;
+		size++;
 	}
 
 	void AddArray(const T* arr, unsigned int arrSize) noexcept

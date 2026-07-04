@@ -5,7 +5,7 @@ Player::Player(Camera* camera) noexcept
 	this->camera = camera;
 }
 
-void Player::ProcessCollision(World* world)
+void Player::ProcessCollision(World* world) noexcept
 {
 	Vector3 newPos = camera->GetPosition() + camera->GetMovementVector();
 
@@ -15,7 +15,7 @@ void Player::ProcessCollision(World* world)
 	}
 }
 
-void Player::UpdatePhysics(float deltaTime)
+void Player::UpdatePhysics(float deltaTime) noexcept
 {
 	Vector3 pos = camera->GetPosition();
 	yVelocity -= GRAVITY * deltaTime;
@@ -34,14 +34,12 @@ void Player::Jump() noexcept
 	yVelocity = JUMP_VELOCITY;
 }
 
-void Player::Respawn()
+void Player::PlaceBlock(World* world, Render* render, UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], 
+	const BlockType& blockType)
 {
-	int xChunck = static_cast<int>(GetPosition().x) / Chunck::CHUNK_WIDTH;
-	int yChunck = static_cast<int>(GetPosition().z) / Chunck::CHUNK_LENGTH;
-
-	Vector3 newPos{ xChunck * Chunck::CHUNK_WIDTH, 50.f, yChunck * Chunck::CHUNK_LENGTH };
-
-	camera->SetPosition(newPos);
+	Vector3 pos = camera->GetPosition();
+	Vector3 forward = camera->GetFrontMovementVector();
+	world->PlaceBlock(uvs, render, pos, forward, blockType);
 }
 
 Vector3 Player::GetPosition() const noexcept
@@ -66,14 +64,14 @@ bool Player::IsOnGroundState() const noexcept
 
 bool Player::Colides(World* world, const Vector3& blockPos)
 {
-	int minX = floor(blockPos.x - 0.1f);
-	int maxX = floor(blockPos.x + 0.1f);
+	int minX = floor(blockPos.x - 0.2f);
+	int maxX = floor(blockPos.x + 0.2f);
 
 	int minY = floor(blockPos.y - 1.f);
 	int maxY = floor(blockPos.y + 1.f);
 
-	int minZ = floor(blockPos.z - 0.1f);
-	int maxZ = floor(blockPos.z + 0.1f);
+	int minZ = floor(blockPos.z - 0.2f);
+	int maxZ = floor(blockPos.z + 0.2f);
 
 	Vector3 groundVec = blockPos;
 	groundVec.y -= 2;

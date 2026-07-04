@@ -18,10 +18,11 @@ private:
 public:
 	explicit Player(Camera* camera) noexcept;
 
-	void ProcessCollision(World* world);
-	void UpdatePhysics(float deltaTime);
+	void ProcessCollision(World* world) noexcept;
+	void UpdatePhysics(float deltaTime) noexcept;
 	void Jump() noexcept;
-	void Respawn();
+	void PlaceBlock(World* world, Render* render, UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], 
+		const BlockType& blockType);
 
 	Vector3 GetPosition() const noexcept;
 	Vector3 GetOldPosition() const noexcept;

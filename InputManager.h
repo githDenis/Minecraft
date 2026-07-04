@@ -15,7 +15,11 @@ public:
 	void EnableGamemode();
 
 	bool GetKeyState(int key) const;
-	bool IsKeyHoldForTime(int key, int time) const;
+	bool IsKeyHoldForTime(int key, int milliseconds) const;
+
+	bool GetMouseButtonState(int button) const;
+	bool IsMouseButtonHoldForTime(int button, int milliseconds) const;
+
 	GLFWwindow* GetWindow() const;
 
 };
