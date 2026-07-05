@@ -35,11 +35,6 @@ void Application::SetRender(Render* render) noexcept
 	this->render = render;
 }
 
-void Application::SetCamera(Camera* camera) noexcept
-{
-	this->camera = camera;
-}
-
 void Application::SetShaderProgram(ShaderProgram* shaderProgram) noexcept
 {
 	this->shaderProgram = shaderProgram;
@@ -94,14 +89,19 @@ void Application::Run()
 		float deltaTime = currentTime - lastTime;
 		lastTime = currentTime;
 
-		if (inputManager->GetKeyState(GLFW_KEY_ESCAPE))
+		if (inputManager->IsKeyPressed(GLFW_KEY_ESCAPE))
 		{
 			break;
 		}
 
-		if (inputManager->IsKeyHoldForTime(GLFW_KEY_SPACE, 10) && player->IsOnGroundState())
+		if (inputManager->IsKeyDown(GLFW_KEY_SPACE) && player->IsOnGroundState())
 		{
 			player->Jump();
+		}
+
+		if (inputManager->IsKeyPressed(GLFW_KEY_I))
+		{
+			std::cout << "FF\n";
 		}
 
 		if (inputManager->IsMouseButtonHoldForTime(GLFW_MOUSE_BUTTON_LEFT, 800))
@@ -109,7 +109,7 @@ void Application::Run()
 			player->PlaceBlock(&world, render, uvs, BlockType::BT_AIR);
 		}
 
-		if (inputManager->GetMouseButtonState(GLFW_MOUSE_BUTTON_RIGHT))
+		if (inputManager->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
 		{
 			player->PlaceBlock(&world, render, uvs, BlockType::BT_GROUND);
 		}
@@ -119,9 +119,9 @@ void Application::Run()
 
 		shaderProgram->Use();
 
-		camera->UpdateTranslation(deltaTime);
+		player->UpdateCamera(deltaTime);
 
-		render->ApplyCameraData(*camera);
+		render->ApplyCameraData(player->GetCamera());
 
 		Vector3 pos{ player->GetPosition() };
 

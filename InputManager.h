@@ -2,24 +2,32 @@
 
 #include "Framework.h"
 #include "Window.h"
+#include <array>
 
 class InputManager
 {
 private:
 	Window* window;
+	bool keysOldStates[GLFW_KEY_LAST + 1];
+	bool mouseButtonsOldStates[GLFW_MOUSE_BUTTON_LAST + 1];
 
 public:
 	explicit InputManager(Window* window) noexcept;
 
 	void BindMouseCallback(void(*event)(GLFWwindow* window, double x, double y));
-	void EnableGamemode();
+	void EnableGamemode() noexcept;
 
-	bool GetKeyState(int key) const;
-	bool IsKeyHoldForTime(int key, int milliseconds) const;
+	bool IsKeyDown(int key) noexcept;
+	bool IsKeyPressed(int key) noexcept;
+	bool IsKeyReleased(int key) noexcept;
 
-	bool GetMouseButtonState(int button) const;
-	bool IsMouseButtonHoldForTime(int button, int milliseconds) const;
+	bool IsMouseButtonDown(int button) noexcept;
+	bool IsMouseButtonPressed(int button) noexcept;
+	bool IsMouseButtonReleased(int button) noexcept;
 
-	GLFWwindow* GetWindow() const;
+	bool IsKeyHoldForTime(int key, int milliseconds) noexcept;
+	bool IsMouseButtonHoldForTime(int button, int milliseconds) noexcept;
+
+	GLFWwindow* GetWindow() const noexcept;
 
 };

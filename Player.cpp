@@ -1,23 +1,32 @@
 #include "Player.h"
 
-Player::Player(Camera* camera) noexcept
+Player::Player(InputManager* inputManger) noexcept
 {
-	this->camera = camera;
+	camera.SetInputManager(inputManger);
+	camera.SetFOV(45.f);
+	camera.InitMouseMoveCallback();
+
+	inventory.InitWindow("Inventory", 400, 400);
+}
+
+void Player::UpdateCamera(float deltaTime)
+{
+	camera.UpdateTranslation(deltaTime);
 }
 
 void Player::ProcessCollision(World* world) noexcept
 {
-	Vector3 newPos = camera->GetPosition() + camera->GetMovementVector();
+	Vector3 newPos = camera.GetPosition() + camera.GetMovementVector();
 
 	if (!Colides(world, newPos))
 	{
-		camera->SetPosition(newPos);
+		camera.SetPosition(newPos);
 	}
 }
 
 void Player::UpdatePhysics(float deltaTime) noexcept
 {
-	Vector3 pos = camera->GetPosition();
+	Vector3 pos = camera.GetPosition();
 	yVelocity -= GRAVITY * deltaTime;
 
 	if (isOnGround)
@@ -25,7 +34,7 @@ void Player::UpdatePhysics(float deltaTime) noexcept
 		yVelocity = 0.f;
 	}
 	pos.y += yVelocity * deltaTime;
-	camera->SetAxisValue('Y', pos.y);
+	camera.SetAxisValue('Y', pos.y);
 }
 
 void Player::Jump() noexcept
@@ -37,24 +46,29 @@ void Player::Jump() noexcept
 void Player::PlaceBlock(World* world, Render* render, UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], 
 	const BlockType& blockType)
 {
-	Vector3 pos = camera->GetPosition();
-	Vector3 forward = camera->GetFrontMovementVector();
+	Vector3 pos = camera.GetPosition();
+	Vector3 forward = camera.GetFrontMovementVector();
 	world->PlaceBlock(uvs, render, pos, forward, blockType);
+}
+
+Camera& Player::GetCamera() noexcept
+{
+	return camera;
 }
 
 Vector3 Player::GetPosition() const noexcept
 {
-	return camera->GetPosition();
+	return camera.GetPosition();
 }
 
 Vector3 Player::GetOldPosition() const noexcept
 {
-	return camera->GetOldPosition();
+	return camera.GetOldPosition();
 }
 
 Vector3 Player::GetSignMovementVector() const noexcept
 {
-	return camera->GetSignMovementVector();
+	return camera.GetSignMovementVector();
 }
 
 bool Player::IsOnGroundState() const noexcept

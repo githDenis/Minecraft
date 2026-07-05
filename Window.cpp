@@ -2,6 +2,16 @@
 
 Window::Window(const char* title, int width, int height) noexcept
 {
+	Init(title, width, height);
+}
+
+void Window::FramebufferChangeSizeCallback(GLFWwindow* window, int width, int height)
+{
+	glViewport(0, 0, width, height);
+}
+
+void Window::Init(const char* title, int width, int height) noexcept
+{
 	strcpy(this->title, title);
 	this->width = width;
 	this->height = height;
@@ -11,9 +21,14 @@ Window::Window(const char* title, int width, int height) noexcept
 	glfwSetFramebufferSizeCallback(window, &FramebufferChangeSizeCallback);
 }
 
-void Window::FramebufferChangeSizeCallback(GLFWwindow* window, int width, int height)
+void Window::Show()
 {
-	glViewport(0, 0, width, height);
+	glfwShowWindow(window);
+}
+
+void Window::Hide()
+{
+	glfwHideWindow(window);
 }
 
 GLFWwindow* Window::GetHandle() const noexcept

@@ -16,8 +16,13 @@ private:
 	int height;
 
 public:
+	Window() noexcept {};
 	explicit Window(const char* title, int width, int height) noexcept;
 	static void FramebufferChangeSizeCallback(GLFWwindow* window, int width, int height);
+
+	void Init(const char* title, int width, int height) noexcept;
+	void Show();
+	void Hide();
 
 	GLFWwindow* GetHandle() const noexcept;
 	int GetWidth() const noexcept;

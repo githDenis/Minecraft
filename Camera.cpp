@@ -1,8 +1,8 @@
 #include "Camera.h"
 
-Camera::Camera(InputManager* inputManager) noexcept
+void Camera::SetInputManager(InputManager* inputManger) noexcept
 {
-	this->inputManager = inputManager;
+	this->inputManager = inputManger;
 }
 
 void Camera::MouseMoveCallback(GLFWwindow* window, double x, double y)
@@ -56,28 +56,28 @@ void Camera::UpdateTranslation(float deltaTime)
 {
 	movement = glm::vec3(0.0f);
 
-	if (inputManager->GetKeyState(GLFW_KEY_W))
+	if (inputManager->IsKeyDown(GLFW_KEY_W))
 	{
 		movement += glm::normalize(front) * CAMERA_SPEED * deltaTime;
 		movement.y = 0;
 		oldPos = pos;
 	}
 
-	if (inputManager->GetKeyState(GLFW_KEY_S))
+	if (inputManager->IsKeyDown(GLFW_KEY_S))
 	{
 		movement -= glm::normalize(front) * CAMERA_SPEED * deltaTime;
 		movement.y = 0;
 		oldPos = pos;
 	}
 
-	if (inputManager->GetKeyState(GLFW_KEY_A))
+	if (inputManager->IsKeyDown(GLFW_KEY_A))
 	{
 		movement += glm::normalize(glm::cross(up, front)) * CAMERA_SPEED * deltaTime;
 		movement.y = 0;
 		oldPos = pos;
 	}
 
-	if (inputManager->GetKeyState(GLFW_KEY_D))
+	if (inputManager->IsKeyDown(GLFW_KEY_D))
 	{
 		movement -= glm::normalize(glm::cross(up, front)) * CAMERA_SPEED * deltaTime;
 		movement.y = 0;

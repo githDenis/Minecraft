@@ -35,8 +35,7 @@ private:
 	void OnMouseMove(double x, double y);
 
 public:
-	explicit Camera(InputManager* inputManager) noexcept;
-
+	void SetInputManager(InputManager* inputManger) noexcept;
 	void InitMouseMoveCallback();
 	void UpdateTranslation(float deltaTime);
 	void SetFOV(float angle) noexcept;

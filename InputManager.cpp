@@ -3,6 +3,8 @@
 InputManager::InputManager(Window* window) noexcept
 {
 	this->window = window;
+	memset(keysOldStates, false, sizeof(keysOldStates));
+	memset(mouseButtonsOldStates, false, sizeof(mouseButtonsOldStates));
 }
 
 void InputManager::BindMouseCallback(void(*event)(GLFWwindow* window, double x, double y))
@@ -10,100 +12,108 @@ void InputManager::BindMouseCallback(void(*event)(GLFWwindow* window, double x, 
 	glfwSetCursorPosCallback(window->GetHandle(), event);
 }
 
-void InputManager::EnableGamemode()
+void InputManager::EnableGamemode() noexcept
 {
 	glfwSetInputMode(window->GetHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
-bool InputManager::GetKeyState(int key) const
+bool InputManager::IsKeyDown(int key) noexcept
 {
-	static bool oldState = false;
+	return glfwGetKey(window->GetHandle(), key) == GLFW_PRESS;
+}
+
+bool InputManager::IsKeyPressed(int key) noexcept
+{
 	bool res = glfwGetKey(window->GetHandle(), key) == GLFW_PRESS;
 
-	if (!oldState && res)
+	if (!keysOldStates[key] && res)
 	{
-		oldState = true;
+		keysOldStates[key] = true;
 		return true;
 	}
-	else if (oldState && !res)
+	else if (keysOldStates[key] && !res)
 	{
-		oldState = false;
+		keysOldStates[key] = false;
 		return false;
 	}
 	return false;
 }
 
-bool InputManager::IsKeyHoldForTime(int key, int milliseconds) const
+bool InputManager::IsKeyReleased(int key) noexcept
 {
-	static bool isButtonPressed = false;
+	bool res = glfwGetKey(window->GetHandle(), key) == GLFW_PRESS;
+
+	if (keysOldStates[key] && !res)
+	{
+		keysOldStates[key] = false;
+		return true;
+	}
+	if (res)
+	{
+		keysOldStates[key] = true;
+	}
+	return false;
+}
+
+bool InputManager::IsMouseButtonDown(int button) noexcept
+{
+	return glfwGetMouseButton(window->GetHandle(), button) == GLFW_PRESS;
+}
+
+bool InputManager::IsMouseButtonPressed(int button) noexcept
+{
+	bool res = glfwGetMouseButton(window->GetHandle(), button) == GLFW_PRESS;
+
+	if (!mouseButtonsOldStates[button] && res)
+	{
+		mouseButtonsOldStates[button] = true;
+		return true;
+	}
+	else if (mouseButtonsOldStates[button] && !res)
+	{
+		mouseButtonsOldStates[button] = false;
+		return false;
+	}
+	return false;
+}
+
+bool InputManager::IsMouseButtonReleased(int button) noexcept
+{
+	bool res = glfwGetMouseButton(window->GetHandle(), button) == GLFW_PRESS;
+
+	if (mouseButtonsOldStates[button] && !res)
+	{
+		mouseButtonsOldStates[button] = false;
+		return true;
+	}
+	if (res)
+	{
+		mouseButtonsOldStates[button] = true;
+	}
+	return false;
+}
+
+
+bool InputManager::IsKeyHoldForTime(int key, int milliseconds) noexcept
+{
 	static std::chrono::time_point<std::chrono::steady_clock> start;
 	static std::chrono::time_point<std::chrono::steady_clock> end;
 	static std::chrono::milliseconds duration = std::chrono::milliseconds(0);
 
 	if (glfwGetKey(window->GetHandle(), key) == GLFW_PRESS)
 	{
-		if (!isButtonPressed)
+		if (!keysOldStates[key])
 		{
-			isButtonPressed = true;
+			keysOldStates[key] = true;
 			start = std::chrono::steady_clock::now();
 		}
 	}
 	else
 	{
-		isButtonPressed = false;
+		keysOldStates[key] = false;
 	}
 
-	if (isButtonPressed)
-	{
-		end = std::chrono::steady_clock::now();
-		duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-	}
-	else
-	{
-		duration = std::chrono::milliseconds(0);
-	}
-	return duration.count() >= milliseconds;
-}
-
-bool InputManager::GetMouseButtonState(int button) const
-{
-	static bool oldState = false;
-	bool res = glfwGetMouseButton(window->GetHandle(), button) == GLFW_PRESS;
-
-	if (!oldState && res)
-	{
-		oldState = true;
-		return true;
-	}
-	else if (oldState && !res)
-	{
-		oldState = false;
-		return false;
-	}
-	return false;
-}
-
-bool InputManager::IsMouseButtonHoldForTime(int button, int milliseconds) const
-{
-	static bool isButtonPressed = false;
-	static std::chrono::time_point<std::chrono::steady_clock> start;
-	static std::chrono::time_point<std::chrono::steady_clock> end;
-	static std::chrono::milliseconds duration = std::chrono::milliseconds(0);
-
-	if (glfwGetMouseButton(window->GetHandle(), button) == GLFW_PRESS)
-	{
-		if (!isButtonPressed)
-		{
-			isButtonPressed = true;
-			start = std::chrono::steady_clock::now();
-		}
-	}
-	else
-	{
-		isButtonPressed = false;
-	}
-
-	if (isButtonPressed)
+	if (keysOldStates[key])
 	{
 		end = std::chrono::steady_clock::now();
 		duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
@@ -123,7 +133,46 @@ bool InputManager::IsMouseButtonHoldForTime(int button, int milliseconds) const
 	return res;
 }
 
-GLFWwindow* InputManager::GetWindow() const
+bool InputManager::IsMouseButtonHoldForTime(int button, int milliseconds) noexcept
+{
+	static std::chrono::time_point<std::chrono::steady_clock> start;
+	static std::chrono::time_point<std::chrono::steady_clock> end;
+	static std::chrono::milliseconds duration = std::chrono::milliseconds(0);
+
+	if (glfwGetMouseButton(window->GetHandle(), button) == GLFW_PRESS)
+	{
+		if (!mouseButtonsOldStates[button])
+		{
+			mouseButtonsOldStates[button] = true;
+			start = std::chrono::steady_clock::now();
+		}
+	}
+	else
+	{
+		mouseButtonsOldStates[button] = false;
+	}
+
+	if (mouseButtonsOldStates[button])
+	{
+		end = std::chrono::steady_clock::now();
+		duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+	}
+	else
+	{
+		duration.zero();
+	}
+
+	bool res = duration.count() >= milliseconds;
+
+	if (res)
+	{
+		start = std::chrono::steady_clock::now();
+		duration.zero();
+	}
+	return res;
+}
+
+GLFWwindow* InputManager::GetWindow() const noexcept
 {
 	return window->GetHandle();
 }

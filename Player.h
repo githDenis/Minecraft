@@ -3,6 +3,7 @@
 #include "Framework.h"
 #include "Camera.h"
 #include "World.h"
+#include "Inventory.h"
 
 class Player
 {
@@ -12,18 +13,21 @@ public:
 	static constexpr float JUMP_VELOCITY = 10.f;
 
 private:
-	Camera* camera;
+	Camera camera;
+	Inventory inventory;
 	bool isOnGround = false;
 
 public:
-	explicit Player(Camera* camera) noexcept;
+	explicit Player(InputManager* inputManger) noexcept;
 
+	void UpdateCamera(float deltaTime);
 	void ProcessCollision(World* world) noexcept;
 	void UpdatePhysics(float deltaTime) noexcept;
 	void Jump() noexcept;
 	void PlaceBlock(World* world, Render* render, UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], 
 		const BlockType& blockType);
 
+	Camera& GetCamera() noexcept;
 	Vector3 GetPosition() const noexcept;
 	Vector3 GetOldPosition() const noexcept;
 	Vector3 GetSignMovementVector() const noexcept;

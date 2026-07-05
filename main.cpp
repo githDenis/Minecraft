@@ -8,6 +8,7 @@
 #include "Mesh.h"
 #include "Camera.h"
 #include "Player.h"
+#include "Inventory.h"
 
 const int WINDOW_WIDTH = 1800;
 const int WINDOW_HEIGHT = 900;
@@ -25,16 +26,12 @@ int main()
 	inputManager.EnableGamemode();
 
  	Render render(&window, &shaderProgram, &UIShaderProgram);
-	Camera camera(&inputManager);
-	camera.SetFOV(45.f);
-	camera.InitMouseMoveCallback();
 
-	Player player(&camera);
-	
+	Player player(&inputManager);
+
 	app.SetWindow(&window);
 	app.SetInputManager(&inputManager);
 	app.SetRender(&render);
-	app.SetCamera(&camera);
 	app.SetPlayer(&player);
 	app.InitOpenGLContext();
 
