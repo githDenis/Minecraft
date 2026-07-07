@@ -16,6 +16,7 @@ public:
 
 	void BindMouseCallback(void(*event)(GLFWwindow* window, double x, double y));
 	void EnableGamemode() noexcept;
+	void EnableUIMode() noexcept;
 
 	bool IsKeyDown(int key) noexcept;
 	bool IsKeyPressed(int key) noexcept;

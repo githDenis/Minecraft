@@ -44,7 +44,7 @@ private:
 	Mesh opaqueMesh;
 	Mesh transparentMesh;
 
-	Vector3 position;
+	glm::vec3 position;
 	Texture* textures;
 	Actor opaqueActor;
 	Actor transparentActor;
@@ -55,55 +55,24 @@ public:
 	void GenerateTree();
 	void GenerateFolliageType(const BlockType& type, int intencity);
 	void GenerateMeshVerteciesAndTextCoords(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT]);
-	void AddCubeToMesh(const Vector3& pos, Mesh& mesh, unsigned int& vertexOffset);
-	void AddCrossPlanesToMesh(const Vector3& pos, Mesh& mesh);
+	void AddCubeToMesh(const glm::vec3& pos, Mesh& mesh, unsigned int& vertexOffset);
+	void AddCrossPlanesToMesh(const glm::vec3& pos, Mesh& mesh);
 	void AddCubeTextureCoords(const UV& up, const UV& front, const UV& down, Mesh& mesh);
 	void AddCrossPlanesTextureCoords(const UV& front);
 	void InitMesh();
 	void Draw(Render* render);
-	void SetPosition(const Vector3& vector) noexcept;
-	void PlaceBlock(const Vector3& blockPos, const BlockType& blockType);
-	void SetBlockType(const Vector3& blockPos, const BlockType& newType);
+	void SetPosition(const glm::vec3& vector) noexcept;
+	void PlaceBlock(const glm::vec3& blockPos, const BlockType& blockType);
+	void SetBlockType(const glm::vec3& blockPos, const BlockType& newType);
 
-	BlockClass GetBlockClass(const Vector3& blockPos) const noexcept;
-	unsigned char GetBlockType(const Vector3& blockPos) const noexcept;
-	Vector3& GetPosition() noexcept;
+	BlockClass GetBlockClass(const glm::vec3& blockPos) const noexcept;
+	unsigned char GetBlockType(const glm::vec3& blockPos) const noexcept;
+	const glm::vec3& GetPosition() const noexcept;
 	unsigned int Hash(int x, int z, int seed) const noexcept;
 
 	Chunck() noexcept = default;
 	Chunck(const Chunck&) = delete;
 	
 	Chunck& operator=(const Chunck&) = delete;
-	Chunck& operator=(Chunck&& another) noexcept
-	{
-		for (int x = 0; x < CHUNK_WIDTH; x++)
-		{
-			for (int y = 0; y < CHUNK_HEIGHT; y++)
-			{
-				for (int z = 0; z < CHUNK_LENGTH; z++)
-				{
-					blockTypes[x][y][z] = another.blockTypes[x][y][z];
-				}
-			}
-		}
-
-		opaqueMeshVertexOffset = another.opaqueMeshVertexOffset;
-		transparentMeshVertexOffset = another.transparentMeshVertexOffset;
-		position = another.position;
-		textures = another.textures;
-		opaqueMesh = std::move(another.opaqueMesh);
-		transparentMesh = std::move(another.transparentMesh);
-
-		for (int x = 0; x < CHUNK_WIDTH; x++)
-		{
-			for (int y = 0; y < CHUNK_HEIGHT; y++)
-			{
-				for (int z = 0; z < CHUNK_LENGTH; z++)
-				{
-					another.blockTypes[x][y][z] = static_cast<unsigned char>(BlockType::BT_AIR);
-				}
-			}
-		}
-		return *this;
-	}
+	Chunck& operator=(Chunck&& another) noexcept;
 };

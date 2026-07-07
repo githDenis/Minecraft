@@ -22,7 +22,6 @@ void Application::InitOpenGLContext()
 void Application::SetWindow(Window* window) noexcept
 {
 	this->window = window;
-	glfwMakeContextCurrent(this->window->GetHandle());
 }
 
 void Application::SetInputManager(InputManager* inputManager) noexcept
@@ -72,6 +71,8 @@ void Application::Run()
 
 	UIMesh targetMesh;
 	targetMesh.GenerateCrossTarget(window->GetWidth(), window->GetHeight());
+	targetMesh.SetColor(Color(1.f, 1.f, 1.f));
+	targetMesh.Init();
 
 	UIActor targetActor;
 	targetActor.SetMesh(&targetMesh);
@@ -80,6 +81,8 @@ void Application::Run()
 	world.GenerateChuncks(&texture);
 	world.GenerateFolliage();
 	world.GenerateChuncksMeshes(uvs);
+
+	player->InitInventory();
 
 	float lastTime = glfwGetTime();
 
@@ -101,7 +104,7 @@ void Application::Run()
 
 		if (inputManager->IsKeyPressed(GLFW_KEY_I))
 		{
-			std::cout << "FF\n";
+			player->UseInventory();
 		}
 
 		if (inputManager->IsMouseButtonHoldForTime(GLFW_MOUSE_BUTTON_LEFT, 800))
@@ -123,7 +126,7 @@ void Application::Run()
 
 		render->ApplyCameraData(player->GetCamera());
 
-		Vector3 pos{ player->GetPosition() };
+		glm::vec3 pos{ player->GetPosition() };
 
 		int chunkX = static_cast<int>(std::floor(pos.x / (float)Chunck::CHUNK_WIDTH));
 		int chunkY = static_cast<int>(std::floor(pos.z / (float)Chunck::CHUNK_LENGTH));
@@ -136,7 +139,7 @@ void Application::Run()
 
 		if (chunckDx != 0 || chunckDy != 0)
 		{
-			Vector2 newPos{ chunkX - World::DRAW_CHUNK_RADIUS, chunkY - World::DRAW_CHUNK_RADIUS };
+			glm::vec2 newPos{ chunkX - World::DRAW_CHUNK_RADIUS, chunkY - World::DRAW_CHUNK_RADIUS };
 
 			world.RegenerateWorld(newPos, pos, chunckDx, chunckDy, uvs);
 
@@ -153,9 +156,19 @@ void Application::Run()
 		player->ProcessCollision(&world);
 
 		UIShaderProgram->Use();
-		targetActor.SetPenSize(3.f);
-		render->DrawUIActor(targetActor);
-		
+
+		if (!player->IsInventoryUsing())
+		{
+			inputManager->EnableGamemode();
+			targetActor.SetPenSize(3.f);
+			render->DrawUIActor(targetActor, GL_LINES);
+		}
+		else
+		{
+			inputManager->EnableUIMode();
+			player->DrawInventory(render);
+		}
+
 		glfwSwapBuffers(window->GetHandle());
 		glfwPollEvents();
 	}

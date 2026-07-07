@@ -22,12 +22,14 @@ int main()
 	ShaderProgram UIShaderProgram;
 
 	Window window("Game window", WINDOW_WIDTH, WINDOW_HEIGHT);
+	window.MakeCurrent();
+
 	InputManager inputManager(&window);
 	inputManager.EnableGamemode();
 
  	Render render(&window, &shaderProgram, &UIShaderProgram);
 
-	Player player(&inputManager);
+	Player player(&window, &inputManager);
 
 	app.SetWindow(&window);
 	app.SetInputManager(&inputManager);

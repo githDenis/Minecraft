@@ -21,6 +21,16 @@ void Window::Init(const char* title, int width, int height) noexcept
 	glfwSetFramebufferSizeCallback(window, &FramebufferChangeSizeCallback);
 }
 
+void Window::MakeCurrent() noexcept
+{
+	glfwMakeContextCurrent(window);
+}
+
+void Window::Close() noexcept
+{
+	glfwSetWindowShouldClose(window, true);
+}
+
 void Window::Show()
 {
 	glfwShowWindow(window);

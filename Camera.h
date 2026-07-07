@@ -26,10 +26,9 @@ private:
 	glm::vec3 up = glm::vec3(0, 1, 0);
 	glm::vec3 front = glm::vec3(0, 0, -1);
 	glm::vec3 oldPos = glm::vec3(50, 50, 50);
-	
 	Rotator rotation{ 0, 0, 0 };
-
 	float FOV;
+	bool isLocked = false;
 
 	static void MouseMoveCallback(GLFWwindow* window, double x, double y);
 	void OnMouseMove(double x, double y);
@@ -39,14 +38,15 @@ public:
 	void InitMouseMoveCallback();
 	void UpdateTranslation(float deltaTime);
 	void SetFOV(float angle) noexcept;
-	void SetPosition(const Vector3& vector) noexcept;
+	void SetLockedState(bool state) noexcept;
+	void SetPosition(const glm::vec3& vector) noexcept;
 	void SetAxisValue(char axis, float value) noexcept;
-
+	
 	glm::mat4 GetViewMatrix() const noexcept;
 	glm::mat4 GetProjectionMatrix(float windowWidth, float windowHeight) const noexcept;
-	Vector3 GetPosition() const noexcept;
-	Vector3 GetMovementVector() const noexcept;
-	Vector3 GetSignMovementVector() const noexcept;
-	Vector3 GetFrontMovementVector() const noexcept;
-	Vector3 GetOldPosition() const noexcept;
+	const glm::vec3& GetPosition() const noexcept;
+	const glm::vec3& GetMovementVector() const noexcept;
+	glm::vec3 GetSignMovementVector() const noexcept;
+	const glm::vec3& GetFrontMovementVector() const noexcept;
+	const glm::vec3& GetOldPosition() const noexcept;
 };

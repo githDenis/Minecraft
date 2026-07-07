@@ -1,5 +1,38 @@
 #include "Chunck.h"
 
+Chunck& Chunck::operator=(Chunck&& another) noexcept
+{
+	for (int x = 0; x < CHUNK_WIDTH; x++)
+	{
+		for (int y = 0; y < CHUNK_HEIGHT; y++)
+		{
+			for (int z = 0; z < CHUNK_LENGTH; z++)
+			{
+				blockTypes[x][y][z] = another.blockTypes[x][y][z];
+			}
+		}
+	}
+
+	opaqueMeshVertexOffset = another.opaqueMeshVertexOffset;
+	transparentMeshVertexOffset = another.transparentMeshVertexOffset;
+	position = another.position;
+	textures = another.textures;
+	opaqueMesh = std::move(another.opaqueMesh);
+	transparentMesh = std::move(another.transparentMesh);
+
+	for (int x = 0; x < CHUNK_WIDTH; x++)
+	{
+		for (int y = 0; y < CHUNK_HEIGHT; y++)
+		{
+			for (int z = 0; z < CHUNK_LENGTH; z++)
+			{
+				another.blockTypes[x][y][z] = static_cast<unsigned char>(BlockType::BT_AIR);
+			}
+		}
+	}
+	return *this;
+}
+
 void Chunck::LoadTexture(Texture* textures) noexcept
 {
 	this->textures = textures;
@@ -88,7 +121,7 @@ void Chunck::GenerateTree()
 			if (h % 200 == 0)
 			{
 				//Нахождение позиции дерева
-				Vector3 pos{ x + position.x, 0, z + position.z };
+				glm::vec3 pos{ x + position.x, 0, z + position.z };
 
 				if ((x != 0 && x != CHUNK_WIDTH - 1) && (z != 0 && z != CHUNK_LENGTH - 1))
 				{
@@ -206,13 +239,13 @@ void Chunck::GenerateMeshVerteciesAndTextCoords(UV uvs[Chunck::BLOCKS_TYPES_COUN
 				{
 					continue;
 				}
-				Vector3 blockPos{ static_cast<float>(x), static_cast<float>(y), static_cast<float>(z) };
+				glm::vec3 blockPos{ static_cast<float>(x), static_cast<float>(y), static_cast<float>(z) };
 
-				BlockClass blockClass = GetBlockClass(Vector3{ blockPos });
+				BlockClass blockClass = GetBlockClass(glm::vec3{ blockPos });
 
 				if (blockClass == BlockClass::BC_OPAQUE)
 				{
-					AddCubeToMesh(Vector3{ blockPos }, opaqueMesh, opaqueMeshVertexOffset);
+					AddCubeToMesh(glm::vec3{ blockPos }, opaqueMesh, opaqueMeshVertexOffset);
 					AddCubeTextureCoords(
 						uvs[static_cast<int>(blockType)][0],
 						uvs[static_cast<int>(blockType)][1],
@@ -221,12 +254,12 @@ void Chunck::GenerateMeshVerteciesAndTextCoords(UV uvs[Chunck::BLOCKS_TYPES_COUN
 				}
 				else if (blockClass == BlockClass::BC_FOLLIAGE)
 				{
-					AddCrossPlanesToMesh(Vector3{ blockPos }, opaqueMesh);
+					AddCrossPlanesToMesh(glm::vec3{ blockPos }, opaqueMesh);
 					AddCrossPlanesTextureCoords(uvs[static_cast<int>(blockType)][0]);
 				}
 				else
 				{
-					AddCubeToMesh(Vector3{ blockPos }, transparentMesh, transparentMeshVertexOffset);
+					AddCubeToMesh(glm::vec3{ blockPos }, transparentMesh, transparentMeshVertexOffset);
 					AddCubeTextureCoords(
 						uvs[static_cast<int>(blockType)][0],
 						uvs[static_cast<int>(blockType)][1],
@@ -238,7 +271,7 @@ void Chunck::GenerateMeshVerteciesAndTextCoords(UV uvs[Chunck::BLOCKS_TYPES_COUN
 	}
 }
 
-void Chunck::AddCubeToMesh(const Vector3& pos, Mesh& mesh, unsigned int& vertexOffset)
+void Chunck::AddCubeToMesh(const glm::vec3& pos, Mesh& mesh, unsigned int& vertexOffset)
 {
 	float vertecies[] =
 	{
@@ -325,7 +358,7 @@ void Chunck::AddCubeToMesh(const Vector3& pos, Mesh& mesh, unsigned int& vertexO
 	vertexOffset += 24;
 }
 
-void Chunck::AddCrossPlanesToMesh(const Vector3& pos, Mesh& mesh)
+void Chunck::AddCrossPlanesToMesh(const glm::vec3& pos, Mesh& mesh)
 {
 	float vertecies[] =
 	{
@@ -482,24 +515,24 @@ void Chunck::Draw(Render* render)
 	render->DrawActor(transparentActor, true);
 }
 
-void Chunck::SetPosition(const Vector3& vector) noexcept
+void Chunck::SetPosition(const glm::vec3& vector) noexcept
 {
 	position = vector;
 }
 
-void Chunck::PlaceBlock(const Vector3& blockPos, const BlockType& blockType)
+void Chunck::PlaceBlock(const glm::vec3& blockPos, const BlockType& blockType)
 {
 	blockTypes[static_cast<int>(blockPos.x)][static_cast<int>(blockPos.y)][static_cast<int>(blockPos.z)] =
 		static_cast<unsigned char>(blockType);
 }
 
-void Chunck::SetBlockType(const Vector3& blockPos, const BlockType& newType)
+void Chunck::SetBlockType(const glm::vec3& blockPos, const BlockType& newType)
 {
 	blockTypes[static_cast<int>(blockPos.x)][static_cast<int>(blockPos.y)][static_cast<int>(blockPos.z)] =
 		static_cast<unsigned char>(newType);
 }
 
-BlockClass Chunck::GetBlockClass(const Vector3& blockPos) const noexcept
+BlockClass Chunck::GetBlockClass(const glm::vec3& blockPos) const noexcept
 {
 	BlockType blockType = static_cast<BlockType>(blockTypes
 		[static_cast<int>(blockPos.x)]
@@ -521,7 +554,7 @@ BlockClass Chunck::GetBlockClass(const Vector3& blockPos) const noexcept
 	}
 }
 
-unsigned char Chunck::GetBlockType(const Vector3& blockPos) const noexcept
+unsigned char Chunck::GetBlockType(const glm::vec3& blockPos) const noexcept
 {
 	if ((blockPos.x >= 0.f && blockPos.x < CHUNK_WIDTH) &&
 		(blockPos.y >= 0.f && blockPos.y < CHUNK_HEIGHT) &&
@@ -532,7 +565,7 @@ unsigned char Chunck::GetBlockType(const Vector3& blockPos) const noexcept
 	return static_cast<unsigned char>(BlockType::BT_AIR);
 }
 
-Vector3& Chunck::GetPosition() noexcept
+const glm::vec3& Chunck::GetPosition() const noexcept
 {
 	return position;
 }

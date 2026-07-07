@@ -21,6 +21,8 @@ public:
 	static void FramebufferChangeSizeCallback(GLFWwindow* window, int width, int height);
 
 	void Init(const char* title, int width, int height) noexcept;
+	void MakeCurrent() noexcept;
+	void Close() noexcept;
 	void Show();
 	void Hide();
 

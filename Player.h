@@ -16,9 +16,10 @@ private:
 	Camera camera;
 	Inventory inventory;
 	bool isOnGround = false;
+	bool isInventoryUsing = false;
 
 public:
-	explicit Player(InputManager* inputManger) noexcept;
+	explicit Player(Window* mainWindow, InputManager* inputManager) noexcept;
 
 	void UpdateCamera(float deltaTime);
 	void ProcessCollision(World* world) noexcept;
@@ -26,12 +27,16 @@ public:
 	void Jump() noexcept;
 	void PlaceBlock(World* world, Render* render, UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], 
 		const BlockType& blockType);
+	void InitInventory() noexcept;
+	void UseInventory() noexcept;
+	void DrawInventory(Render* render);
 
-	Camera& GetCamera() noexcept;
-	Vector3 GetPosition() const noexcept;
-	Vector3 GetOldPosition() const noexcept;
-	Vector3 GetSignMovementVector() const noexcept;
+	const Camera& GetCamera() const noexcept;
+	const glm::vec3& GetPosition() const noexcept;
+	const glm::vec3& GetOldPosition() const noexcept;
+	glm::vec3 GetSignMovementVector() noexcept;
 	bool IsOnGroundState() const noexcept;
-	bool Colides(World* world, const Vector3& blockPos);
-	bool ColidesAxis(World* world, const Vector3& blockPos);
+	bool IsInventoryUsing() const noexcept;
+	bool Colides(World* world, const glm::vec3& blockPos);
+	bool ColidesAxis(World* world, const glm::vec3& blockPos);
 };

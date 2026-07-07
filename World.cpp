@@ -1,12 +1,12 @@
 #include "World.h"
 
-void World::GenerateChuncksPositions(const Vector3& playerPos)
+void World::GenerateChuncksPositions(const glm::vec3& playerPos)
 {
 	for (int x = 0; x < CHUNKS_HORIZONTAL_COUNT; x++)
 	{
 		for (int y = 0; y < CHUNKS_VERTICAL_COUNT; y++)
 		{
-			Vector3 pos{
+			glm::vec3 pos{
 				x * Chunck::CHUNK_WIDTH + playerPos.x,
 				0,
 				y * Chunck::CHUNK_LENGTH + playerPos.z
@@ -36,13 +36,13 @@ void World::GenerateFolliage()
 	}
 }
 
-void World::ApplyChanchedBlocks(const Vector3& newPos)
+void World::ApplyChanchedBlocks(const glm::vec3& newPos)
 {
 	for (int i = 0; i < blocksInfo.GetSize(); i++)
 	{
-		Vector3 pos{ GetBlockPos(blocksInfo[i].pos, newPos) };
-		Vector2 changedChunkPos{ GetChunckPos(blocksInfo[i].pos) };
-		Vector2 playerChunkPos{ GetChunckPos(newPos) };
+		glm::vec3 pos{ GetBlockPos(blocksInfo[i].pos, newPos) };
+		glm::vec2 changedChunkPos{ GetChunckPos(blocksInfo[i].pos) };
+		glm::vec2 playerChunkPos{ GetChunckPos(newPos) };
 
 		int minXChunk = playerChunkPos.x - DRAW_CHUNK_RADIUS;
 		int maxXChunk = playerChunkPos.x + DRAW_CHUNK_RADIUS;
@@ -71,7 +71,7 @@ void World::GenerateChuncksMeshes(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS
 	}
 }
 
-void World::RegenerateWorld(const Vector2& newPos, const Vector3& playerPos, int dx, int dy, 
+void World::RegenerateWorld(const glm::vec2& newPos, const glm::vec3& playerPos, int dx, int dy,
 	UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT])
 {
 	static constexpr int leftX = CHUNKS_HORIZONTAL_COUNT - 1;
@@ -189,13 +189,13 @@ void World::RegenerateChunckContent(Chunck& chunck)
 	chunck.GenerateFolliageType(BlockType::BT_RED_FLOWER, 50);
 }
 
-void World::ReneretateChunckPosition(const Vector2& newPos)
+void World::ReneretateChunckPosition(const glm::vec2& newPos)
 {
 	for (int x = 0; x < CHUNKS_HORIZONTAL_COUNT; x++)
 	{
 		for (int y = 0; y < CHUNKS_VERTICAL_COUNT; y++)
 		{
-			Vector3 pos = {
+			glm::vec3 pos = {
 				(x + newPos.x) * Chunck::CHUNK_WIDTH,
 				0,
 				(y + newPos.y) * Chunck::CHUNK_LENGTH
@@ -210,25 +210,25 @@ void World::DrawChunck(Render* render, int index)
 	chunks[index].Draw(render);
 }
 
-void World::PlaceBlock(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], Render* render, const Vector3& pos,
-	Vector3& forwardVector, const BlockType& blockType)
+void World::PlaceBlock(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], Render* render, const glm::vec3& pos,
+	glm::vec3& forwardVector, const BlockType& blockType)
 {
-	Vector3 start = pos;
-	Vector3 direction = forwardVector;
+	glm::vec3 start = pos;
+	glm::vec3 direction = forwardVector;
 
 	for (float i = 1.f; i < BREAK_BLOCK_DISTANCE; i++)
 	{
-		Vector3 checkPos = start + direction * i;
-		Vector3 blockPos{ GetBlockPos(checkPos, pos) };
+		glm::vec3 checkPos = start + direction * i;
+		glm::vec3 blockPos{ GetBlockPos(checkPos, pos) };
 		int chunckIndex = GetChunckIndex(checkPos, pos);
 
 		if (chunks[chunckIndex].GetBlockType(blockPos) != static_cast<unsigned char>(BlockType::BT_AIR) &&
 			chunks[chunckIndex].GetBlockType(blockPos) != static_cast<unsigned char>(BlockType::BT_WATER))
 		{
-			int k = blockType == BlockType::BT_AIR ? i : i - 1;
+			float k = blockType == BlockType::BT_AIR ? i : i - 1;
 			checkPos = start + direction * k;
 			
-			Vector3 placePos{ GetBlockPos(checkPos, pos) };
+			glm::vec3 placePos{ GetBlockPos(checkPos, pos) };
 			chunckIndex = GetChunckIndex(checkPos, pos);
 
 			chunks[chunckIndex].PlaceBlock(placePos, blockType);
@@ -246,14 +246,14 @@ void World::PlaceBlock(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], Re
 	}
 }
 
-unsigned char World::GetBlockType(const Vector3& blockPos, const Vector3& playerPos) const
+unsigned char World::GetBlockType(const glm::vec3& blockPos, const glm::vec3& playerPos) const
 {
-	Vector3 pos{ GetBlockPos(blockPos, playerPos) };
+	glm::vec3 pos{ GetBlockPos(blockPos, playerPos) };
 	int chunckIndex = GetChunckIndex(blockPos, playerPos);
 	return chunks[chunckIndex].GetBlockType(pos);
 }
 
-Vector3 World::GetBlockPos(const Vector3& pos, const Vector3& playerPos) const noexcept
+glm::vec3 World::GetBlockPos(const glm::vec3& pos, const glm::vec3& playerPos) const noexcept
 {
 	int xChunck = floor(pos.x / Chunck::CHUNK_WIDTH);
 	int zChunck = floor(pos.z / Chunck::CHUNK_LENGTH);
@@ -268,15 +268,15 @@ Vector3 World::GetBlockPos(const Vector3& pos, const Vector3& playerPos) const n
 	int blockY = floor(pos.y);
 	int blockZ = floor(pos.z) - zChunck * Chunck::CHUNK_LENGTH;
 
-	return Vector3{ static_cast<float>(blockX), static_cast<float>(blockY), static_cast<float>(blockZ) };
+	return glm::vec3{ static_cast<float>(blockX), static_cast<float>(blockY), static_cast<float>(blockZ) };
 }
 
-Vector2 World::GetChunckPos(const Vector3& pos) const noexcept
+glm::vec2 World::GetChunckPos(const glm::vec3& pos) const noexcept
 {
-	return Vector2{ floor(pos.x / Chunck::CHUNK_WIDTH), floor(pos.z / Chunck::CHUNK_LENGTH) };
+	return glm::vec2{ floor(pos.x / Chunck::CHUNK_WIDTH), floor(pos.z / Chunck::CHUNK_LENGTH) };
 }
 
-int World::GetChunckIndex(const Vector3& pos, const Vector3& playerPos) const noexcept
+int World::GetChunckIndex(const glm::vec3& pos, const glm::vec3& playerPos) const noexcept
 {
 	int xChunck = floor(pos.x / Chunck::CHUNK_WIDTH);
 	int zChunck = floor(pos.z / Chunck::CHUNK_LENGTH);

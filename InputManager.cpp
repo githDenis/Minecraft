@@ -17,6 +17,11 @@ void InputManager::EnableGamemode() noexcept
 	glfwSetInputMode(window->GetHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
+void InputManager::EnableUIMode() noexcept
+{
+	glfwSetInputMode(window->GetHandle(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+}
+
 bool InputManager::IsKeyDown(int key) noexcept
 {
 	return glfwGetKey(window->GetHandle(), key) == GLFW_PRESS;

@@ -17,33 +17,36 @@ void Camera::MouseMoveCallback(GLFWwindow* window, double x, double y)
 
 void Camera::OnMouseMove(double x, double y)
 {
-	static float xLast = 0;
-	static float yLast = 0;
-	float xOffset = static_cast<float>(x) - xLast;
-	float yOffset = yLast - static_cast<float>(y);
-	xLast = static_cast<float>(x);
-	yLast = static_cast<float>(y);
-
-	xOffset *= SENSITIVITY;
-	yOffset *= SENSITIVITY;
-
-	rotation.yaw += xOffset;
-	rotation.pitch += yOffset;
-
-	if (rotation.pitch > 89.f)
+	if (!isLocked)
 	{
-		rotation.pitch = 89.f;
-	}
-	else if (rotation.pitch < -89.f)
-	{
-		rotation.pitch = -89.f;
-	}
+		static float xLast = 0;
+		static float yLast = 0;
+		float xOffset = static_cast<float>(x) - xLast;
+		float yOffset = yLast - static_cast<float>(y);
+		xLast = static_cast<float>(x);
+		yLast = static_cast<float>(y);
 
-	glm::vec3 direction;
-	direction.x = cos(glm::radians(rotation.yaw)) * cos(glm::radians(rotation.pitch));
-	direction.y = sin(glm::radians(rotation.pitch));
-	direction.z = sin(glm::radians(rotation.yaw)) * cos(glm::radians(rotation.pitch));
-	front = glm::normalize(direction);
+		xOffset *= SENSITIVITY;
+		yOffset *= SENSITIVITY;
+
+		rotation.yaw += xOffset;
+		rotation.pitch += yOffset;
+
+		if (rotation.pitch > 89.f)
+		{
+			rotation.pitch = 89.f;
+		}
+		else if (rotation.pitch < -89.f)
+		{
+			rotation.pitch = -89.f;
+		}
+
+		glm::vec3 direction;
+		direction.x = cos(glm::radians(rotation.yaw)) * cos(glm::radians(rotation.pitch));
+		direction.y = sin(glm::radians(rotation.pitch));
+		direction.z = sin(glm::radians(rotation.yaw)) * cos(glm::radians(rotation.pitch));
+		front = glm::normalize(direction);
+	}
 }
 
 void Camera::InitMouseMoveCallback()
@@ -54,34 +57,37 @@ void Camera::InitMouseMoveCallback()
 
 void Camera::UpdateTranslation(float deltaTime)
 {
-	movement = glm::vec3(0.0f);
-
-	if (inputManager->IsKeyDown(GLFW_KEY_W))
+	if (!isLocked)
 	{
-		movement += glm::normalize(front) * CAMERA_SPEED * deltaTime;
-		movement.y = 0;
-		oldPos = pos;
-	}
+		movement = glm::vec3(0.0f);
 
-	if (inputManager->IsKeyDown(GLFW_KEY_S))
-	{
-		movement -= glm::normalize(front) * CAMERA_SPEED * deltaTime;
-		movement.y = 0;
-		oldPos = pos;
-	}
+		if (inputManager->IsKeyDown(GLFW_KEY_W))
+		{
+			movement += glm::normalize(front) * CAMERA_SPEED * deltaTime;
+			movement.y = 0;
+			oldPos = pos;
+		}
 
-	if (inputManager->IsKeyDown(GLFW_KEY_A))
-	{
-		movement += glm::normalize(glm::cross(up, front)) * CAMERA_SPEED * deltaTime;
-		movement.y = 0;
-		oldPos = pos;
-	}
+		if (inputManager->IsKeyDown(GLFW_KEY_S))
+		{
+			movement -= glm::normalize(front) * CAMERA_SPEED * deltaTime;
+			movement.y = 0;
+			oldPos = pos;
+		}
 
-	if (inputManager->IsKeyDown(GLFW_KEY_D))
-	{
-		movement -= glm::normalize(glm::cross(up, front)) * CAMERA_SPEED * deltaTime;
-		movement.y = 0;
-		oldPos = pos;
+		if (inputManager->IsKeyDown(GLFW_KEY_A))
+		{
+			movement += glm::normalize(glm::cross(up, front)) * CAMERA_SPEED * deltaTime;
+			movement.y = 0;
+			oldPos = pos;
+		}
+
+		if (inputManager->IsKeyDown(GLFW_KEY_D))
+		{
+			movement -= glm::normalize(glm::cross(up, front)) * CAMERA_SPEED * deltaTime;
+			movement.y = 0;
+			oldPos = pos;
+		}
 	}
 }
 
@@ -90,12 +96,15 @@ void Camera::SetFOV(float angle) noexcept
 	FOV = angle;
 }
 
-void Camera::SetPosition(const Vector3& vector) noexcept
+void Camera::SetLockedState(bool state) noexcept
+{
+	isLocked = state;
+}
+
+void Camera::SetPosition(const glm::vec3& vector) noexcept
 {
 	oldPos = pos;
-	pos.x = vector.x;
-	pos.y = vector.y;
-	pos.z = vector.z;
+	pos = vector;
 }
 
 void Camera::SetAxisValue(char axis, float value) noexcept
@@ -124,19 +133,19 @@ glm::mat4 Camera::GetProjectionMatrix(float windowWidth, float windowHeight) con
 	return glm::perspective(glm::radians(FOV), windowWidth / windowHeight, 0.1f, DRAWING_DISTANCE);
 }
 
-Vector3 Camera::GetPosition() const noexcept
+const glm::vec3& Camera::GetPosition() const noexcept
 {
-	return Vector3{ pos.x, pos.y, pos.z };
+	return pos;
 }
 
-Vector3 Camera::GetMovementVector() const noexcept
+const glm::vec3& Camera::GetMovementVector() const noexcept
 {
-	return Vector3{ movement.x, movement.y, movement.z };
+	return movement;
 }
 
-Vector3 Camera::GetSignMovementVector() const noexcept
+glm::vec3 Camera::GetSignMovementVector() const noexcept
 {
-	Vector3 newVec{ movement.x, movement.y, movement.z };
+	glm::vec3 newVec{ movement.x, movement.y, movement.z };
 	if (newVec.x >= 0.08) newVec.x = 1.f;
 	else if (newVec.x <= -0.08) newVec.x = -1.f;
 	else newVec.x = 0;
@@ -152,12 +161,12 @@ Vector3 Camera::GetSignMovementVector() const noexcept
 	return newVec;
 }
 
-Vector3 Camera::GetFrontMovementVector() const noexcept
+const glm::vec3& Camera::GetFrontMovementVector() const noexcept
 {
-	return Vector3{ front.x, front.y, front.z };
+	return front;
 }
 
-Vector3 Camera::GetOldPosition() const noexcept
+const glm::vec3& Camera::GetOldPosition() const noexcept
 {
-	return Vector3{ oldPos.x, oldPos.y, oldPos.z };
+	return oldPos;
 }

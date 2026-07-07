@@ -5,7 +5,7 @@
 
 struct BlockInfoInWorld
 {
-	Vector3 pos;
+	glm::vec3 pos;
 	BlockType blockType;
 };
 
@@ -24,25 +24,25 @@ private:
 	Vector<BlockInfoInWorld> blocksInfo;
 
 public:
-	void GenerateChuncksPositions(const Vector3& playerPos);
+	void GenerateChuncksPositions(const glm::vec3& playerPos);
 	void GenerateChuncks(Texture* textures);
 	void GenerateFolliage();
-	void ApplyChanchedBlocks(const Vector3& newPos);
+	void ApplyChanchedBlocks(const glm::vec3& newPos);
 	void GenerateChuncksMeshes(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT]);
 	
-	void RegenerateWorld(const Vector2& newPos, const Vector3& playerPos, int dx, int dy, 
+	void RegenerateWorld(const glm::vec2& newPos, const glm::vec3& playerPos, int dx, int dy,
 		UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT]);
 	void RegenerateChunckContent(Chunck& chunck);
-	void ReneretateChunckPosition(const Vector2& newPos);
+	void ReneretateChunckPosition(const glm::vec2& newPos);
 	void DrawChunck(Render* render, int index);
 	
-	void PlaceBlock(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], Render* render, const Vector3& pos,
-		Vector3& forwardVector, const BlockType& blockType);
+	void PlaceBlock(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], Render* render, const glm::vec3& pos,
+		glm::vec3& forwardVector, const BlockType& blockType);
 
-	unsigned char GetBlockType(const Vector3& blockPos, const Vector3& playerPos) const;
+	unsigned char GetBlockType(const glm::vec3& blockPos, const glm::vec3& playerPos) const;
 
 private:
-	Vector3 GetBlockPos(const Vector3& pos, const Vector3& playerPos) const noexcept;
-	Vector2 GetChunckPos(const Vector3& pos) const noexcept;
-	int GetChunckIndex(const Vector3& pos, const Vector3& playerPos) const noexcept;
+	glm::vec3 GetBlockPos(const glm::vec3& pos, const glm::vec3& playerPos) const noexcept;
+	glm::vec2 GetChunckPos(const glm::vec3& pos) const noexcept;
+	int GetChunckIndex(const glm::vec3& pos, const glm::vec3& playerPos) const noexcept;
 };
