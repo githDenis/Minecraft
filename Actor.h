@@ -23,6 +23,7 @@ public:
 
 	glm::mat4 GetModelMattrix() noexcept;
 	const glm::vec3& GetPosition() const noexcept;
+	const Rotator& GetRotation() const noexcept;
 	Mesh* GetMesh() noexcept;
 	unsigned int GetTexture() const noexcept;
 

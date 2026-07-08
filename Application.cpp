@@ -148,8 +148,10 @@ void Application::Run()
 		}
 
 		world.DrawChuncks(render);
+
 		world.SimulatePhysicsForDroppedBlocks(deltaTime);
 		world.ProcessCollisionForDroppedBlocks();
+		world.ProcessRotationForDroppedBlocks(deltaTime);
 		world.DrawDroppedBlocks(render);
 
 		player->UpdatePhysics(deltaTime);

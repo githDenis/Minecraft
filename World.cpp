@@ -242,6 +242,14 @@ void World::ProcessCollisionForDroppedBlocks()
 	}
 }
 
+void World::ProcessRotationForDroppedBlocks(float deltaTime)
+{
+	for (int i = 0; i < droppedBlocks.GetSize(); i++)
+	{
+		droppedBlocks[i].ProcessRotation(deltaTime);
+	}
+}
+
 void World::PlaceBlock(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], Render* render, const glm::vec3& pos,
 	glm::vec3& forwardVector, const BlockType& blockType)
 {

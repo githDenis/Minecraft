@@ -43,9 +43,21 @@ void DroppedBlock::ProcessCollision(World* world)
 	}
 }
 
+void DroppedBlock::ProcessRotation(float deltaTime)
+{
+	Rotator rotation = GetRotation();
+	rotation.pitch += ROTATION_SPEED * deltaTime;
+	actor.SetRotation(rotation);
+}
+
 const glm::vec3& DroppedBlock::GetPosition() const noexcept
 {
 	return actor.GetPosition();
+}
+
+const Rotator& DroppedBlock::GetRotation() const noexcept
+{
+	return actor.GetRotation();
 }
 
 DroppedBlock& DroppedBlock::operator=(DroppedBlock&& another) noexcept

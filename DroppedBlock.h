@@ -10,6 +10,7 @@ class DroppedBlock
 {
 public:
 	static constexpr float GRAVITY = 6.f;
+	static constexpr float ROTATION_SPEED = 8.f;
 
 private:
 	Mesh mesh;
@@ -23,8 +24,10 @@ public:
 	void Draw(Render* render);
 	void SimulatePhysics(float deltaTime);
 	void ProcessCollision(class World* world);
+	void ProcessRotation(float deltaTime);
 
 	const glm::vec3& GetPosition() const noexcept;
+	const Rotator& GetRotation() const noexcept;
 
 	DroppedBlock() noexcept = default;
 	DroppedBlock(const DroppedBlock& another) noexcept = delete;

@@ -38,6 +38,11 @@ const glm::vec3& Actor::GetPosition() const noexcept
 	return position;
 }
 
+const Rotator& Actor::GetRotation() const noexcept
+{
+	return rotation;
+}
+
 Mesh* Actor::GetMesh() noexcept
 {
 	return mesh;
