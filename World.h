@@ -2,6 +2,7 @@
 
 #include "Framework.h"
 #include "Chunck.h"
+#include "DroppedBlock.h"
 
 struct BlockInfoInWorld
 {
@@ -22,6 +23,7 @@ public:
 private:
 	std::unique_ptr<Chunck[]> chunks = std::make_unique<Chunck[]>(CHUNKS_COUNT);
 	Vector<BlockInfoInWorld> blocksInfo;
+	Vector<DroppedBlock> droppedBlocks;
 
 public:
 	void GenerateChuncksPositions(const glm::vec3& playerPos);
@@ -34,10 +36,13 @@ public:
 		UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT]);
 	void RegenerateChunckContent(Chunck& chunck);
 	void ReneretateChunckPosition(const glm::vec2& newPos);
-	void DrawChunck(Render* render, int index);
-	
+	void DrawChuncks(Render* render);
+	void DrawDroppedBlocks(Render* render);
+
 	void PlaceBlock(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], Render* render, const glm::vec3& pos,
 		glm::vec3& forwardVector, const BlockType& blockType);
+	void DestroyBlock(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], const Texture* texture, Render* render, 
+		const glm::vec3& pos, const glm::vec3& forwardVector);
 
 	unsigned char GetBlockType(const glm::vec3& blockPos, const glm::vec3& playerPos) const;
 

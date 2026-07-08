@@ -48,6 +48,26 @@ public:
 		size++;
 	}
 
+	void Add(T&& value)
+	{
+		if (size >= capacity)
+		{
+			capacity = capacity == 0 ? 8 : capacity * 2;
+
+			T* newPtr = new T[capacity];
+
+			for (int i = 0; i < size; i++)
+			{
+				newPtr[i] = std::move(ptr[i]);
+			}
+
+			delete[] ptr;
+			ptr = newPtr;
+		}
+		ptr[size] = std::move(value);
+		size++;
+	}
+
 	void AddArray(const T* arr, unsigned int arrSize) noexcept
 	{
 		unsigned int newSize = size + arrSize;

@@ -27,6 +27,8 @@ public:
 	void Jump() noexcept;
 	void PlaceBlock(World* world, Render* render, UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], 
 		const BlockType& blockType);
+	void DestroyBlock(World* world, UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], const Texture* texture,
+		Render* render);
 	void InitInventory() noexcept;
 	void UseInventory() noexcept;
 	void DrawInventory(Render* render);

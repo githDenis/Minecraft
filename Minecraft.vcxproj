@@ -144,6 +144,7 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Chunck.cpp" />
+    <ClCompile Include="DroppedBlock.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="main.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Chunck.h" />
+    <ClInclude Include="DroppedBlock.h" />
     <ClInclude Include="Framework.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Inventory.h" />

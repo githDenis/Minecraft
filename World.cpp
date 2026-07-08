@@ -1,4 +1,5 @@
 #include "World.h"
+#include "DroppedBlock.h"
 
 void World::GenerateChuncksPositions(const glm::vec3& playerPos)
 {
@@ -205,9 +206,20 @@ void World::ReneretateChunckPosition(const glm::vec2& newPos)
 	}
 }
 
-void World::DrawChunck(Render* render, int index)
+void World::DrawChuncks(Render* render)
 {
-	chunks[index].Draw(render);
+	for (int i = 0; i < World::CHUNKS_COUNT; i++)
+	{
+		chunks[i].Draw(render);
+	}
+}
+
+void World::DrawDroppedBlocks(Render* render)
+{
+	for (int i = 0; i < droppedBlocks.GetSize(); i++)
+	{
+		droppedBlocks[i].Draw(render);
+	}
 }
 
 void World::PlaceBlock(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], Render* render, const glm::vec3& pos,
@@ -241,6 +253,46 @@ void World::PlaceBlock(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], Re
 				.blockType = blockType,
 			};
 			blocksInfo.Add(blockInfo);
+			return;
+		}
+	}
+}
+
+void World::DestroyBlock(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], const Texture* texture, Render* render,
+	const glm::vec3& pos, const glm::vec3& forwardVector)
+{
+	glm::vec3 start = pos;
+	glm::vec3 direction = forwardVector;
+
+	for (float i = 1.f; i < BREAK_BLOCK_DISTANCE; i++)
+	{
+		glm::vec3 checkPos = start + direction * i;
+		glm::vec3 blockPos{ GetBlockPos(checkPos, pos) };
+		int chunckIndex = GetChunckIndex(checkPos, pos);
+
+		if (chunks[chunckIndex].GetBlockType(blockPos) != static_cast<unsigned char>(BlockType::BT_AIR) &&
+			chunks[chunckIndex].GetBlockType(blockPos) != static_cast<unsigned char>(BlockType::BT_WATER))
+		{
+			checkPos = start + direction * i;
+
+			glm::vec3 placePos{ GetBlockPos(checkPos, pos) };
+			chunckIndex = GetChunckIndex(checkPos, pos);
+			
+			BlockType blockType = static_cast<BlockType>(chunks[chunckIndex].GetBlockType(blockPos));
+			chunks[chunckIndex].PlaceBlock(placePos, BlockType::BT_AIR);
+			chunks[chunckIndex].GenerateMeshVerteciesAndTextCoords(uvs);
+			chunks[chunckIndex].InitMesh();
+			chunks[chunckIndex].Draw(render);
+
+			BlockInfoInWorld blockInfo {
+				.pos = checkPos,
+				.blockType = BlockType::BT_AIR,
+			};
+			blocksInfo.Add(blockInfo);
+
+			DroppedBlock droppedBlock;
+			droppedBlock.Init(uvs, texture, blockType, checkPos);
+			droppedBlocks.Add(std::move(droppedBlock));
 			return;
 		}
 	}

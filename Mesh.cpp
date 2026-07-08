@@ -8,136 +8,121 @@ Mesh::~Mesh()
 	glDeleteBuffers(1, &texCoordsVBO);
 }
 
-//void Mesh::GenerateCube()
-//{
-//	float cubeVertecies[] =
-//	{
-//		// FRONT (-Z)
-//		-0.5f, -0.5f, -0.5f,
-//		 0.5f, -0.5f, -0.5f,
-//		 0.5f,  0.5f, -0.5f,
-//		-0.5f,  0.5f, -0.5f,
-//
-//
-//		// BACK (+Z)
-//		-0.5f, -0.5f,  0.5f,
-//		-0.5f,  0.5f,  0.5f,
-//		 0.5f,  0.5f,  0.5f,
-//		 0.5f, -0.5f,  0.5f,
-//
-//
-//		 // LEFT (-X)
-//		 -0.5f, -0.5f, -0.5f,
-//		 -0.5f,  0.5f, -0.5f,
-//		 -0.5f,  0.5f,  0.5f,
-//		 -0.5f, -0.5f,  0.5f,
-//
-//
-//		 // RIGHT (+X)
-//		  0.5f, -0.5f, -0.5f,
-//		  0.5f, -0.5f,  0.5f,
-//		  0.5f,  0.5f,  0.5f,
-//		  0.5f,  0.5f, -0.5f,
-//
-//
-//		  // BOTTOM (-Y)
-//		  -0.5f, -0.5f, -0.5f,
-//		  -0.5f, -0.5f,  0.5f,
-//		   0.5f, -0.5f,  0.5f,
-//		   0.5f, -0.5f, -0.5f,
-//
-//
-//		   // TOP (+Y)
-//		   -0.5f,  0.5f, -0.5f,
-//			0.5f,  0.5f, -0.5f,
-//			0.5f,  0.5f,  0.5f,
-//		   -0.5f,  0.5f,  0.5f,
-//	};
-//
-//	unsigned int cubeIndecies[] =
-//	{
-//		// FRONT
-//		0, 1, 2,
-//		2, 3, 0,
-//
-//
-//		// BACK
-//		4, 5, 6,
-//		6, 7, 4,
-//
-//
-//		// LEFT
-//		8, 9, 10,
-//		10, 11, 8,
-//
-//
-//		// RIGHT
-//		12, 13, 14,
-//		14, 15, 12,
-//
-//
-//		// BOTTOM
-//		16, 17, 18,
-//		18, 19, 16,
-//
-//
-//		// TOP
-//		20, 21, 22,
-//		22, 23, 20,
-//	};
-//
-//	indeciesArraySize = sizeof(cubeVertecies) / sizeof(float);
-//	vertecies.AddArray(cubeVertecies, indeciesArraySize);
-//	indecies.AddArray(cubeIndecies, sizeof(cubeVertecies) / sizeof(unsigned int));
-//}
-//
-//void Mesh::SetUV(const UV& upUV, const UV& frontUV, const UV& downUV)
-//{
-//	float cubeTextureCoords[] =
-//	{
-//		// FRONT
-//		frontUV.u0, frontUV.v1,
-//		frontUV.u1, frontUV.v1,
-//		frontUV.u1, frontUV.v0,
-//		frontUV.u0, frontUV.v0,
-//
-//		// BACK
-//		frontUV.u0, frontUV.v1,
-//		frontUV.u0, frontUV.v0,
-//		frontUV.u1, frontUV.v0,
-//		frontUV.u1, frontUV.v1,
-//
-//
-//		// LEFT
-//		frontUV.u1, frontUV.v1,
-//		frontUV.u1, frontUV.v0,
-//		frontUV.u0, frontUV.v0,
-//		frontUV.u0, frontUV.v1,
-//
-//
-//		// RIGHT
-//		frontUV.u0, frontUV.v1,
-//		frontUV.u1, frontUV.v1,
-//		frontUV.u1, frontUV.v0,
-//		frontUV.u0, frontUV.v0,
-//
-//
-//		// BOTTOM
-//		downUV.u0, downUV.v1,
-//		downUV.u0, downUV.v0,
-//		downUV.u1, downUV.v0,
-//		downUV.u1, downUV.v1,
-//
-//
-//		// TOP
-//		upUV.u0, upUV.v1,
-//		upUV.u1, upUV.v1,
-//		upUV.u1, upUV.v0,
-//		upUV.u0, upUV.v0,
-//	};
-//
-//	textCoords.AddArray(cubeTextureCoords, sizeof(cubeTextureCoords) / sizeof(float));
-//}
+void Mesh::GenerateCube()
+{
+	float cubeVertecies[] =
+	{
+		// FRONT (-Z)
+		-0.2f, -0.2f, -0.2f,
+		0.2f, -0.2f, -0.2f,
+		0.2f,  0.2f, -0.2f,
+		-0.2f,  0.2f, -0.2f,
+
+		// BACK (+Z)
+		-0.2f, -0.2f,  0.2f,
+		-0.2f,  0.2f,  0.2f,
+		0.2f,  0.2f,  0.2f,
+		0.2f, -0.2f,  0.2f,
+
+		 // LEFT (-X)
+		-0.2f, -0.2f, -0.2f,
+		-0.2f,  0.2f, -0.2f,
+		-0.2f,  0.2f,  0.2f,
+		-0.2f, -0.2f,  0.2f,
+
+		 // RIGHT (+X)
+		0.2f, -0.2f, -0.2f,
+		0.2f, -0.2f,  0.2f,
+		0.2f,  0.2f,  0.2f,
+		0.2f,  0.2f, -0.2f,
+
+		// BOTTOM (-Y)
+		-0.2f, -0.2f, -0.2f,
+		-0.2f, -0.2f,  0.2f,
+		0.2f, -0.2f,  0.2f,
+		0.2f, -0.2f, -0.2f,
+
+		// TOP (+Y)
+		-0.2f,  0.2f, -0.2f,
+		0.2f,  0.2f, -0.2f,
+		0.2f,  0.2f,  0.2f,
+		-0.2f,  0.2f,  0.2f,
+	};
+
+	unsigned int cubeIndecies[] =
+	{
+		// FRONT
+		0, 1, 2,
+		2, 3, 0,
+
+		// BACK
+		4, 5, 6,
+		6, 7, 4,
+
+		// LEFT
+		8, 9, 10,
+		10, 11, 8,
+
+		// RIGHT
+		12, 13, 14,
+		14, 15, 12,
+
+		// BOTTOM
+		16, 17, 18,
+		18, 19, 16,
+
+		// TOP
+		20, 21, 22,
+		22, 23, 20,
+	};
+	indeciesArraySize = sizeof(cubeVertecies) / sizeof(float);
+	vertecies.AddArray(cubeVertecies, indeciesArraySize);
+	indecies.AddArray(cubeIndecies, sizeof(cubeVertecies) / sizeof(unsigned int));
+}
+
+void Mesh::SetCubeUV(const UV& upUV, const UV& frontUV, const UV& downUV)
+{
+	float cubeTextureCoords[] =
+	{
+		// FRONT
+		frontUV.u0, frontUV.v1,
+		frontUV.u1, frontUV.v1,
+		frontUV.u1, frontUV.v0,
+		frontUV.u0, frontUV.v0,
+
+		// BACK
+		frontUV.u0, frontUV.v1,
+		frontUV.u0, frontUV.v0,
+		frontUV.u1, frontUV.v0,
+		frontUV.u1, frontUV.v1,
+
+		// LEFT
+		frontUV.u1, frontUV.v1,
+		frontUV.u1, frontUV.v0,
+		frontUV.u0, frontUV.v0,
+		frontUV.u0, frontUV.v1,
+
+		// RIGHT
+		frontUV.u0, frontUV.v1,
+		frontUV.u1, frontUV.v1,
+		frontUV.u1, frontUV.v0,
+		frontUV.u0, frontUV.v0,
+
+		// BOTTOM
+		downUV.u0, downUV.v1,
+		downUV.u0, downUV.v0,
+		downUV.u1, downUV.v0,
+		downUV.u1, downUV.v1,
+
+		// TOP
+		upUV.u0, upUV.v1,
+		upUV.u1, upUV.v1,
+		upUV.u1, upUV.v0,
+		upUV.u0, upUV.v0,
+	};
+
+	textCoords.AddArray(cubeTextureCoords, sizeof(cubeTextureCoords) / sizeof(float));
+}
 
 void Mesh::InitMesh()
 {
@@ -179,7 +164,7 @@ void Mesh::InitMesh()
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	
+
 
 	indeciesArraySize = indecies.GetSize();
 
@@ -211,4 +196,30 @@ Vector<unsigned int>& Mesh::GetIndecies() noexcept
 Vector<float>& Mesh::GetTextCoords() noexcept
 {
 	return textCoords;
+}
+
+Mesh& Mesh::operator=(const Mesh& another) noexcept
+{
+	VAO = another.VAO;
+	VBO = another.VBO;
+	EBO = another.EBO;
+	texCoordsVBO = another.texCoordsVBO;
+	indeciesArraySize = another.indeciesArraySize;
+	return *this;
+};
+
+Mesh& Mesh::operator=(Mesh&& another) noexcept
+{
+	VAO = another.VAO;
+	VBO = another.VBO;
+	EBO = another.EBO;
+	texCoordsVBO = another.texCoordsVBO;
+	indeciesArraySize = another.indeciesArraySize;
+
+	another.VAO = 0;
+	another.VBO = 0;
+	another.EBO = 0;
+	another.texCoordsVBO = 0;
+	another.indeciesArraySize = 0;
+	return *this;
 }

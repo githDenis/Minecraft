@@ -34,7 +34,7 @@ void Inventory::GenerateSlots() noexcept
 	slotMesh.Init();
 
 	for (int y = 0; y < ROW_COUNT; y++)
-	{
+	{  
 		for (int x = 0; x < SLOT_COUNT_IN_ROW; x++)
 		{
 			slotActors[x + y * SLOT_COUNT_IN_ROW].SetMesh(&slotMesh);

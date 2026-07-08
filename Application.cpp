@@ -62,11 +62,11 @@ void Application::Run()
 		{ texture.GetUV(21, 16), texture.GetUV(20, 16), texture.GetUV(21, 16) },   //Tree
 		{ texture.GetUV(53, 16), texture.GetUV(53, 16), texture.GetUV(53, 16) },   //Leaves
 		{ texture.GetUV(16, 16), texture.GetUV(16, 16), texture.GetUV(16, 16) },   //Stone
-		{ texture.GetUV(142, 16), texture.GetUV(142, 16), texture.GetUV(142, 16) }, //Sand
+		{ texture.GetUV(142, 16), texture.GetUV(142, 16), texture.GetUV(142, 16) },//Sand
 		{ texture.GetUV(39, 16), texture.GetUV(39, 16), texture.GetUV(53, 16) },   //Grass
 		{ texture.GetUV(13, 16), texture.GetUV(13, 16), texture.GetUV(13, 16) },   //Yellow flower
 		{ texture.GetUV(12, 16), texture.GetUV(12, 16), texture.GetUV(12, 16) },   //Red flower
-		{ texture.GetUV(177, 16), texture.GetUV(177, 16), texture.GetUV(177, 16) },   //Water
+		{ texture.GetUV(177, 16), texture.GetUV(177, 16), texture.GetUV(177, 16) },//Water
 	};
 
 	UIMesh targetMesh;
@@ -109,7 +109,7 @@ void Application::Run()
 
 		if (inputManager->IsMouseButtonHoldForTime(GLFW_MOUSE_BUTTON_LEFT, 800))
 		{
-			player->PlaceBlock(&world, render, uvs, BlockType::BT_AIR);
+			player->DestroyBlock(&world, uvs, &texture, render);
 		}
 
 		if (inputManager->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
@@ -147,10 +147,8 @@ void Application::Run()
 			oldChunckY = chunkY;
 		}
 
-		for (int i = 0; i < World::CHUNKS_COUNT; i++)
-		{
-			world.DrawChunck(render, i);
-		}
+		world.DrawChuncks(render);
+		world.DrawDroppedBlocks(render);
 
 		player->UpdatePhysics(deltaTime);
 		player->ProcessCollision(&world);

@@ -16,12 +16,14 @@ private:
 public:
 	Actor() {};
 
-	void SetMesh(Mesh* mesh) noexcept;
 	void SetPosition(const glm::vec3& vector) noexcept;
 	void SetRotation(const Rotator& rotation) noexcept;
+	void SetMesh(Mesh* mesh) noexcept;
 	void SetTexture(Texture* texture) noexcept;
 
 	glm::mat4 GetModelMattrix() noexcept;
 	Mesh* GetMesh() noexcept;
 	unsigned int GetTexture() const noexcept;
+
+	Actor& operator=(Actor&& another) noexcept;
 };
