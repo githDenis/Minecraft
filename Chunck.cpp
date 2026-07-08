@@ -554,15 +554,18 @@ BlockClass Chunck::GetBlockClass(const glm::vec3& blockPos) const noexcept
 	}
 }
 
-unsigned char Chunck::GetBlockType(const glm::vec3& blockPos) const noexcept
+BlockType Chunck::GetBlockType(const glm::vec3& blockPos) const noexcept
 {
 	if ((blockPos.x >= 0.f && blockPos.x < CHUNK_WIDTH) &&
 		(blockPos.y >= 0.f && blockPos.y < CHUNK_HEIGHT) &&
 		(blockPos.z >= 0.f && blockPos.z < CHUNK_LENGTH))
 	{
-		return blockTypes[static_cast<int>(blockPos.x)][static_cast<int>(blockPos.y)][static_cast<int>(blockPos.z)];
+		return static_cast<BlockType>(blockTypes
+			[static_cast<int>(blockPos.x)]
+			[static_cast<int>(blockPos.y)]
+			[static_cast<int>(blockPos.z)]);
 	}
-	return static_cast<unsigned char>(BlockType::BT_AIR);
+	return BlockType::BT_AIR;
 }
 
 const glm::vec3& Chunck::GetPosition() const noexcept

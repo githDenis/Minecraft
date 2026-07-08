@@ -19,3 +19,39 @@ void DroppedBlock::Draw(Render* render)
 {
 	render->DrawActor(actor, false);
 }
+
+void DroppedBlock::SimulatePhysics(float deltaTime)
+{
+	if (!isOnGround)
+	{
+		glm::vec3 pos = actor.GetPosition();
+		velocity -= GRAVITY * deltaTime;
+		pos.y += velocity * deltaTime;
+		actor.SetPosition(pos);
+	}
+}
+
+void DroppedBlock::ProcessCollision(World* world)
+{
+	glm::vec3 checkPos = GetPosition() - glm::vec3(0.f, 0.5f, 0.f);
+	BlockType blockType = world->GetBlockType(checkPos, checkPos);
+
+	if (blockType != BlockType::BT_AIR)
+	{
+		velocity = 0;
+		isOnGround = true;
+	}
+}
+
+const glm::vec3& DroppedBlock::GetPosition() const noexcept
+{
+	return actor.GetPosition();
+}
+
+DroppedBlock& DroppedBlock::operator=(DroppedBlock&& another) noexcept
+{
+	mesh = std::move(another.mesh);
+	actor = std::move(another.actor);
+	actor.SetMesh(&mesh);
+	return *this;
+}

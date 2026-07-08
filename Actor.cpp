@@ -33,6 +33,11 @@ glm::mat4 Actor::GetModelMattrix() noexcept
 	return model;
 }
 
+const glm::vec3& Actor::GetPosition() const noexcept
+{
+	return position;
+}
+
 Mesh* Actor::GetMesh() noexcept
 {
 	return mesh;

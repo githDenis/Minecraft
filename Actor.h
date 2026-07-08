@@ -22,6 +22,7 @@ public:
 	void SetTexture(Texture* texture) noexcept;
 
 	glm::mat4 GetModelMattrix() noexcept;
+	const glm::vec3& GetPosition() const noexcept;
 	Mesh* GetMesh() noexcept;
 	unsigned int GetTexture() const noexcept;
 

@@ -23,7 +23,7 @@ public:
 private:
 	std::unique_ptr<Chunck[]> chunks = std::make_unique<Chunck[]>(CHUNKS_COUNT);
 	Vector<BlockInfoInWorld> blocksInfo;
-	Vector<DroppedBlock> droppedBlocks;
+	Vector<class DroppedBlock> droppedBlocks;
 
 public:
 	void GenerateChuncksPositions(const glm::vec3& playerPos);
@@ -38,15 +38,16 @@ public:
 	void ReneretateChunckPosition(const glm::vec2& newPos);
 	void DrawChuncks(Render* render);
 	void DrawDroppedBlocks(Render* render);
+	void SimulatePhysicsForDroppedBlocks(float deltaTime);
+	void ProcessCollisionForDroppedBlocks();
 
 	void PlaceBlock(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], Render* render, const glm::vec3& pos,
 		glm::vec3& forwardVector, const BlockType& blockType);
 	void DestroyBlock(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], const Texture* texture, Render* render, 
 		const glm::vec3& pos, const glm::vec3& forwardVector);
 
-	unsigned char GetBlockType(const glm::vec3& blockPos, const glm::vec3& playerPos) const;
-
-private:
+	BlockType GetBlockType(const glm::vec3& blockPos, const glm::vec3& playerPos) const;
+	
 	glm::vec3 GetBlockPos(const glm::vec3& pos, const glm::vec3& playerPos) const noexcept;
 	glm::vec2 GetChunckPos(const glm::vec3& pos) const noexcept;
 	int GetChunckIndex(const glm::vec3& pos, const glm::vec3& playerPos) const noexcept;

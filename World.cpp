@@ -222,6 +222,26 @@ void World::DrawDroppedBlocks(Render* render)
 	}
 }
 
+void World::SimulatePhysicsForDroppedBlocks(float deltaTime)
+{
+	for (int i = 0; i < droppedBlocks.GetSize(); i++)
+	{
+		droppedBlocks[i].SimulatePhysics(deltaTime);
+	}
+}
+
+void World::ProcessCollisionForDroppedBlocks()
+{
+	for (int i = 0; i < droppedBlocks.GetSize(); i++)
+	{
+		glm::vec3 droppedBlockPos{ droppedBlocks[i].GetPosition() };
+		glm::vec3 posInChunck { GetBlockPos(droppedBlockPos, droppedBlockPos) };
+		int chunckIndex = GetChunckIndex(droppedBlockPos, droppedBlockPos);
+
+		droppedBlocks[i].ProcessCollision(this);
+	}
+}
+
 void World::PlaceBlock(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], Render* render, const glm::vec3& pos,
 	glm::vec3& forwardVector, const BlockType& blockType)
 {
@@ -234,8 +254,8 @@ void World::PlaceBlock(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], Re
 		glm::vec3 blockPos{ GetBlockPos(checkPos, pos) };
 		int chunckIndex = GetChunckIndex(checkPos, pos);
 
-		if (chunks[chunckIndex].GetBlockType(blockPos) != static_cast<unsigned char>(BlockType::BT_AIR) &&
-			chunks[chunckIndex].GetBlockType(blockPos) != static_cast<unsigned char>(BlockType::BT_WATER))
+		if (chunks[chunckIndex].GetBlockType(blockPos) != BlockType::BT_AIR &&
+			chunks[chunckIndex].GetBlockType(blockPos) != BlockType::BT_WATER)
 		{
 			float k = blockType == BlockType::BT_AIR ? i : i - 1;
 			checkPos = start + direction * k;
@@ -270,8 +290,8 @@ void World::DestroyBlock(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], 
 		glm::vec3 blockPos{ GetBlockPos(checkPos, pos) };
 		int chunckIndex = GetChunckIndex(checkPos, pos);
 
-		if (chunks[chunckIndex].GetBlockType(blockPos) != static_cast<unsigned char>(BlockType::BT_AIR) &&
-			chunks[chunckIndex].GetBlockType(blockPos) != static_cast<unsigned char>(BlockType::BT_WATER))
+		if (chunks[chunckIndex].GetBlockType(blockPos) != BlockType::BT_AIR &&
+			chunks[chunckIndex].GetBlockType(blockPos) != BlockType::BT_WATER)
 		{
 			checkPos = start + direction * i;
 
@@ -298,7 +318,7 @@ void World::DestroyBlock(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], 
 	}
 }
 
-unsigned char World::GetBlockType(const glm::vec3& blockPos, const glm::vec3& playerPos) const
+BlockType World::GetBlockType(const glm::vec3& blockPos, const glm::vec3& playerPos) const
 {
 	glm::vec3 pos{ GetBlockPos(blockPos, playerPos) };
 	int chunckIndex = GetChunckIndex(blockPos, playerPos);

@@ -66,7 +66,7 @@ public:
 	void SetBlockType(const glm::vec3& blockPos, const BlockType& newType);
 
 	BlockClass GetBlockClass(const glm::vec3& blockPos) const noexcept;
-	unsigned char GetBlockType(const glm::vec3& blockPos) const noexcept;
+	BlockType GetBlockType(const glm::vec3& blockPos) const noexcept;
 	const glm::vec3& GetPosition() const noexcept;
 	unsigned int Hash(int x, int z, int seed) const noexcept;
 
