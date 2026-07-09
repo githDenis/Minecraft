@@ -41,6 +41,8 @@ public:
 	void SimulatePhysicsForDroppedBlocks(float deltaTime);
 	void ProcessCollisionForDroppedBlocks();
 	void ProcessRotationForDroppedBlocks(float deltaTime);
+	void ProcessCollisionWithPlayerForDroppedBlocks(class Player* player, Texture* texture, 
+		UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT]);
 
 	void PlaceBlock(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], Render* render, const glm::vec3& pos,
 		glm::vec3& forwardVector, const BlockType& blockType);

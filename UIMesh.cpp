@@ -6,7 +6,7 @@ UIMesh::~UIMesh()
 	glDeleteBuffers(1, &VBO);
 }
 
-void UIMesh::GenerateCrossTarget(int windowWidth, int windowHeight)
+void UIMesh::GenerateCrossTarget(int windowWidth, int windowHeight) noexcept
 {
 	float aspect1 = (float)windowWidth / (float)windowHeight;
 
@@ -24,7 +24,7 @@ void UIMesh::GenerateCrossTarget(int windowWidth, int windowHeight)
 	this->vertecies.AddArray(vertecies, vertexArraySize);
 }
 
-void UIMesh::GenerateRectangle(float width, float height, int windowWidth, int windowHeight)
+void UIMesh::GenerateRectangle(float width, float height, int windowWidth, int windowHeight) noexcept
 {
 	float aspect1 = (float)windowWidth / (float)windowHeight;
 
@@ -49,8 +49,10 @@ void UIMesh::GenerateRectangle(float width, float height, int windowWidth, int w
 	this->vertecies.AddArray(vertecies, vertexArraySize);
 }
 
-void UIMesh::SetColor(const Color& color)
+void UIMesh::SetColor(const Color& color) noexcept
 {
+	useTexture = false;
+
 	for (int i = 0; i < vertecies.GetSize(); i++)
 	{
 		colors.Add(color.red);
@@ -59,11 +61,35 @@ void UIMesh::SetColor(const Color& color)
 	}
 }
 
+void UIMesh::SetRectabgleUV(const UV& uv) noexcept
+{
+	useTexture = true;
+
+	float coords[] =
+	{
+		uv.u0, uv.v1, // v0
+		uv.u0, uv.v0, // v1
+		uv.u1, uv.v0, // v2
+
+		uv.u1, uv.v0, // v3
+		uv.u1, uv.v1, // v4
+		uv.u0, uv.v1  // v5
+	};
+
+	static constexpr int size = sizeof(coords) / sizeof(float);
+	textCoords.AddArray(coords, size);
+}
+
 void UIMesh::Init()
 {
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &colorVBO);
+	if (!VAO)
+		glGenVertexArrays(1, &VAO);
+	
+	if (!VBO)
+		glGenBuffers(1, &VBO);
+	
+	if (!colorVBO)
+		glGenBuffers(1, &colorVBO);
 
 	glBindVertexArray(VAO);
 
@@ -73,15 +99,33 @@ void UIMesh::Init()
 	glEnableVertexAttribArray(0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, colorVBO);
-	glBufferData(GL_ARRAY_BUFFER, colors.GetSize() * sizeof(float), colors.GetPtr(), GL_STATIC_DRAW);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
-	glEnableVertexAttribArray(1);
 
+	if (!useTexture)
+	{
+		glBufferData(GL_ARRAY_BUFFER, colors.GetSize() * sizeof(float), colors.GetPtr(), GL_STATIC_DRAW);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
+		glEnableVertexAttribArray(1);
+	}
+	else
+	{
+		glBufferData(GL_ARRAY_BUFFER, textCoords.GetSize() * sizeof(float), textCoords.GetPtr(), GL_STATIC_DRAW);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, NULL);
+		glEnableVertexAttribArray(2);
+	}
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	
 	vertecies.Clear();
-	colors.Clear();
+
+	if (colors.GetSize() > 0)
+	{
+		colors.Clear();
+	}
+
+	if (textCoords.GetSize() > 0)
+	{
+		textCoords.Clear();
+	}
 }
 
 unsigned int UIMesh::GetVAO() const
@@ -92,4 +136,9 @@ unsigned int UIMesh::GetVAO() const
 unsigned int UIMesh::GetVertexArraySize() const noexcept
 {
 	return vertexArraySize;
+}
+
+bool UIMesh::IsUseTexture() const noexcept
+{
+	return useTexture;
 }

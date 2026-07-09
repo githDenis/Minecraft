@@ -15,8 +15,10 @@ public:
 private:
 	Mesh mesh;
 	Actor actor;
+	BlockType blockType;
 	float velocity = 0.f;
 	bool isOnGround = false;
+	bool isAlive = false;
 
 public:
 	void Init(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], const Texture* texture, const BlockType& blockType,
@@ -25,9 +27,13 @@ public:
 	void SimulatePhysics(float deltaTime);
 	void ProcessCollision(class World* world);
 	void ProcessRotation(float deltaTime);
+	bool ProcessCollisionWithPlayer(class Player* player);
+	void SetAliveState(bool state) noexcept;
 
 	const glm::vec3& GetPosition() const noexcept;
 	const Rotator& GetRotation() const noexcept;
+	const BlockType& GetBlockType() const noexcept;
+	bool IsAlive() const noexcept;
 
 	DroppedBlock() noexcept = default;
 	DroppedBlock(const DroppedBlock& another) noexcept = delete;

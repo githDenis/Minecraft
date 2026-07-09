@@ -75,6 +75,11 @@ void Player::DrawInventory(Render* render)
 	inventory.Show(render);
 }
 
+void Player::AddItemToInventory(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT])
+{
+	inventory.AddItem(droppedBlock, texture, uvs);
+}
+
 const Camera& Player::GetCamera() const noexcept
 {
 	return camera;

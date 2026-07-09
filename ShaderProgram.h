@@ -17,4 +17,5 @@ public:
 	void Use();
 
 	void SetMatrix4VariableValue(const char* name, const glm::mat4& matrix);
+	void SetBoolValue(const char* name, bool value);
 };

@@ -44,3 +44,8 @@ void ShaderProgram::SetMatrix4VariableValue(const char* name, const glm::mat4& m
 {
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, name), 1, GL_FALSE, glm::value_ptr(matrix));
 }
+
+void ShaderProgram::SetBoolValue(const char* name, bool value)
+{
+	glUniform1i(glGetUniformLocation(shaderProgram, name), value);
+}

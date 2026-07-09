@@ -152,6 +152,7 @@ void Application::Run()
 		world.SimulatePhysicsForDroppedBlocks(deltaTime);
 		world.ProcessCollisionForDroppedBlocks();
 		world.ProcessRotationForDroppedBlocks(deltaTime);
+		world.ProcessCollisionWithPlayerForDroppedBlocks(player, &texture, uvs);
 		world.DrawDroppedBlocks(render);
 
 		player->UpdatePhysics(deltaTime);

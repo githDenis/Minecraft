@@ -1,11 +1,6 @@
 #include "Inventory.h"
 #include "Structs.h"
 
-/*
-	|1| |2| |3| |4| |5| |6| |7| |8| |9|
-	|10| |11| |12| |13| |14| |15| |16| |17| |18|
-*/
-
 void Inventory::SetMainWindow(Window* mainWindow) noexcept
 {
 	this->mainWindow = mainWindow;
@@ -29,16 +24,15 @@ void Inventory::InitInventoryWindow() noexcept
 
 void Inventory::GenerateSlots() noexcept
 {
-	slotMesh.GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
-	slotMesh.SetColor(Color(0.5f, 0.5f, 0.5f));
-	slotMesh.Init();
-
 	for (int y = 0; y < ROW_COUNT; y++)
 	{  
 		for (int x = 0; x < SLOT_COUNT_IN_ROW; x++)
 		{
-			slotActors[x + y * SLOT_COUNT_IN_ROW].SetMesh(&slotMesh);
-			slotActors[x + y * SLOT_COUNT_IN_ROW].SetPenSize(3.f);
+			slotMeshes[x + y * SLOT_COUNT_IN_ROW].GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
+			slotMeshes[x + y * SLOT_COUNT_IN_ROW].SetColor(Color(0.5f, 0.5f, 0.5f));
+			slotMeshes[x + y * SLOT_COUNT_IN_ROW].Init();
+
+			slotActors[x + y * SLOT_COUNT_IN_ROW].SetMesh(&slotMeshes[x + y * SLOT_COUNT_IN_ROW]);
 
 			glm::vec3 slotPos = START_SLOT_POS +
 				glm::vec3(
@@ -65,4 +59,23 @@ void Inventory::Show(Render* render) noexcept
 
 void Inventory::Hide()
 {
+}
+
+void Inventory::AddItem(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT])
+{
+	if (currentIndex < droppedBlocks.size())
+	{
+		BlockType blockType = droppedBlock.GetBlockType();
+		droppedBlocks[currentIndex] = std::move(droppedBlock);
+		droppedBlocks[currentIndex].SetAliveState(false);
+
+		slotMeshes[currentIndex].SetRectabgleUV(uvs[static_cast<int>(blockType)][1]);
+		slotMeshes[currentIndex].GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
+		slotMeshes[currentIndex].Init();
+
+		slotActors[currentIndex].SetMesh(&slotMeshes[currentIndex]);
+		slotActors[currentIndex].SetTexture(texture);
+
+		currentIndex++;
+	}
 }

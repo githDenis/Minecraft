@@ -5,6 +5,11 @@ void UIActor::SetMesh(UIMesh* mesh) noexcept
 	this->mesh = mesh;
 }
 
+void UIActor::SetTexture(Texture* texture) noexcept
+{
+	this->texture = texture;
+}
+
 void UIActor::SetPenSize(float size) const noexcept
 {
 	glLineWidth(size);
@@ -18,6 +23,11 @@ void UIActor::SetPosition(const glm::vec3& vector) noexcept
 UIMesh* UIActor::GetMesh() noexcept
 {
 	return mesh;
+}
+
+Texture* UIActor::GetTexture() noexcept
+{
+	return texture;
 }
 
 glm::mat4 UIActor::GetModelMatrix() const noexcept

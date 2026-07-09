@@ -1,5 +1,6 @@
 #include "World.h"
 #include "DroppedBlock.h"
+#include "Player.h"
 
 void World::GenerateChuncksPositions(const glm::vec3& playerPos)
 {
@@ -218,7 +219,10 @@ void World::DrawDroppedBlocks(Render* render)
 {
 	for (int i = 0; i < droppedBlocks.GetSize(); i++)
 	{
-		droppedBlocks[i].Draw(render);
+		if (droppedBlocks[i].IsAlive())
+		{
+			droppedBlocks[i].Draw(render);
+		}
 	}
 }
 
@@ -226,7 +230,10 @@ void World::SimulatePhysicsForDroppedBlocks(float deltaTime)
 {
 	for (int i = 0; i < droppedBlocks.GetSize(); i++)
 	{
-		droppedBlocks[i].SimulatePhysics(deltaTime);
+		if (droppedBlocks[i].IsAlive())
+		{
+			droppedBlocks[i].SimulatePhysics(deltaTime);
+		}
 	}
 }
 
@@ -234,11 +241,14 @@ void World::ProcessCollisionForDroppedBlocks()
 {
 	for (int i = 0; i < droppedBlocks.GetSize(); i++)
 	{
-		glm::vec3 droppedBlockPos{ droppedBlocks[i].GetPosition() };
-		glm::vec3 posInChunck { GetBlockPos(droppedBlockPos, droppedBlockPos) };
-		int chunckIndex = GetChunckIndex(droppedBlockPos, droppedBlockPos);
+		if (droppedBlocks[i].IsAlive())
+		{
+			glm::vec3 droppedBlockPos{ droppedBlocks[i].GetPosition() };
+			glm::vec3 posInChunck{ GetBlockPos(droppedBlockPos, droppedBlockPos) };
+			int chunckIndex = GetChunckIndex(droppedBlockPos, droppedBlockPos);
 
-		droppedBlocks[i].ProcessCollision(this);
+			droppedBlocks[i].ProcessCollision(this);
+		}
 	}
 }
 
@@ -246,7 +256,25 @@ void World::ProcessRotationForDroppedBlocks(float deltaTime)
 {
 	for (int i = 0; i < droppedBlocks.GetSize(); i++)
 	{
-		droppedBlocks[i].ProcessRotation(deltaTime);
+		if (droppedBlocks[i].IsAlive())
+		{
+			droppedBlocks[i].ProcessRotation(deltaTime);
+		}
+	}
+}
+
+void World::ProcessCollisionWithPlayerForDroppedBlocks(class Player* player, Texture* texture, 
+	UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT])
+{
+	for (int i = 0; i < droppedBlocks.GetSize(); i++)
+	{
+		if (droppedBlocks[i].IsAlive())
+		{
+			if (droppedBlocks[i].ProcessCollisionWithPlayer(player))
+			{
+				player->AddItemToInventory(droppedBlocks[i], texture, uvs);
+			}
+		}
 	}
 }
 

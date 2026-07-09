@@ -51,8 +51,11 @@ void Render::DrawUIActor(UIActor& actor, int mode)
 	glDisable(GL_CULL_FACE);
 	
 	UIShaderProgram->SetMatrix4VariableValue("model", actor.GetModelMatrix());
+	UIShaderProgram->SetBoolValue("useTexture", actor.GetMesh()->IsUseTexture());
 
-	glBindTexture(GL_TEXTURE_2D, 0);
+	if (actor.GetMesh()->IsUseTexture())
+		glBindTexture(GL_TEXTURE_2D, actor.GetTexture()->GetID());
+
 	glBindVertexArray(actor.GetMesh()->GetVAO());
 
 	int vertexCount = mode == GL_LINES ? actor.GetMesh()->GetVertexArraySize() / 2 : actor.GetMesh()->GetVertexArraySize() - 2;

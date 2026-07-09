@@ -1,4 +1,5 @@
 #include "DroppedBlock.h"
+#include "Player.h"
 
 void DroppedBlock::Init(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], const Texture* texture, 
 	const BlockType& blockType, const glm::vec3& blockPos)
@@ -13,6 +14,8 @@ void DroppedBlock::Init(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], c
 
 	glm::vec3 spawnPos = blockPos + glm::vec3(0.f, 1.f, 0.f);
 	actor.SetPosition(spawnPos);
+	this->blockType = blockType;
+	isAlive = true;
 }
 
 void DroppedBlock::Draw(Render* render)
@@ -50,6 +53,24 @@ void DroppedBlock::ProcessRotation(float deltaTime)
 	actor.SetRotation(rotation);
 }
 
+void DroppedBlock::SetAliveState(bool state) noexcept
+{
+	isAlive = state;
+}
+
+bool DroppedBlock::ProcessCollisionWithPlayer(class Player* player)
+{
+	glm::vec3 pos = GetPosition();
+	glm::vec3 playerPos = player->GetPosition();
+
+	int minX = pos.x - 1.f;
+	int maxX = pos.x + 1.f;
+	int minZ = pos.z - 1.f;
+	int maxZ = pos.z + 1.f;
+
+	return ((playerPos.x >= minX && playerPos.x <= maxX) && (playerPos.z >= minZ && playerPos.z <= maxZ));
+}
+
 const glm::vec3& DroppedBlock::GetPosition() const noexcept
 {
 	return actor.GetPosition();
@@ -60,10 +81,24 @@ const Rotator& DroppedBlock::GetRotation() const noexcept
 	return actor.GetRotation();
 }
 
+const BlockType& DroppedBlock::GetBlockType() const noexcept
+{
+	return blockType;
+}
+
+bool DroppedBlock::IsAlive() const noexcept
+{
+	return isAlive;
+}
+
 DroppedBlock& DroppedBlock::operator=(DroppedBlock&& another) noexcept
 {
 	mesh = std::move(another.mesh);
 	actor = std::move(another.actor);
+	isAlive = another.isAlive;
+	blockType = another.blockType;
 	actor.SetMesh(&mesh);
+	another.isAlive = false;
+	another.blockType = BlockType::BT_AIR;
 	return *this;
 }
