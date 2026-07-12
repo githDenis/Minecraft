@@ -4,6 +4,7 @@
 #include "Render.h"
 #include "InputManager.h"
 #include "DroppedBlock.h"
+#include "Text.h"
 
 class Inventory
 {
@@ -24,15 +25,16 @@ private:
 	UIActor actor;
 	std::array<UIMesh, SLOTS_COUNT> slotMeshes;
 	std::array<UIActor, SLOTS_COUNT> slotActors;
+	std::array<Text, SLOTS_COUNT> texts;
 	std::array<DroppedBlock, SLOTS_COUNT> droppedBlocks;
-	int currentIndex = 0;
+	std::array<int, SLOTS_COUNT> itemsCount;
 
 	void InitInventoryWindow() noexcept;
-	void GenerateSlots() noexcept;
+	void GenerateSlots(Texture* textTexture) noexcept;
 
 public:
 	void SetMainWindow(Window* mainWindow) noexcept;
-	void Init() noexcept;
+	void Init(Texture* textTexture) noexcept;
 	void Show(Render* render) noexcept;
 	void Hide();
 	void AddItem(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT]);

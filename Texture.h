@@ -7,7 +7,6 @@ class Texture
 {
 private:
 	unsigned int texture;
-	UV uv;
 
 public:
 	Texture() noexcept {};
@@ -17,5 +16,5 @@ public:
 	void Create();
 	void SetImage(const char* filePath);
 	unsigned int GetID() const noexcept;
-	UV GetUV(int imageID,int divider);
+	UV GetUV(int imageID, int xDivider, int yDivider) noexcept;
 };

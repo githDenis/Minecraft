@@ -29,7 +29,7 @@ public:
 		const BlockType& blockType);
 	void DestroyBlock(World* world, UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], const Texture* texture,
 		Render* render);
-	void InitInventory() noexcept;
+	void InitInventory(Texture* textTexture) noexcept;
 	void UseInventory() noexcept;
 	void DrawInventory(Render* render);
 	void AddItemToInventory(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT]);

@@ -12,10 +12,26 @@ void main()
 {
     if (useTexture)
     {
-        FragColor = texture(aTexture, TexCoord);
+        vec4 color = texture(aTexture, TexCoord);
+        if (color.x < 0.1 && color.y < 0.1 && color.z < 0.1)
+        {
+            discard;
+        }
+        else
+        {
+            FragColor = texture(aTexture, TexCoord);
+        }
     }
     else
     {
-        FragColor = vec4(Color, 1.f);
+        vec4 color = vec4(Color, 1.f);
+        if (color.x < 0.1 && color.y < 0.1 && color.z < 0.1)
+        {
+            discard;
+        }
+        else
+        {
+            FragColor = vec4(Color, 1.f);
+        }
     }
 }

@@ -3,6 +3,7 @@
 #include "Texture.h"
 #include "World.h"
 #include "Chunck.h"
+#include "Text.h"
 
 Application::~Application()
 {
@@ -57,17 +58,21 @@ void Application::Run()
 	texture.SetImage("E:\\C++\\Minecraft\\Textures\\Textures.jpg");
 
 	UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT] = {
-		{ texture.GetUV(0, 16), texture.GetUV(3, 16), texture.GetUV(2, 16) },      //Ground with grass
-		{ texture.GetUV(2, 16), texture.GetUV(2, 16), texture.GetUV(2, 16) },      //Ground
-		{ texture.GetUV(21, 16), texture.GetUV(20, 16), texture.GetUV(21, 16) },   //Tree
-		{ texture.GetUV(53, 16), texture.GetUV(53, 16), texture.GetUV(53, 16) },   //Leaves
-		{ texture.GetUV(16, 16), texture.GetUV(16, 16), texture.GetUV(16, 16) },   //Stone
-		{ texture.GetUV(142, 16), texture.GetUV(142, 16), texture.GetUV(142, 16) },//Sand
-		{ texture.GetUV(39, 16), texture.GetUV(39, 16), texture.GetUV(53, 16) },   //Grass
-		{ texture.GetUV(13, 16), texture.GetUV(13, 16), texture.GetUV(13, 16) },   //Yellow flower
-		{ texture.GetUV(12, 16), texture.GetUV(12, 16), texture.GetUV(12, 16) },   //Red flower
-		{ texture.GetUV(177, 16), texture.GetUV(177, 16), texture.GetUV(177, 16) },//Water
+		{ texture.GetUV(0, 16, 16), texture.GetUV(3, 16, 16), texture.GetUV(2, 16, 16) },      //Ground with grass
+		{ texture.GetUV(2, 16, 16), texture.GetUV(2, 16, 16), texture.GetUV(2, 16, 16) },      //Ground
+		{ texture.GetUV(21, 16, 16), texture.GetUV(20, 16, 16), texture.GetUV(21, 16, 16) },   //Tree
+		{ texture.GetUV(53, 16, 16), texture.GetUV(53, 16, 16), texture.GetUV(53, 16, 16) },   //Leaves
+		{ texture.GetUV(16, 16, 16), texture.GetUV(16, 16, 16), texture.GetUV(16, 16, 16) },   //Stone
+		{ texture.GetUV(142, 16, 16), texture.GetUV(142, 16, 16), texture.GetUV(142, 16, 16) },//Sand
+		{ texture.GetUV(39, 16, 16), texture.GetUV(39, 16, 16), texture.GetUV(53, 16, 16) },   //Grass
+		{ texture.GetUV(13, 16, 16), texture.GetUV(13, 16, 16), texture.GetUV(13, 16, 16) },   //Yellow flower
+		{ texture.GetUV(12, 16, 16), texture.GetUV(12, 16, 16), texture.GetUV(12, 16, 16) },   //Red flower
+		{ texture.GetUV(177, 16, 16), texture.GetUV(177, 16, 16), texture.GetUV(177, 16, 16) },//Water
 	};
+
+	Texture digitsTexture;
+	digitsTexture.Create();
+	digitsTexture.SetImage("E:\\C++\\Minecraft\\Textures\\DigitsTexture.jpg");
 
 	UIMesh targetMesh;
 	targetMesh.GenerateCrossTarget(window->GetWidth(), window->GetHeight());
@@ -82,7 +87,7 @@ void Application::Run()
 	world.GenerateFolliage();
 	world.GenerateChuncksMeshes(uvs);
 
-	player->InitInventory();
+	player->InitInventory(&digitsTexture);
 
 	float lastTime = glfwGetTime();
 
@@ -171,7 +176,6 @@ void Application::Run()
 			inputManager->EnableUIMode();
 			player->DrawInventory(render);
 		}
-
 		glfwSwapBuffers(window->GetHandle());
 		glfwPollEvents();
 	}

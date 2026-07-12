@@ -36,6 +36,7 @@ void Texture::SetImage(const char* filePath)
 			nChannels == 3 ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, imageBuf);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
+	glBindTexture(GL_TEXTURE_2D, 0);
 	stbi_image_free(imageBuf);
 }
 
@@ -44,16 +45,19 @@ unsigned int Texture::GetID() const noexcept
 	return texture;
 }
 
-UV Texture::GetUV(int imageID, int divider)
+UV Texture::GetUV(int imageID, int xDivider, int yDivider) noexcept
 {
-	float imageSize = 1.f / divider;
+	float imageWidth = 1.f / xDivider;
+	float imageHeight = 1.f / yDivider;
 
-	int x = imageID % divider;
-	int y = imageID / divider;
+	int x = imageID % xDivider;
+	int y = imageID / xDivider;
 
-	uv.u0 = x * imageSize;
-	uv.v0 = y * imageSize;
-	uv.u1 = uv.u0 + imageSize;
-	uv.v1 = uv.v0 + imageSize;
+	UV uv;
+	uv.u0 = x * imageWidth;
+	uv.v0 = y * imageHeight;
+	uv.u1 = uv.u0 + imageWidth;
+	uv.v1 = uv.v0 + imageHeight;
+
 	return uv;
 }

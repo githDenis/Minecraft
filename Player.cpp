@@ -59,9 +59,9 @@ void Player::DestroyBlock(World* world, UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunc
 	world->DestroyBlock(uvs, texture, render, pos, forward);
 }
 
-void Player::InitInventory() noexcept
+void Player::InitInventory(Texture* textTexture) noexcept
 {
-	inventory.Init();
+	inventory.Init(textTexture);
 }
 
 void Player::UseInventory() noexcept

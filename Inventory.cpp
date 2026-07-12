@@ -4,12 +4,17 @@
 void Inventory::SetMainWindow(Window* mainWindow) noexcept
 {
 	this->mainWindow = mainWindow;
+
+	for (int i = 0; i < SLOTS_COUNT; i++)
+	{
+		texts[i].SetMainWindow(mainWindow);
+	}
 }
 
-void Inventory::Init() noexcept
+void Inventory::Init(Texture* textTexture) noexcept
 {
 	InitInventoryWindow();
-	GenerateSlots();
+	GenerateSlots(textTexture);
 }
 
 void Inventory::InitInventoryWindow() noexcept
@@ -22,10 +27,10 @@ void Inventory::InitInventoryWindow() noexcept
 	actor.SetPenSize(3.f);
 }
 
-void Inventory::GenerateSlots() noexcept
+void Inventory::GenerateSlots(Texture* textTexture) noexcept
 {
 	for (int y = 0; y < ROW_COUNT; y++)
-	{  
+	{
 		for (int x = 0; x < SLOT_COUNT_IN_ROW; x++)
 		{
 			slotMeshes[x + y * SLOT_COUNT_IN_ROW].GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
@@ -40,6 +45,15 @@ void Inventory::GenerateSlots() noexcept
 					-SLOT_HEIGHT * y - SLOT_PADDING * y,
 					0.f);
 			slotActors[x + y * SLOT_COUNT_IN_ROW].SetPosition(slotPos);
+
+			texts[x + y * SLOT_COUNT_IN_ROW].SetTexture(textTexture);
+			texts[x + y * SLOT_COUNT_IN_ROW].SetCharsInRow(5);
+			texts[x + y * SLOT_COUNT_IN_ROW].SetCharsInColumn(2);
+			texts[x + y * SLOT_COUNT_IN_ROW].SetCharsCount(10);
+			texts[x + y * SLOT_COUNT_IN_ROW].SetText("");
+			texts[x + y * SLOT_COUNT_IN_ROW].SetStartPosition(slotPos + glm::vec3(SLOT_PADDING, -SLOT_PADDING, 0.f));
+			texts[x + y * SLOT_COUNT_IN_ROW].Init();
+			itemsCount[x + y * SLOT_COUNT_IN_ROW] = 0;
 		}
 	}
 }
@@ -53,6 +67,7 @@ void Inventory::Show(Render* render) noexcept
 		for (int x = 0; x < SLOT_COUNT_IN_ROW; x++)
 		{
 			render->DrawUIActor(slotActors[x + y * SLOT_COUNT_IN_ROW], GL_TRIANGLES);
+			texts[x + y * SLOT_COUNT_IN_ROW].Draw(render);
 		}
 	}
 }
@@ -63,19 +78,31 @@ void Inventory::Hide()
 
 void Inventory::AddItem(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT])
 {
-	if (currentIndex < droppedBlocks.size())
+	for (int i = 0; i < droppedBlocks.size(); i++)
 	{
 		BlockType blockType = droppedBlock.GetBlockType();
-		droppedBlocks[currentIndex] = std::move(droppedBlock);
-		droppedBlocks[currentIndex].SetAliveState(false);
 
-		slotMeshes[currentIndex].SetRectabgleUV(uvs[static_cast<int>(blockType)][1]);
-		slotMeshes[currentIndex].GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
-		slotMeshes[currentIndex].Init();
+		if (itemsCount[i] == 0)
+		{
+			droppedBlocks[i] = std::move(droppedBlock);
+			droppedBlocks[i].SetAliveState(false);
+			slotMeshes[i].SetRectabgleUV(uvs[static_cast<int>(blockType)][1]);
+			slotMeshes[i].GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
+			slotMeshes[i].Init();
 
-		slotActors[currentIndex].SetMesh(&slotMeshes[currentIndex]);
-		slotActors[currentIndex].SetTexture(texture);
-
-		currentIndex++;
+			slotActors[i].SetMesh(&slotMeshes[i]);
+			slotActors[i].SetTexture(texture);
+			itemsCount[i]++;
+			texts[i].SetTextFromDigits(itemsCount[i]);
+			break;
+		}
+		else if (droppedBlocks[i].GetBlockType() == blockType)
+		{
+			droppedBlocks[i] = std::move(droppedBlock);
+			droppedBlocks[i].SetAliveState(false);
+			itemsCount[i]++;
+			texts[i].SetTextFromDigits(itemsCount[i]);
+			break;
+		}
 	}
 }
