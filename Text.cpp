@@ -1,5 +1,4 @@
 #include "Text.h"
-#include <string>
 
 void Text::SetMainWindow(Window* window) noexcept
 {
@@ -31,11 +30,6 @@ void Text::SetText(const char* buf) noexcept
 	strcpy(this->buf, buf);
 }
 
-void Text::SetTextFromDigits(int num) noexcept
-{
-	SetText(std::to_string(num).c_str());
-}
-
 void Text::SetStartPosition(const glm::vec3& pos) noexcept
 {
 	startPos = pos;
@@ -60,7 +54,7 @@ void Text::Draw(Render* render)
 	{
 		if (buf[i] != '\0')
 		{
-			int index = static_cast<int>(buf[i]) - 48;
+			int index = static_cast<int>(buf[i]) - 32;
 			UV uv{ uvs[index] };
 
 			meshes[i].GenerateRectangle(CHAR_WIDTH, CHAR_HEIGHT, window->GetWidth(), window->GetHeight());
@@ -71,7 +65,7 @@ void Text::Draw(Render* render)
 			actors[i].SetTexture(texture);
 			actors[i].SetPosition(charPos);
 			render->DrawUIActor(actors[i], GL_TRIANGLES);
-			charPos = charPos + glm::vec3(CHAR_WIDTH / 2, 0.f, 0.f);
+			charPos = charPos + glm::vec3(CHAR_WIDTH / 6, 0.f, 0.f);
 		}
 	}
 }

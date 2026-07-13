@@ -70,9 +70,9 @@ void Application::Run()
 		{ texture.GetUV(177, 16, 16), texture.GetUV(177, 16, 16), texture.GetUV(177, 16, 16) },//Water
 	};
 
-	Texture digitsTexture;
-	digitsTexture.Create();
-	digitsTexture.SetImage("E:\\C++\\Minecraft\\Textures\\DigitsTexture.jpg");
+	Texture textTexture;
+	textTexture.Create();
+	textTexture.SetImage("E:\\C++\\Minecraft\\Textures\\Font.jpg");
 
 	UIMesh targetMesh;
 	targetMesh.GenerateCrossTarget(window->GetWidth(), window->GetHeight());
@@ -87,7 +87,7 @@ void Application::Run()
 	world.GenerateFolliage();
 	world.GenerateChuncksMeshes(uvs);
 
-	player->InitInventory(&digitsTexture);
+	player->InitInventory(&textTexture);
 
 	float lastTime = glfwGetTime();
 

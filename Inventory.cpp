@@ -1,5 +1,6 @@
 #include "Inventory.h"
 #include "Structs.h"
+#include <string>
 
 void Inventory::SetMainWindow(Window* mainWindow) noexcept
 {
@@ -47,11 +48,11 @@ void Inventory::GenerateSlots(Texture* textTexture) noexcept
 			slotActors[x + y * SLOT_COUNT_IN_ROW].SetPosition(slotPos);
 
 			texts[x + y * SLOT_COUNT_IN_ROW].SetTexture(textTexture);
-			texts[x + y * SLOT_COUNT_IN_ROW].SetCharsInRow(5);
-			texts[x + y * SLOT_COUNT_IN_ROW].SetCharsInColumn(2);
-			texts[x + y * SLOT_COUNT_IN_ROW].SetCharsCount(10);
+			texts[x + y * SLOT_COUNT_IN_ROW].SetCharsInRow(10);
+			texts[x + y * SLOT_COUNT_IN_ROW].SetCharsInColumn(10);
+			texts[x + y * SLOT_COUNT_IN_ROW].SetCharsCount(10 * 10);
 			texts[x + y * SLOT_COUNT_IN_ROW].SetText("");
-			texts[x + y * SLOT_COUNT_IN_ROW].SetStartPosition(slotPos + glm::vec3(SLOT_PADDING, -SLOT_PADDING, 0.f));
+			texts[x + y * SLOT_COUNT_IN_ROW].SetStartPosition(slotPos + glm::vec3(0.f, 0.f, 0.f));
 			texts[x + y * SLOT_COUNT_IN_ROW].Init();
 			itemsCount[x + y * SLOT_COUNT_IN_ROW] = 0;
 		}
@@ -93,15 +94,23 @@ void Inventory::AddItem(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chu
 			slotActors[i].SetMesh(&slotMeshes[i]);
 			slotActors[i].SetTexture(texture);
 			itemsCount[i]++;
-			texts[i].SetTextFromDigits(itemsCount[i]);
+
+			std::string text = std::to_string(itemsCount[i]);
+			texts[i].SetText(text.c_str());
 			break;
 		}
 		else if (droppedBlocks[i].GetBlockType() == blockType)
 		{
+			if (itemsCount[i] == MAX_ITEMS_IN_SLOT)
+			{
+				continue;
+			}
 			droppedBlocks[i] = std::move(droppedBlock);
 			droppedBlocks[i].SetAliveState(false);
 			itemsCount[i]++;
-			texts[i].SetTextFromDigits(itemsCount[i]);
+
+			std::string text = std::to_string(itemsCount[i]);
+			texts[i].SetText(text.c_str());
 			break;
 		}
 	}

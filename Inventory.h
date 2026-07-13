@@ -18,6 +18,7 @@ public:
 	static constexpr int SLOT_COUNT_IN_ROW = 9;
 	static constexpr int ROW_COUNT = 6;
 	static constexpr int SLOTS_COUNT = SLOT_COUNT_IN_ROW * ROW_COUNT;
+	static constexpr int MAX_ITEMS_IN_SLOT = 64;
 
 private:
 	Window* mainWindow;

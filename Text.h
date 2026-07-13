@@ -11,9 +11,9 @@
 class Text
 {
 private:
-	static const int BUF_SIZE = 2;
-	static constexpr float CHAR_WIDTH = 0.03f;
-	static constexpr float CHAR_HEIGHT = 0.06f;
+	static const int BUF_SIZE = 16;
+	static constexpr float CHAR_WIDTH = 0.1f;
+	static constexpr float CHAR_HEIGHT = 0.13f;
 
 	int charsInRow;
 	int charsInColumn;
@@ -36,7 +36,6 @@ public:
 	void SetCharsInColumn(int charsInColumn) noexcept;
 	void SetCharsCount(int charsCount) noexcept;
 	void SetText(const char* buf) noexcept;
-	void SetTextFromDigits(int num) noexcept;
 	void SetStartPosition(const glm::vec3& pos) noexcept;
 	void Init();
 	void Draw(Render* render);

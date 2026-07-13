@@ -30,11 +30,15 @@ void Texture::SetImage(const char* filePath)
 	int width, height, nChannels;
 	unsigned char* imageBuf = stbi_load(filePath, &width, &height, &nChannels, NULL);
 
-	if (imageBuf)
+	if (imageBuf[0] != '\0')
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, nChannels == 3 ? GL_RGB : GL_RGBA, width, height, 0,
 			nChannels == 3 ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, imageBuf);
 		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << stbi_failure_reason() << '\n';
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 	stbi_image_free(imageBuf);
