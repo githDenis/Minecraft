@@ -25,6 +25,11 @@ UIMesh* UIActor::GetMesh() noexcept
 	return mesh;
 }
 
+const glm::vec3& UIActor::GetPosition() const noexcept
+{
+	return pos;
+}
+
 Texture* UIActor::GetTexture() noexcept
 {
 	return texture;

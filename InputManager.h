@@ -10,11 +10,14 @@ private:
 	Window* window;
 	bool keysOldStates[GLFW_KEY_LAST + 1];
 	bool mouseButtonsOldStates[GLFW_MOUSE_BUTTON_LAST + 1];
+	static glm::vec2 mousePos;
+
+	static void MouseMoveCallback(GLFWwindow* window, double x, double y);
 
 public:
 	explicit InputManager(Window* window) noexcept;
 
-	void BindMouseCallback(void(*event)(GLFWwindow* window, double x, double y));
+	void BindMouseCallback();
 	void EnableGamemode() noexcept;
 	void EnableUIMode() noexcept;
 
@@ -28,6 +31,8 @@ public:
 
 	bool IsKeyHoldForTime(int key, int milliseconds) noexcept;
 	bool IsMouseButtonHoldForTime(int button, int milliseconds) noexcept;
+
+	static const glm::vec2 GetMousePosition() noexcept;
 
 	GLFWwindow* GetWindow() const noexcept;
 

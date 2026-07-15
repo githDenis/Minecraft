@@ -1,5 +1,8 @@
 #include "InputManager.h"
 
+glm::vec2 InputManager::mousePos = glm::vec2(0.f, 0.f);
+
+
 InputManager::InputManager(Window* window) noexcept
 {
 	this->window = window;
@@ -7,9 +10,14 @@ InputManager::InputManager(Window* window) noexcept
 	memset(mouseButtonsOldStates, false, sizeof(mouseButtonsOldStates));
 }
 
-void InputManager::BindMouseCallback(void(*event)(GLFWwindow* window, double x, double y))
+void InputManager::MouseMoveCallback(GLFWwindow* window, double x, double y)
 {
-	glfwSetCursorPosCallback(window->GetHandle(), event);
+	mousePos = glm::vec2(x, y);
+}
+
+void InputManager::BindMouseCallback()
+{
+	glfwSetCursorPosCallback(window->GetHandle(), InputManager::MouseMoveCallback);
 }
 
 void InputManager::EnableGamemode() noexcept
@@ -175,6 +183,11 @@ bool InputManager::IsMouseButtonHoldForTime(int button, int milliseconds) noexce
 		duration.zero();
 	}
 	return res;
+}
+
+const glm::vec2 InputManager::GetMousePosition() noexcept
+{
+	return mousePos;
 }
 
 GLFWwindow* InputManager::GetWindow() const noexcept

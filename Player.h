@@ -33,6 +33,7 @@ public:
 	void UseInventory() noexcept;
 	void DrawInventory(Render* render);
 	void AddItemToInventory(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT]);
+	void ProcessHoveringForInventory(InputManager* inputManager, Render* render);
 
 	const Camera& GetCamera() const noexcept;
 	const glm::vec3& GetPosition() const noexcept;

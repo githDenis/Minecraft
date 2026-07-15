@@ -4,13 +4,13 @@ Player::Player(Window* mainWindow, InputManager* inputManager) noexcept
 {
 	camera.SetInputManager(inputManager);
 	camera.SetFOV(45.f);
-	camera.InitMouseMoveCallback();
 
 	inventory.SetMainWindow(mainWindow);
 }
 
 void Player::UpdateCamera(float deltaTime)
 {
+	camera.Update();
 	camera.UpdateTranslation(deltaTime);
 }
 
@@ -80,6 +80,11 @@ void Player::AddItemToInventory(DroppedBlock& droppedBlock, Texture* texture, UV
 	inventory.AddItem(droppedBlock, texture, uvs);
 }
 
+void Player::ProcessHoveringForInventory(InputManager* inputManager, Render* render)
+{
+	inventory.ProcessMouseHovering(inputManager, render);
+}
+
 const Camera& Player::GetCamera() const noexcept
 {
 	return camera;
@@ -115,14 +120,14 @@ bool Player::Colides(World* world, const glm::vec3& blockPos)
 	int minX = floor(blockPos.x - 0.2f);
 	int maxX = floor(blockPos.x + 0.2f);
 
-	int minY = floor(blockPos.y - 1.f);
-	int maxY = floor(blockPos.y + 1.f);
+	int minY = floor(blockPos.y - 0.5f);
+	int maxY = floor(blockPos.y);
 
 	int minZ = floor(blockPos.z - 0.2f);
 	int maxZ = floor(blockPos.z + 0.2f);
 
 	glm::vec3 groundVec = blockPos;
-	groundVec.y -= 2;
+	groundVec.y -= 1.8f;
 	isOnGround = ColidesAxis(world, groundVec);
 
 	for (int x = minX; x <= maxX; x++)

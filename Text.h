@@ -10,11 +10,12 @@
 
 class Text
 {
-private:
-	static const int BUF_SIZE = 16;
+public:
+	static const int BUF_SIZE = 20;
 	static constexpr float CHAR_WIDTH = 0.1f;
 	static constexpr float CHAR_HEIGHT = 0.13f;
 
+private:
 	int charsInRow;
 	int charsInColumn;
 	int charsCount;

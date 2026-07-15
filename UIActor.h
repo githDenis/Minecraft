@@ -19,6 +19,7 @@ public:
 	void SetPenSize(float size) const noexcept;
 	void SetPosition(const glm::vec3& vector) noexcept;
 	UIMesh* GetMesh() noexcept;
+	const glm::vec3& GetPosition() const noexcept;
 	Texture* GetTexture() noexcept;
 	glm::mat4 GetModelMatrix() const noexcept;
 };

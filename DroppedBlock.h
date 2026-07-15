@@ -11,6 +11,7 @@ class DroppedBlock
 public:
 	static constexpr float GRAVITY = 6.f;
 	static constexpr float ROTATION_SPEED = 8.f;
+	static const int BUF_SIZE = 20;
 
 private:
 	Mesh mesh;
@@ -19,6 +20,7 @@ private:
 	float velocity = 0.f;
 	bool isOnGround = false;
 	bool isAlive = false;
+	char buf[BUF_SIZE];
 
 public:
 	void Init(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], const Texture* texture, const BlockType& blockType,
@@ -34,6 +36,7 @@ public:
 	const Rotator& GetRotation() const noexcept;
 	const BlockType& GetBlockType() const noexcept;
 	bool IsAlive() const noexcept;
+	const char* GetBlockText() noexcept;
 
 	DroppedBlock() noexcept = default;
 	DroppedBlock(const DroppedBlock& another) noexcept = delete;

@@ -5,18 +5,12 @@ void Camera::SetInputManager(InputManager* inputManger) noexcept
 	this->inputManager = inputManger;
 }
 
-void Camera::MouseMoveCallback(GLFWwindow* window, double x, double y)
+void Camera::Update()
 {
-	Camera* camera = static_cast<Camera*>(glfwGetWindowUserPointer(window));
+	glm::vec2 mousePos = inputManager->GetMousePosition();
+	double x = mousePos.x;
+	double y = mousePos.y;
 
-	if (camera)
-	{
-		camera->OnMouseMove(x, y);
-	}
-}
-
-void Camera::OnMouseMove(double x, double y)
-{
 	if (!isLocked)
 	{
 		static float xLast = 0;
@@ -47,12 +41,6 @@ void Camera::OnMouseMove(double x, double y)
 		direction.z = sin(glm::radians(rotation.yaw)) * cos(glm::radians(rotation.pitch));
 		front = glm::normalize(direction);
 	}
-}
-
-void Camera::InitMouseMoveCallback()
-{
-	glfwSetWindowUserPointer(inputManager->GetWindow(), this);
-	inputManager->BindMouseCallback(&Camera::MouseMoveCallback);
 }
 
 void Camera::UpdateTranslation(float deltaTime)

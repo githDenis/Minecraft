@@ -147,6 +147,7 @@
     <ClCompile Include="DroppedBlock.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Inventory.cpp" />
+    <ClCompile Include="ItemDescription.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -170,6 +171,7 @@
     <ClInclude Include="Framework.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Inventory.h" />
+    <ClInclude Include="ItemDescription.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Render.h" />

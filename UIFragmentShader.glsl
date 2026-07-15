@@ -19,19 +19,11 @@ void main()
         }
         else
         {
-            FragColor = texture(aTexture, TexCoord);
+            FragColor = color;
         }
     }
     else
     {
-        vec4 color = vec4(Color, 1.f);
-        if (color.x < 0.1 && color.y < 0.1 && color.z < 0.1)
-        {
-            discard;
-        }
-        else
-        {
-            FragColor = vec4(Color, 1.f);
-        }
+        FragColor = vec4(Color, 1.f);
     }
 }

@@ -14,7 +14,7 @@ enum class Direction : unsigned char
 class Camera
 {
 public:
-	static constexpr float CAMERA_SPEED = 12.f;
+	static constexpr float CAMERA_SPEED = 10.f;
 	static constexpr float SENSITIVITY = 0.05f;
 	static constexpr float DRAWING_DISTANCE = 200.f;
 
@@ -30,12 +30,9 @@ private:
 	float FOV;
 	bool isLocked = false;
 
-	static void MouseMoveCallback(GLFWwindow* window, double x, double y);
-	void OnMouseMove(double x, double y);
-
 public:
 	void SetInputManager(InputManager* inputManger) noexcept;
-	void InitMouseMoveCallback();
+	void Update();
 	void UpdateTranslation(float deltaTime);
 	void SetFOV(float angle) noexcept;
 	void SetLockedState(bool state) noexcept;

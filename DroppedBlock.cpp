@@ -91,14 +91,32 @@ bool DroppedBlock::IsAlive() const noexcept
 	return isAlive;
 }
 
+const char* DroppedBlock::GetBlockText() noexcept
+{
+	switch (blockType)
+	{
+	case BlockType::BT_GROUND_GRASS: return "Ground with grass";
+	case BlockType::BT_GROUND: return "Ground";
+	case BlockType::BT_TREE: return "Tree";
+	case BlockType::BT_LEAVES: return "Leaves";
+	case BlockType::BT_STONE: return "Stone";
+	case BlockType::BT_SAND: return "Sand";
+	case BlockType::BT_GRASS: return "Grass";
+	case BlockType::BT_YELLOW_FLOWER: return "Yellow flower";
+	case BlockType::BT_RED_FLOWER: return "Red flower";
+	}
+}
+
 DroppedBlock& DroppedBlock::operator=(DroppedBlock&& another) noexcept
 {
 	mesh = std::move(another.mesh);
 	actor = std::move(another.actor);
 	isAlive = another.isAlive;
 	blockType = another.blockType;
+	strcpy(buf, another.buf);
 	actor.SetMesh(&mesh);
 	another.isAlive = false;
 	another.blockType = BlockType::BT_AIR;
+	strcpy(another.buf, "");
 	return *this;
 }

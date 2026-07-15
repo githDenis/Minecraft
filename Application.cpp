@@ -2,8 +2,6 @@
 #include "Actor.h"
 #include "Texture.h"
 #include "World.h"
-#include "Chunck.h"
-#include "Text.h"
 
 Application::~Application()
 {
@@ -175,6 +173,7 @@ void Application::Run()
 		{
 			inputManager->EnableUIMode();
 			player->DrawInventory(render);
+			player->ProcessHoveringForInventory(inputManager, render);
 		}
 		glfwSwapBuffers(window->GetHandle());
 		glfwPollEvents();
