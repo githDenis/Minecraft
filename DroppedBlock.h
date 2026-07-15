@@ -23,8 +23,8 @@ private:
 	char buf[BUF_SIZE];
 
 public:
-	void Init(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], const Texture* texture, const BlockType& blockType,
-		const glm::vec3& blockPos);
+	void Init(UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT], const Texture* texture, const BlockClass& blockClass, 
+		const BlockType& blockType, const glm::vec3& blockPos);
 	void Draw(Render* render);
 	void SimulatePhysics(float deltaTime);
 	void ProcessCollision(class World* world);

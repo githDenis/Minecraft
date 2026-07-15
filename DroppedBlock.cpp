@@ -1,12 +1,20 @@
 #include "DroppedBlock.h"
 #include "Player.h"
 
-void DroppedBlock::Init(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], const Texture* texture, 
-	const BlockType& blockType, const glm::vec3& blockPos)
+void DroppedBlock::Init(UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT], const Texture* texture,
+	const BlockClass& blockClass, const BlockType& blockType, const glm::vec3& blockPos)
 {
-	mesh.GenerateCube();
-	mesh.SetCubeUV(uvs[static_cast<int>(blockType)][0], uvs[static_cast<int>(blockType)][1],
-		uvs[static_cast<int>(blockType)][2]);
+	if (blockClass == BlockClass::BC_OPAQUE)
+	{
+		mesh.GenerateCube();
+		mesh.SetCubeUV(uvs[static_cast<int>(blockType)][0], uvs[static_cast<int>(blockType)][1],
+			uvs[static_cast<int>(blockType)][2]);
+	}
+	else if (blockClass == BlockClass::BC_FOLLIAGE)
+	{
+		mesh.GenerateCrossPlanes();
+		mesh.SetCrossPlanesUV(uvs[static_cast<int>(blockType)][0]);
+	}
 	mesh.InitMesh();
 
 	actor.SetMesh(&mesh);

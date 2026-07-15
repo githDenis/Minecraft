@@ -222,7 +222,7 @@ void Chunck::GenerateFolliageType(const BlockType& type, int intencity)
 	}
 }
 
-void Chunck::GenerateMeshVerteciesAndTextCoords(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT])
+void Chunck::GenerateMeshVerteciesAndTextCoords(UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT])
 {
 	opaqueMeshVertexOffset = 0;
 	transparentMeshVertexOffset = 0;

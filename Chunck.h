@@ -28,7 +28,7 @@ enum class BlockClass : unsigned char {
 class Chunck
 {
 public:
-	static const int BLOCKS_TYPES_COUNT = static_cast<int>(BlockType::BT_AIR);
+	static const int BLOCKS_COUNT = static_cast<int>(BlockType::BT_AIR);
 	static const int UVS_COUNT = 3;
 	static const int CHUNK_WIDTH = 16;
 	static const int CHUNK_HEIGHT = 32;
@@ -54,7 +54,7 @@ public:
 	void Generate();
 	void GenerateTree();
 	void GenerateFolliageType(const BlockType& type, int intencity);
-	void GenerateMeshVerteciesAndTextCoords(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT]);
+	void GenerateMeshVerteciesAndTextCoords(UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT]);
 	void AddCubeToMesh(const glm::vec3& pos, Mesh& mesh, unsigned int& vertexOffset);
 	void AddCrossPlanesToMesh(const glm::vec3& pos, Mesh& mesh);
 	void AddCubeTextureCoords(const UV& up, const UV& front, const UV& down, Mesh& mesh);

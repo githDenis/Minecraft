@@ -25,14 +25,14 @@ public:
 	void ProcessCollision(World* world) noexcept;
 	void UpdatePhysics(float deltaTime) noexcept;
 	void Jump() noexcept;
-	void PlaceBlock(World* world, Render* render, UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], 
+	void PlaceBlock(World* world, Render* render, UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT],
 		const BlockType& blockType);
-	void DestroyBlock(World* world, UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], const Texture* texture,
+	void DestroyBlock(World* world, UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT], const Texture* texture,
 		Render* render);
 	void InitInventory(Texture* textTexture) noexcept;
 	void UseInventory() noexcept;
 	void DrawInventory(Render* render);
-	void AddItemToInventory(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT]);
+	void AddItemToInventory(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT]);
 	void ProcessHoveringForInventory(InputManager* inputManager, Render* render);
 
 	const Camera& GetCamera() const noexcept;

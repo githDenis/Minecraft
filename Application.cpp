@@ -55,7 +55,7 @@ void Application::Run()
 	texture.Create();
 	texture.SetImage("E:\\C++\\Minecraft\\Textures\\Textures.jpg");
 
-	UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT] = {
+	UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT] = {
 		{ texture.GetUV(0, 16, 16), texture.GetUV(3, 16, 16), texture.GetUV(2, 16, 16) },      //Ground with grass
 		{ texture.GetUV(2, 16, 16), texture.GetUV(2, 16, 16), texture.GetUV(2, 16, 16) },      //Ground
 		{ texture.GetUV(21, 16, 16), texture.GetUV(20, 16, 16), texture.GetUV(21, 16, 16) },   //Tree

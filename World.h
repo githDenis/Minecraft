@@ -30,10 +30,10 @@ public:
 	void GenerateChuncks(Texture* textures);
 	void GenerateFolliage();
 	void ApplyChanchedBlocks(const glm::vec3& newPos);
-	void GenerateChuncksMeshes(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT]);
+	void GenerateChuncksMeshes(UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT]);
 	
 	void RegenerateWorld(const glm::vec2& newPos, const glm::vec3& playerPos, int dx, int dy,
-		UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT]);
+		UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT]);
 	void RegenerateChunckContent(Chunck& chunck);
 	void ReneretateChunckPosition(const glm::vec2& newPos);
 	void DrawChuncks(Render* render);
@@ -42,15 +42,14 @@ public:
 	void ProcessCollisionForDroppedBlocks();
 	void ProcessRotationForDroppedBlocks(float deltaTime);
 	void ProcessCollisionWithPlayerForDroppedBlocks(class Player* player, Texture* texture, 
-		UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT]);
+		UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT]);
 
-	void PlaceBlock(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], Render* render, const glm::vec3& pos,
+	void PlaceBlock(UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT], Render* render, const glm::vec3& pos,
 		glm::vec3& forwardVector, const BlockType& blockType);
-	void DestroyBlock(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], const Texture* texture, Render* render, 
+	void DestroyBlock(UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT], const Texture* texture, Render* render,
 		const glm::vec3& pos, const glm::vec3& forwardVector);
 
 	BlockType GetBlockType(const glm::vec3& blockPos, const glm::vec3& playerPos) const;
-	
 	glm::vec3 GetBlockPos(const glm::vec3& pos, const glm::vec3& playerPos) const noexcept;
 	glm::vec2 GetChunckPos(const glm::vec3& pos) const noexcept;
 	int GetChunckIndex(const glm::vec3& pos, const glm::vec3& playerPos) const noexcept;

@@ -76,7 +76,7 @@ void Inventory::Show(Render* render) noexcept
 	}
 }
 
-void Inventory::AddItem(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT])
+void Inventory::AddItem(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT])
 {
 	for (int i = 0; i < droppedBlocks.size(); i++)
 	{

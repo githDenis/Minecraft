@@ -64,7 +64,7 @@ void World::ApplyChanchedBlocks(const glm::vec3& newPos)
 	}
 }
 
-void World::GenerateChuncksMeshes(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT])
+void World::GenerateChuncksMeshes(UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT])
 {
 	for (int i = 0; i < CHUNKS_COUNT; i++)
 	{
@@ -74,7 +74,7 @@ void World::GenerateChuncksMeshes(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS
 }
 
 void World::RegenerateWorld(const glm::vec2& newPos, const glm::vec3& playerPos, int dx, int dy,
-	UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT])
+	UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT])
 {
 	static constexpr int leftX = CHUNKS_HORIZONTAL_COUNT - 1;
 	static const int rightX = 0;
@@ -264,7 +264,7 @@ void World::ProcessRotationForDroppedBlocks(float deltaTime)
 }
 
 void World::ProcessCollisionWithPlayerForDroppedBlocks(class Player* player, Texture* texture, 
-	UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT])
+	UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT])
 {
 	for (int i = 0; i < droppedBlocks.GetSize(); i++)
 	{
@@ -278,7 +278,7 @@ void World::ProcessCollisionWithPlayerForDroppedBlocks(class Player* player, Tex
 	}
 }
 
-void World::PlaceBlock(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], Render* render, const glm::vec3& pos,
+void World::PlaceBlock(UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT], Render* render, const glm::vec3& pos,
 	glm::vec3& forwardVector, const BlockType& blockType)
 {
 	glm::vec3 start = pos;
@@ -314,7 +314,7 @@ void World::PlaceBlock(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], Re
 	}
 }
 
-void World::DestroyBlock(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], const Texture* texture, Render* render,
+void World::DestroyBlock(UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT], const Texture* texture, Render* render,
 	const glm::vec3& pos, const glm::vec3& forwardVector)
 {
 	glm::vec3 start = pos;
@@ -334,6 +334,7 @@ void World::DestroyBlock(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], 
 			glm::vec3 placePos{ GetBlockPos(checkPos, pos) };
 			chunckIndex = GetChunckIndex(checkPos, pos);
 			
+			BlockClass blockClass = static_cast<BlockClass>(chunks[chunckIndex].GetBlockClass(blockPos));
 			BlockType blockType = static_cast<BlockType>(chunks[chunckIndex].GetBlockType(blockPos));
 			chunks[chunckIndex].PlaceBlock(placePos, BlockType::BT_AIR);
 			chunks[chunckIndex].GenerateMeshVerteciesAndTextCoords(uvs);
@@ -347,7 +348,7 @@ void World::DestroyBlock(UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], 
 			blocksInfo.Add(blockInfo);
 
 			DroppedBlock droppedBlock;
-			droppedBlock.Init(uvs, texture, blockType, checkPos);
+			droppedBlock.Init(uvs, texture, blockClass, blockType, checkPos);
 			droppedBlocks.Add(std::move(droppedBlock));
 			return;
 		}

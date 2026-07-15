@@ -124,6 +124,93 @@ void Mesh::SetCubeUV(const UV& upUV, const UV& frontUV, const UV& downUV)
 	textCoords.AddArray(cubeTextureCoords, sizeof(cubeTextureCoords) / sizeof(float));
 }
 
+void Mesh::GenerateCrossPlanes()
+{
+	float vertecies[] =
+	{
+		// Plane 1
+		0.f, 0.f, 0.f,
+		0.f, 0.3f, 0.f,
+		0.3f, 0.3f, 0.3f,
+		0.3f, 0.f, 0.3f,
+
+		//(обратная Plane 1)
+		0.f, 0.f, 0.f,
+		0.3f, 0.f, 0.3f,
+		0.3f, 0.3f, 0.3f,
+		0.f, 0.3f, 0.f,
+
+		// Plane 2
+		0.f, 0.f, 0.3f,
+		0.f, 0.3f, 0.3f,
+		0.3f, 0.3f, 0.f,
+		0.3f, 0.f, 0.f,
+
+		//(обратная Plane 2)
+		0.f, 0.f, 0.3f,
+		0.3f, 0.f, 0.f,
+		0.3f, 0.3f, 0.f,
+		0.f, 0.3f, 0.3f
+	};
+
+	unsigned int indecies[] =
+	{
+		// Plane 1
+		0, 1, 2,
+		2, 3, 0,
+
+		//(обратная Plane 1)
+		8, 9, 10,
+		10, 11, 8,
+
+		// Plane 2
+		4, 5, 6,
+		6, 7, 4,
+
+		//(обратная Plane 2)
+		12, 13, 14,
+		14, 15, 12,
+	};
+	static constexpr int vertSize = sizeof(vertecies) / sizeof(float);
+	static constexpr int indSize = sizeof(indecies) / sizeof(unsigned int);
+	indeciesArraySize = vertSize;
+
+	this->vertecies.AddArray(vertecies, vertSize);
+	this->indecies.AddArray(indecies, indSize);
+}
+
+void Mesh::SetCrossPlanesUV(const UV& front)
+{
+	float coords[] =
+	{
+		// Plane 1
+		front.u0, front.v1,
+		front.u0, front.v0,
+		front.u1, front.v0,
+		front.u1, front.v1,
+
+		//(обратная Plane 1)
+		front.u0, front.v1,
+		front.u1, front.v1,
+		front.u1, front.v0,
+		front.u0, front.v0,
+
+		// Plane 2
+		front.u0, front.v1,
+		front.u0, front.v0,
+		front.u1, front.v0,
+		front.u1, front.v1,
+
+		//(обратная Plane 2)
+		front.u0, front.v1,
+		front.u1, front.v1,
+		front.u1, front.v0,
+		front.u0, front.v0,
+	};
+	static constexpr int size = sizeof(coords) / sizeof(float);
+	textCoords.AddArray(coords, size);
+}
+
 void Mesh::InitMesh()
 {
 	if (VAO == 0)

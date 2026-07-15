@@ -40,6 +40,6 @@ public:
 	void SetMainWindow(Window* mainWindow) noexcept;
 	void Init(Texture* textTexture) noexcept;
 	void Show(Render* render) noexcept;
-	void AddItem(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT]);
+	void AddItem(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT]);
 	void ProcessMouseHovering(InputManager* inputManager, Render* render);
 };

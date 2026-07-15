@@ -43,7 +43,7 @@ void Player::Jump() noexcept
 	yVelocity = JUMP_VELOCITY;
 }
 
-void Player::PlaceBlock(World* world, Render* render, UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], 
+void Player::PlaceBlock(World* world, Render* render, UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT],
 	const BlockType& blockType)
 {
 	glm::vec3 pos = camera.GetPosition();
@@ -51,7 +51,7 @@ void Player::PlaceBlock(World* world, Render* render, UV uvs[Chunck::BLOCKS_TYPE
 	world->PlaceBlock(uvs, render, pos, forward, blockType);
 }
 
-void Player::DestroyBlock(World* world, UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT], const Texture* texture,
+void Player::DestroyBlock(World* world, UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT], const Texture* texture,
 	Render* render)
 {
 	glm::vec3 pos = camera.GetPosition();
@@ -75,7 +75,7 @@ void Player::DrawInventory(Render* render)
 	inventory.Show(render);
 }
 
-void Player::AddItemToInventory(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunck::BLOCKS_TYPES_COUNT][Chunck::UVS_COUNT])
+void Player::AddItemToInventory(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT])
 {
 	inventory.AddItem(droppedBlock, texture, uvs);
 }

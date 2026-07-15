@@ -20,6 +20,8 @@ public:
 	~Mesh();
 	void GenerateCube();
 	void SetCubeUV(const UV& upUV, const UV& frontUV, const UV& downUV);
+	void GenerateCrossPlanes();
+	void SetCrossPlanesUV(const UV& front);
 
 	void InitMesh();
 	unsigned int GetVAO() const;
