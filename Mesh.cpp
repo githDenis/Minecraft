@@ -252,7 +252,6 @@ void Mesh::InitMesh()
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-
 	indeciesArraySize = indecies.GetSize();
 
 	vertecies.Clear();

@@ -8,8 +8,8 @@ void Inventory::SetMainWindow(Window* mainWindow) noexcept
 
 	for (int i = 0; i < SLOTS_COUNT; i++)
 	{
-		texts[i].SetMainWindow(mainWindow);
-		itemDescriptions[i].SetWindow(mainWindow);
+		slots[i].countText.SetMainWindow(mainWindow);
+		slots[i].description.SetWindow(mainWindow);
 	}
 }
 
@@ -26,6 +26,7 @@ void Inventory::InitInventoryWindow() noexcept
 	mesh.Init();
 
 	actor.SetMesh(&mesh);
+	actor.SetPosition(INVENTORY_POS);
 	actor.SetPenSize(3.f);
 }
 
@@ -35,34 +36,39 @@ void Inventory::GenerateSlots(Texture* textTexture) noexcept
 	{
 		for (int x = 0; x < SLOT_COUNT_IN_ROW; x++)
 		{
-			slotMeshes[x + y * SLOT_COUNT_IN_ROW].GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
-			slotMeshes[x + y * SLOT_COUNT_IN_ROW].SetColor(SLOT_COLOR);
-			slotMeshes[x + y * SLOT_COUNT_IN_ROW].Init();
+			slots[x + y * SLOT_COUNT_IN_ROW].mesh.GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
+			slots[x + y * SLOT_COUNT_IN_ROW].mesh.SetColor(SLOT_COLOR);
+			slots[x + y * SLOT_COUNT_IN_ROW].mesh.Init();
 
 			glm::vec3 slotPos = START_SLOT_POS +
 				glm::vec3(
 					SLOT_WIDTH / 2 * x + SLOT_PADDING * x,
 					-SLOT_HEIGHT * y - SLOT_PADDING * y,
 					0.f);
-			slotActors[x + y * SLOT_COUNT_IN_ROW].SetPosition(slotPos);
-			slotActors[x + y * SLOT_COUNT_IN_ROW].SetMesh(&slotMeshes[x + y * SLOT_COUNT_IN_ROW]);
 
-			texts[x + y * SLOT_COUNT_IN_ROW].SetTexture(textTexture);
-			texts[x + y * SLOT_COUNT_IN_ROW].SetCharsInRow(10);
-			texts[x + y * SLOT_COUNT_IN_ROW].SetCharsInColumn(10);
-			texts[x + y * SLOT_COUNT_IN_ROW].SetCharsCount(10 * 10);
-			texts[x + y * SLOT_COUNT_IN_ROW].SetText("");
-			texts[x + y * SLOT_COUNT_IN_ROW].SetStartPosition(slotPos + glm::vec3(0.f, 0.f, 0.f));
-			texts[x + y * SLOT_COUNT_IN_ROW].Init();
+			if (y == ROW_COUNT - 1)
+			{
+				slotPos.y -= SLOT_HEIGHT / 2;
+			}
+			slots[x + y * SLOT_COUNT_IN_ROW].actor.SetPosition(slotPos);
+			slots[x + y * SLOT_COUNT_IN_ROW].actor.SetMesh(&slots[x + y * SLOT_COUNT_IN_ROW].mesh);
 
-			itemDescriptions[x + y * SLOT_COUNT_IN_ROW].SetTextTexture(textTexture);
+			slots[x + y * SLOT_COUNT_IN_ROW].countText.SetTexture(textTexture);
+			slots[x + y * SLOT_COUNT_IN_ROW].countText.SetCharsInRow(10);
+			slots[x + y * SLOT_COUNT_IN_ROW].countText.SetCharsInColumn(10);
+			slots[x + y * SLOT_COUNT_IN_ROW].countText.SetCharsCount(10 * 10);
+			slots[x + y * SLOT_COUNT_IN_ROW].countText.SetText("");
+			slots[x + y * SLOT_COUNT_IN_ROW].countText.SetStartPosition(slotPos);
+			slots[x + y * SLOT_COUNT_IN_ROW].countText.Init();
 
-			itemsCount[x + y * SLOT_COUNT_IN_ROW] = 0;
+			slots[x + y * SLOT_COUNT_IN_ROW].description.SetTextTexture(textTexture);
+
+			slots[x + y * SLOT_COUNT_IN_ROW].count = 0;
 		}
 	}
 }
 
-void Inventory::Show(Render* render) noexcept
+void Inventory::ShowInventory(Render* render) noexcept
 {
 	render->DrawUIActor(actor, GL_TRIANGLES);
 
@@ -70,54 +76,110 @@ void Inventory::Show(Render* render) noexcept
 	{
 		for (int x = 0; x < SLOT_COUNT_IN_ROW; x++)
 		{
-			render->DrawUIActor(slotActors[x + y * SLOT_COUNT_IN_ROW], GL_TRIANGLES);
-			texts[x + y * SLOT_COUNT_IN_ROW].Draw(render);
+			if (y == ROW_COUNT - 1)
+			{
+				glm::vec3 pos = START_SLOT_POS + glm::vec3(
+					SLOT_WIDTH / 2 * x + SLOT_PADDING * x,
+					-SLOT_HEIGHT * y - SLOT_PADDING * y - SLOT_HEIGHT / 2,
+					0.f);
+
+				slots[x + y * SLOT_COUNT_IN_ROW].actor.SetPosition(pos);
+				slots[x + y * SLOT_COUNT_IN_ROW].countText.SetStartPosition(pos);
+			}
+			render->DrawUIActor(slots[x + y * SLOT_COUNT_IN_ROW].actor, GL_TRIANGLES);
+			slots[x + y * SLOT_COUNT_IN_ROW].countText.Draw(render);
 		}
+	}
+}
+
+void Inventory::ShowHotBar(Render* render) noexcept
+{
+	static int currentItemsInventoryStartIndex = SLOT_COUNT_IN_ROW * (ROW_COUNT - 1);
+
+	for (int i = currentItemsInventoryStartIndex; i < SLOTS_COUNT; i++)
+	{
+		glm::vec3 pos = HOT_BAR_POS + glm::vec3(
+			SLOT_WIDTH / 2 * (i - currentItemsInventoryStartIndex) +  SLOT_PADDING *  (i - currentItemsInventoryStartIndex),
+			0.f,
+			0.f);
+
+		slots[i].actor.SetPosition(pos);
+		slots[i].countText.SetStartPosition(pos);
+
+		render->DrawUIActor(slots[i].actor, GL_TRIANGLES);
+		slots[i].countText.Draw(render);
 	}
 }
 
 void Inventory::AddItem(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT])
 {
-	for (int i = 0; i < droppedBlocks.size(); i++)
+	static int currentItemsInventoryStartIndex = SLOT_COUNT_IN_ROW * (ROW_COUNT - 1);
+	int index = 0;
+
+	for (int i = currentItemsInventoryStartIndex; i < SLOTS_COUNT; i++)
 	{
-		BlockType blockType = droppedBlock.GetBlockType();
-
-		if (itemsCount[i] == 0)
+		if (slots[i].count == 0)
 		{
-			droppedBlocks[i] = std::move(droppedBlock);
-			droppedBlocks[i].SetAliveState(false);
-			slotMeshes[i].SetRectabgleUV(uvs[static_cast<int>(blockType)][1]);
-			slotMeshes[i].GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
-			slotMeshes[i].Init();
-
-			slotActors[i].SetMesh(&slotMeshes[i]);
-			slotActors[i].SetTexture(texture);
-
-			itemsCount[i]++;
-
-			std::string textCount = std::to_string(itemsCount[i]);
-			texts[i].SetText(textCount.c_str());
-			
-			std::string blockDescription = droppedBlocks[i].GetBlockText();
-			float desctiptionWidth = blockDescription.length() * Text::CHAR_WIDTH / 2;
-			float desctiptionHeight = Text::CHAR_HEIGHT;
-
-			itemDescriptions[i].Init(desctiptionWidth, desctiptionHeight);
+			index = i;
 			break;
 		}
-		
-		if (droppedBlocks[i].GetBlockType() == blockType)
+		else
 		{
-			if (itemsCount[i] == MAX_ITEMS_IN_SLOT)
+			if (slots[i].count == MAX_ITEMS_IN_SLOT)
 			{
 				continue;
 			}
-			droppedBlocks[i] = std::move(droppedBlock);
-			droppedBlocks[i].SetAliveState(false);
-			itemsCount[i]++;
+			if (droppedBlock.GetBlockType() == slots[i].block.GetBlockType())
+			{
+				index = i;
+				break;
+			}
+			else
+			{
+				continue;
+			}
+		}
+	}
 
-			std::string text = std::to_string(itemsCount[i]);
-			texts[i].SetText(text.c_str());
+	BlockType blockType = droppedBlock.GetBlockType();
+
+	for (int i = index; i < SLOTS_COUNT; i++)
+	{
+		if (slots[i].count == 0)
+		{
+			slots[i].block = std::move(droppedBlock);
+			slots[i].block.SetAliveState(false);
+			slots[i].mesh.SetRectabgleUV(uvs[static_cast<int>(blockType)][1]);
+			slots[i].mesh.Init();
+
+			slots[i].actor.SetMesh(&slots[i].mesh);
+			slots[i].actor.SetTexture(texture);
+
+			slots[i].count++;
+
+			std::string textCount = std::to_string(slots[i].count);
+			slots[i].countText.SetText(textCount.c_str());
+			
+			std::string blockDescription = slots[i].block.GetBlockText();
+			float desctiptionWidth = blockDescription.length() * Text::CHAR_WIDTH / 2;
+			float desctiptionHeight = Text::CHAR_HEIGHT;
+
+			slots[i].description.Init(desctiptionWidth, desctiptionHeight);
+			break;
+		}
+		
+		if (slots[i].block.GetBlockType() == blockType)
+		{
+			if (slots[i].count == MAX_ITEMS_IN_SLOT)
+			{
+				continue;
+			}
+			slots[i].block = std::move(droppedBlock);
+			slots[i].block.SetAliveState(false);
+			slots[i].count++;
+
+			std::string text = std::to_string(slots[i].count);
+			slots[i].countText.SetText(text.c_str());
 			break;
 		}
 	}
@@ -134,14 +196,14 @@ void Inventory::ProcessMouseHovering(InputManager* inputManager, Render* render)
 
 	for (int i = 0; i < SLOTS_COUNT; i++)
 	{
-		glm::vec3 slotPos = slotActors[i].GetPosition();
+		glm::vec3 slotPos = slots[i].actor.GetPosition();
 
-		if ((NDCPos.x >= slotPos.x - SLOT_WIDTH / 2 + SLOT_PADDING * 2 && NDCPos.x <= slotPos.x + SLOT_WIDTH / 2 - SLOT_PADDING * 2) &&
+		if ((NDCPos.x >= slotPos.x - SLOT_WIDTH / 4 && NDCPos.x <= slotPos.x + SLOT_WIDTH / 4) &&
 			(NDCPos.y >= slotPos.y - SLOT_HEIGHT / 2 && NDCPos.y <= slotPos.y + SLOT_HEIGHT / 2))
 		{
-			itemDescriptions[i].SetText(droppedBlocks[i].GetBlockText());
-			itemDescriptions[i].SetPosition(glm::vec3(NDCPos.x, NDCPos.y, 0.f));
-			itemDescriptions[i].Draw(render);
+			slots[i].description.SetText(slots[i].block.GetBlockText());
+			slots[i].description.SetPosition(glm::vec3(NDCPos.x, NDCPos.y + 0.1f, 0.f));
+			slots[i].description.Draw(render);
 		}
 	}
 }

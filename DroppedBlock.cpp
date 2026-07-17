@@ -71,10 +71,10 @@ bool DroppedBlock::ProcessCollisionWithPlayer(class Player* player)
 	glm::vec3 pos = GetPosition();
 	glm::vec3 playerPos = player->GetPosition();
 
-	int minX = pos.x - 1.f;
-	int maxX = pos.x + 1.f;
-	int minZ = pos.z - 1.f;
-	int maxZ = pos.z + 1.f;
+	int minX = pos.x - 1.5f;
+	int maxX = pos.x + 1.5f;
+	int minZ = pos.z - 1.5f;
+	int maxZ = pos.z + 1.5f;
 
 	return ((playerPos.x >= minX && playerPos.x <= maxX) && (playerPos.z >= minZ && playerPos.z <= maxZ));
 }

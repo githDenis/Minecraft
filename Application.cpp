@@ -168,6 +168,7 @@ void Application::Run()
 			inputManager->EnableGamemode();
 			targetActor.SetPenSize(3.f);
 			render->DrawUIActor(targetActor, GL_LINES);
+			player->DrawHotBar(render);
 		}
 		else
 		{

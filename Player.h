@@ -32,6 +32,7 @@ public:
 	void InitInventory(Texture* textTexture) noexcept;
 	void UseInventory() noexcept;
 	void DrawInventory(Render* render);
+	void DrawHotBar(Render* render);
 	void AddItemToInventory(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT]);
 	void ProcessHoveringForInventory(InputManager* inputManager, Render* render);
 

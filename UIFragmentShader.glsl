@@ -13,7 +13,7 @@ void main()
     if (useTexture)
     {
         vec4 color = texture(aTexture, TexCoord);
-        if (color.x < 0.1 && color.y < 0.1 && color.z < 0.1)
+        if (color.r < 0.1 && color.g < 0.1 && color.b < 0.1)
         {
             discard;
         }

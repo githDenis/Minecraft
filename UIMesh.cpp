@@ -93,10 +93,13 @@ void UIMesh::Init()
 
 	glBindVertexArray(VAO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, vertecies.GetSize() * sizeof(float), vertecies.GetPtr(), GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, NULL);
-	glEnableVertexAttribArray(0);
+	if (vertecies.GetPtr())
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, vertecies.GetSize() * sizeof(float), vertecies.GetPtr(), GL_STATIC_DRAW);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, NULL);
+		glEnableVertexAttribArray(0);
+	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, colorVBO);
 
@@ -115,7 +118,10 @@ void UIMesh::Init()
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	
-	vertecies.Clear();
+	if (vertecies.GetSize() > 0)
+	{
+		vertecies.Clear();
+	}
 
 	if (colors.GetSize() > 0)
 	{

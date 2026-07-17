@@ -72,7 +72,12 @@ void Player::UseInventory() noexcept
 
 void Player::DrawInventory(Render* render)
 {
-	inventory.Show(render);
+	inventory.ShowInventory(render);
+}
+
+void Player::DrawHotBar(Render* render)
+{
+	inventory.ShowHotBar(render);
 }
 
 void Player::AddItemToInventory(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT])
@@ -120,7 +125,7 @@ bool Player::Colides(World* world, const glm::vec3& blockPos)
 	int minX = floor(blockPos.x - 0.2f);
 	int maxX = floor(blockPos.x + 0.2f);
 
-	int minY = floor(blockPos.y - 0.5f);
+	int minY = floor(blockPos.y - 1.f);
 	int maxY = floor(blockPos.y);
 
 	int minZ = floor(blockPos.z - 0.2f);
