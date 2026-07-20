@@ -31,13 +31,41 @@ private:
 	glm::vec3 startPos;
 
 public:
-	void SetMainWindow(Window* window) noexcept;
-	void SetTexture(Texture* texture) noexcept;
-	void SetCharsInRow(int charsInRow) noexcept;
-	void SetCharsInColumn(int charsInColumn) noexcept;
-	void SetCharsCount(int charsCount) noexcept;
-	void SetText(const char* buf) noexcept;
-	void SetStartPosition(const glm::vec3& pos) noexcept;
+	void SetMainWindow(Window* window) noexcept
+	{
+		this->window = window;
+	}
+
+	void SetTexture(Texture* texture) noexcept
+	{
+		this->texture = texture;
+	}
+
+	void SetCharsInRow(int charsInRow) noexcept
+	{
+		this->charsInRow = charsInRow;
+	}
+
+	void SetCharsInColumn(int charsInColumn) noexcept
+	{
+		this->charsInColumn = charsInColumn;
+	}
+
+	void SetCharsCount(int charsCount) noexcept
+	{
+		this->charsCount = charsCount;
+	}
+
+	void SetText(const char* buf) noexcept
+	{
+		strcpy(this->buf, buf);
+	}
+
+	void SetStartPosition(const glm::vec3& pos) noexcept
+	{
+		startPos = pos;
+	}
+
 	void Init();
 	void Draw(Render* render);
 };

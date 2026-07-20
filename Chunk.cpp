@@ -1,6 +1,6 @@
-#include "Chunck.h"
+п»ї#include "Chunk.h"
 
-Chunck& Chunck::operator=(Chunck&& another) noexcept
+Chunk& Chunk::operator=(Chunk&& another) noexcept
 {
 	for (int x = 0; x < CHUNK_WIDTH; x++)
 	{
@@ -33,12 +33,7 @@ Chunck& Chunck::operator=(Chunck&& another) noexcept
 	return *this;
 }
 
-void Chunck::LoadTexture(Texture* textures) noexcept
-{
-	this->textures = textures;
-}
-
-void Chunck::Generate()
+void Chunk::Generate() noexcept
 {
 	for (int x = 0; x < CHUNK_WIDTH; x++)
 	{
@@ -111,16 +106,17 @@ void Chunck::Generate()
 	}
 }
 
-void Chunck::GenerateTree()
+void Chunk::GenerateTree() noexcept
 {
 	for (int x = 0; x < CHUNK_WIDTH; x++)
 	{
 		for (int z = 0; z < CHUNK_LENGTH; z++)
 		{
 			int h = Hash(x + position.x, z + position.z, WORLD_SEED);
+
 			if (h % 200 == 0)
 			{
-				//Нахождение позиции дерева
+				//Tree position
 				glm::vec3 pos{ x + position.x, 0, z + position.z };
 
 				if ((x != 0 && x != CHUNK_WIDTH - 1) && (z != 0 && z != CHUNK_LENGTH - 1))
@@ -140,12 +136,11 @@ void Chunck::GenerateTree()
 						}
 					}
 				}
-				//Нахождение позиции дерева
+				//Tree position
 
-
-				if (pos.y != 0) // Если позиция была найдена
+				if (pos.y != 0)
 				{
-					// Генерация ствола
+					// Tree trunk
 					int treeY = static_cast<int>(pos.y - position.y);
 					int hTree = Hash(x + position.x, z + position.z, WORLD_SEED);
 					int treeHeight = hTree % 10;
@@ -163,10 +158,10 @@ void Chunck::GenerateTree()
 					{
 						blockTypes[x][i][z] = static_cast<unsigned char>(BlockType::BT_TREE);
 					}
-					// Генерация ствола
+					// Tree trunk
 
 
-					//Генерация листвы
+					// Tree leaves
 					int treeTop = treeY + treeHeight - 1;
 
 					for (int yLeaves = treeTop; yLeaves < treeTop + 4; yLeaves++)
@@ -184,14 +179,14 @@ void Chunck::GenerateTree()
 							}
 						}
 					}
-					//Генерация листвы
+					// Tree leaves
 				}
 			}
 		}
 	}
 }
 
-void Chunck::GenerateFolliageType(const BlockType& type, int intencity)
+void Chunk::GenerateFolliageType(BlockType type, int intencity) noexcept
 {
 	for (int x = 0; x < CHUNK_WIDTH; x++)
 	{
@@ -201,7 +196,6 @@ void Chunck::GenerateFolliageType(const BlockType& type, int intencity)
 
 			if (h % intencity == 0)
 			{
-				//Нахождение позиции
 				for (int i = GROUND_LAYER_HEIGHT; i < CHUNK_HEIGHT; i++)
 				{
 					if (i - 1 >= 0)
@@ -216,13 +210,12 @@ void Chunck::GenerateFolliageType(const BlockType& type, int intencity)
 						}
 					}
 				}
-				//Нахождение позиции
 			}
 		}
 	}
 }
 
-void Chunck::GenerateMeshVerteciesAndTextCoords(UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT])
+void Chunk::GenerateMeshVerticesAndTextCoords(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
 {
 	opaqueMeshVertexOffset = 0;
 	transparentMeshVertexOffset = 0;
@@ -271,9 +264,9 @@ void Chunck::GenerateMeshVerteciesAndTextCoords(UV uvs[Chunck::BLOCKS_COUNT][Chu
 	}
 }
 
-void Chunck::AddCubeToMesh(const glm::vec3& pos, Mesh& mesh, unsigned int& vertexOffset)
+void Chunk::AddCubeToMesh(const glm::vec3& pos, Mesh& mesh, unsigned int& vertexOffset) noexcept
 {
-	float vertecies[] =
+	float vertices[] =
 	{
 		// FRONT
 		pos.x - 0.f, pos.y - 0.f, pos.z - 0.f,
@@ -317,7 +310,7 @@ void Chunck::AddCubeToMesh(const glm::vec3& pos, Mesh& mesh, unsigned int& verte
 		pos.x - 0.f, pos.y + 1.f, pos.z + 1.f,
 	};
 
-	unsigned int indecies[] =
+	unsigned int indices[] =
 	{
 		// FRONT
 		0 + vertexOffset, 1 + vertexOffset, 2 + vertexOffset,
@@ -349,18 +342,18 @@ void Chunck::AddCubeToMesh(const glm::vec3& pos, Mesh& mesh, unsigned int& verte
 		22 + vertexOffset, 23 + vertexOffset, 20 + vertexOffset,
 	};
 
-	static constexpr int vertSize = sizeof(vertecies) / sizeof(float);
-	static constexpr int indSize = sizeof(indecies) / sizeof(unsigned int);
+	static constexpr int vertSize = sizeof(vertices) / sizeof(vertices[0]);
+	static constexpr int indSize = sizeof(indices) / sizeof(indices[0]);
 
-	mesh.GetVertecies().AddArray(vertecies, vertSize);
-	mesh.GetIndecies().AddArray(indecies, indSize);
+	mesh.GetVertices().AddArray(vertices, vertSize);
+	mesh.GetIndices().AddArray(indices, indSize);
 
 	vertexOffset += 24;
 }
 
-void Chunck::AddCrossPlanesToMesh(const glm::vec3& pos, Mesh& mesh)
+void Chunk::AddCrossPlanesToMesh(const glm::vec3& pos, Mesh& mesh) noexcept
 {
-	float vertecies[] =
+	float vertices[] =
 	{
 		// Plane 1
 		pos.x + 0.f, pos.y + 0.f, pos.z + 0.f,
@@ -368,7 +361,7 @@ void Chunck::AddCrossPlanesToMesh(const glm::vec3& pos, Mesh& mesh)
 		pos.x + 1.f, pos.y + 1.f, pos.z + 1.f,
 		pos.x + 1.f, pos.y + 0.f, pos.z + 1.f,
 
-		//(обратная Plane 1)
+		//(Opposite Plane 1)
 		pos.x + 0.f, pos.y + 0.f, pos.z + 0.f,
 		pos.x + 1.f, pos.y + 0.f, pos.z + 1.f,
 		pos.x + 1.f, pos.y + 1.f, pos.z + 1.f,
@@ -380,20 +373,20 @@ void Chunck::AddCrossPlanesToMesh(const glm::vec3& pos, Mesh& mesh)
 		pos.x + 1.f, pos.y + 1.f, pos.z + 0.f,
 		pos.x + 1.f, pos.y + 0.f, pos.z + 0.f,
 
-		//(обратная Plane 2)
+		//(Opposite Plane 2)
 		pos.x + 0.f, pos.y + 0.f, pos.z + 1.f,
 		pos.x + 1.f, pos.y + 0.f, pos.z + 0.f,
 		pos.x + 1.f, pos.y + 1.f, pos.z + 0.f,
 		pos.x + 0.f, pos.y + 1.f, pos.z + 1.f
 	};
 
-	unsigned int indecies[] =
+	unsigned int indices[] =
 	{
 		// Plane 1
 		0 + opaqueMeshVertexOffset, 1 + opaqueMeshVertexOffset, 2 + opaqueMeshVertexOffset,
 		2 + opaqueMeshVertexOffset, 3 + opaqueMeshVertexOffset, 0 + opaqueMeshVertexOffset,
 
-		//(обратная Plane 1)
+		//(Opposite Plane 1)
 		8 + opaqueMeshVertexOffset, 9 + opaqueMeshVertexOffset, 10 + opaqueMeshVertexOffset,
 		10 + opaqueMeshVertexOffset, 11 + opaqueMeshVertexOffset, 8 + opaqueMeshVertexOffset,
 
@@ -401,22 +394,22 @@ void Chunck::AddCrossPlanesToMesh(const glm::vec3& pos, Mesh& mesh)
 		4 + opaqueMeshVertexOffset, 5 + opaqueMeshVertexOffset, 6 + opaqueMeshVertexOffset,
 		6 + opaqueMeshVertexOffset, 7 + opaqueMeshVertexOffset, 4 + opaqueMeshVertexOffset,
 
-		//(обратная Plane 2)
+		//(Opposite Plane 2)
 		12 + opaqueMeshVertexOffset, 13 + opaqueMeshVertexOffset, 14 + opaqueMeshVertexOffset,
 		14 + opaqueMeshVertexOffset, 15 + opaqueMeshVertexOffset, 12 + opaqueMeshVertexOffset,
 	};
-	static constexpr int vertSize = sizeof(vertecies) / sizeof(float);
-	static constexpr int indSize = sizeof(indecies) / sizeof(unsigned int);
+	static constexpr int vertSize = sizeof(vertices) / sizeof(vertices[0]);
+	static constexpr int indSize = sizeof(indices) / sizeof(indices[0]);
 
-	mesh.GetVertecies().AddArray(vertecies, vertSize);
-	mesh.GetIndecies().AddArray(indecies, indSize);
+	mesh.GetVertices().AddArray(vertices, vertSize);
+	mesh.GetIndices().AddArray(indices, indSize);
 
 	opaqueMeshVertexOffset += 16;
 }
 
-void Chunck::AddCubeTextureCoords(const UV& up, const UV& front, const UV& down, Mesh& mesh)
+void Chunk::AddCubeTextureCoords(const UV& up, const UV& front, const UV& down, Mesh& mesh) noexcept
 {
-	float cubeTextureCoords[] =
+	float coords[] =
 	{
 		// FRONT
 		front.u0, front.v1,
@@ -460,11 +453,11 @@ void Chunck::AddCubeTextureCoords(const UV& up, const UV& front, const UV& down,
 		up.u0, up.v0,
 	};
 
-	static constexpr int size = sizeof(cubeTextureCoords) / sizeof(float);
-	mesh.GetTextCoords().AddArray(cubeTextureCoords, size);
+	static constexpr int size = sizeof(coords) / sizeof(coords[0]);
+	mesh.GetTextCoords().AddArray(coords, size);
 }
 
-void Chunck::AddCrossPlanesTextureCoords(const UV& front)
+void Chunk::AddCrossPlanesTextureCoords(const UV& front) noexcept
 {
 	float coords[] =
 	{
@@ -474,7 +467,7 @@ void Chunck::AddCrossPlanesTextureCoords(const UV& front)
 		front.u1, front.v0,
 		front.u1, front.v1,
 
-		//(обратная Plane 1)
+		//(Opposite Plane 1)
 		front.u0, front.v1,
 		front.u1, front.v1,
 		front.u1, front.v0,
@@ -486,23 +479,23 @@ void Chunck::AddCrossPlanesTextureCoords(const UV& front)
 		front.u1, front.v0,
 		front.u1, front.v1,
 
-		//(обратная Plane 2)
+		//(Opposite Plane 2)
 		front.u0, front.v1,
 		front.u1, front.v1,
 		front.u1, front.v0,
 		front.u0, front.v0,
 	};
-	static constexpr int size = sizeof(coords) / sizeof(float);
+	static constexpr int size = sizeof(coords) / sizeof(coords[0]);
 	opaqueMesh.GetTextCoords().AddArray(coords, size);
 }
 
-void Chunck::InitMesh()
+void Chunk::InitMesh()
 {
 	opaqueMesh.InitMesh();
 	transparentMesh.InitMesh();
 }
 
-void Chunck::Draw(Render* render)
+void Chunk::Draw(Render* render)
 {
 	opaqueActor.SetTexture(textures);
 	opaqueActor.SetMesh(&opaqueMesh);
@@ -515,31 +508,14 @@ void Chunck::Draw(Render* render)
 	render->DrawActor(transparentActor, true);
 }
 
-void Chunck::SetPosition(const glm::vec3& vector) noexcept
-{
-	position = vector;
-}
-
-void Chunck::PlaceBlock(const glm::vec3& blockPos, const BlockType& blockType)
-{
-	blockTypes[static_cast<int>(blockPos.x)][static_cast<int>(blockPos.y)][static_cast<int>(blockPos.z)] =
-		static_cast<unsigned char>(blockType);
-}
-
-void Chunck::SetBlockType(const glm::vec3& blockPos, const BlockType& newType)
-{
-	blockTypes[static_cast<int>(blockPos.x)][static_cast<int>(blockPos.y)][static_cast<int>(blockPos.z)] =
-		static_cast<unsigned char>(newType);
-}
-
-BlockClass Chunck::GetBlockClass(const glm::vec3& blockPos) const noexcept
+BlockClass Chunk::GetBlockClass(const glm::vec3& blockPos) const noexcept
 {
 	BlockType blockType = static_cast<BlockType>(blockTypes
 		[static_cast<int>(blockPos.x)]
 		[static_cast<int>(blockPos.y)]
 		[static_cast<int>(blockPos.z)]
-	);
-	
+		);
+
 	if (blockType >= BlockType::BT_GROUND_GRASS && blockType <= BlockType::BT_SAND)
 	{
 		return BlockClass::BC_OPAQUE;
@@ -554,7 +530,7 @@ BlockClass Chunck::GetBlockClass(const glm::vec3& blockPos) const noexcept
 	}
 }
 
-BlockType Chunck::GetBlockType(const glm::vec3& blockPos) const noexcept
+BlockType Chunk::GetBlockType(const glm::vec3& blockPos) const noexcept
 {
 	if ((blockPos.x >= 0.f && blockPos.x < CHUNK_WIDTH) &&
 		(blockPos.y >= 0.f && blockPos.y < CHUNK_HEIGHT) &&
@@ -568,12 +544,7 @@ BlockType Chunck::GetBlockType(const glm::vec3& blockPos) const noexcept
 	return BlockType::BT_AIR;
 }
 
-const glm::vec3& Chunck::GetPosition() const noexcept
-{
-	return position;
-}
-
-unsigned int Chunck::Hash(int x, int z, int seed) const noexcept
+unsigned int Chunk::Hash(int x, int z, int seed) const noexcept
 {
 	unsigned int h = x * 374761393u + z * 668265263u + seed * 1442695041u;
 	h = (h ^ (h >> 13)) * 1274126177u;

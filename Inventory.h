@@ -44,7 +44,6 @@ private:
 	UIActor actor;
 	std::array<Slot, SLOTS_COUNT> slots;
 
-
 	void InitInventoryWindow() noexcept;
 	void GenerateSlots(Texture* textTexture) noexcept;
 
@@ -53,6 +52,6 @@ public:
 	void Init(Texture* textTexture) noexcept;
 	void ShowInventory(Render* render) noexcept;
 	void ShowHotBar(Render* render) noexcept;
-	void AddItem(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT]);
+	void AddItem(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]);
 	void ProcessMouseHovering(InputManager* inputManager, Render* render);
 };

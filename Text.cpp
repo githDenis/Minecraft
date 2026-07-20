@@ -1,40 +1,5 @@
 #include "Text.h"
 
-void Text::SetMainWindow(Window* window) noexcept
-{
-	this->window = window;
-}
-
-void Text::SetTexture(Texture* texture) noexcept
-{
-	this->texture = texture;
-}
-
-void Text::SetCharsInRow(int charsInRow) noexcept
-{
-	this->charsInRow = charsInRow;
-}
-
-void Text::SetCharsInColumn(int charsInColumn) noexcept
-{
-	this->charsInColumn = charsInColumn;
-}
-
-void Text::SetCharsCount(int charsCount) noexcept
-{
-	this->charsCount = charsCount;
-}
-
-void Text::SetText(const char* buf) noexcept
-{
-	strcpy(this->buf, buf);
-}
-
-void Text::SetStartPosition(const glm::vec3& pos) noexcept
-{
-	startPos = pos;
-}
-
 void Text::Init()
 {
 	uvs = std::make_unique<UV[]>(charsCount);

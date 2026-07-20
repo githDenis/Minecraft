@@ -133,18 +133,3 @@ void UIMesh::Init()
 		textCoords.Clear();
 	}
 }
-
-unsigned int UIMesh::GetVAO() const
-{
-	return VAO;
-}
-
-unsigned int UIMesh::GetVertexArraySize() const noexcept
-{
-	return vertexArraySize;
-}
-
-bool UIMesh::IsUseTexture() const noexcept
-{
-	return useTexture;
-}

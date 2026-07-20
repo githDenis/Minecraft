@@ -10,25 +10,47 @@ private:
 	unsigned int VBO;
 	unsigned int EBO;
 	unsigned int texCoordsVBO;
-	unsigned int indeciesArraySize;
+	unsigned int indicesArraySize;
 
-	Vector<float> vertecies;
-	Vector<unsigned int> indecies;
+	Vector<float> vertices;
+	Vector<unsigned int> indices;
 	Vector<float> textCoords;
 
 public:
+	unsigned int GetVAO() const
+	{
+		return VAO;
+	}
+
+	int GetIndicesArraySize() const noexcept
+	{
+		return indicesArraySize;
+	}
+
+	Vector<float>& GetVertices() noexcept
+	{
+		return vertices;
+	}
+
+	Vector<unsigned int>& GetIndices() noexcept
+	{
+		return indices;
+	}
+
+	Vector<float>& GetTextCoords() noexcept
+	{
+		return textCoords;
+	}
+
 	~Mesh();
-	void GenerateCube();
-	void SetCubeUV(const UV& upUV, const UV& frontUV, const UV& downUV);
-	void GenerateCrossPlanes();
-	void SetCrossPlanesUV(const UV& front);
+	void GenerateCube() noexcept;
+	void GenerateCubeWithOffset(const glm::vec3& offset) noexcept;
+	void SetCubeUV(const UV& upUV, const UV& frontUV, const UV& downUV) noexcept;
+
+	void GenerateCrossPlanes() noexcept;
+	void SetCrossPlanesUV(const UV& front) noexcept;
 
 	void InitMesh();
-	unsigned int GetVAO() const;
-	int GetIndeciesArraySize() const noexcept;
-	Vector<float>& GetVertecies() noexcept;
-	Vector<unsigned int>& GetIndecies() noexcept;
-	Vector<float>& GetTextCoords() noexcept;
 
 	Mesh() noexcept = default;
 	Mesh(const Mesh&) = delete;

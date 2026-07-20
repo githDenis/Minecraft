@@ -1,10 +1,5 @@
 #include "Camera.h"
 
-void Camera::SetInputManager(InputManager* inputManger) noexcept
-{
-	this->inputManager = inputManger;
-}
-
 void Camera::Update()
 {
 	glm::vec2 mousePos = inputManager->GetMousePosition();
@@ -40,6 +35,7 @@ void Camera::Update()
 		direction.y = sin(glm::radians(rotation.pitch));
 		direction.z = sin(glm::radians(rotation.yaw)) * cos(glm::radians(rotation.pitch));
 		front = glm::normalize(direction);
+		right = glm::normalize(glm::cross(front, up));
 	}
 }
 
@@ -79,22 +75,6 @@ void Camera::UpdateTranslation(float deltaTime)
 	}
 }
 
-void Camera::SetFOV(float angle) noexcept
-{
-	FOV = angle;
-}
-
-void Camera::SetLockedState(bool state) noexcept
-{
-	isLocked = state;
-}
-
-void Camera::SetPosition(const glm::vec3& vector) noexcept
-{
-	oldPos = pos;
-	pos = vector;
-}
-
 void Camera::SetAxisValue(char axis, float value) noexcept
 {
 	if (axis == 'X' || axis == 'x')
@@ -109,26 +89,6 @@ void Camera::SetAxisValue(char axis, float value) noexcept
 	{
 		pos.z = value;
 	}
-}
-
-glm::mat4 Camera::GetViewMatrix() const noexcept
-{
-	return glm::lookAt(pos, pos + front, up);
-}
-
-glm::mat4 Camera::GetProjectionMatrix(float windowWidth, float windowHeight) const noexcept
-{
-	return glm::perspective(glm::radians(FOV), windowWidth / windowHeight, 0.1f, DRAWING_DISTANCE);
-}
-
-const glm::vec3& Camera::GetPosition() const noexcept
-{
-	return pos;
-}
-
-const glm::vec3& Camera::GetMovementVector() const noexcept
-{
-	return movement;
 }
 
 glm::vec3 Camera::GetSignMovementVector() const noexcept
@@ -147,14 +107,4 @@ glm::vec3 Camera::GetSignMovementVector() const noexcept
 	else newVec.z = 0.f;
 
 	return newVec;
-}
-
-const glm::vec3& Camera::GetFrontMovementVector() const noexcept
-{
-	return front;
-}
-
-const glm::vec3& Camera::GetOldPosition() const noexcept
-{
-	return oldPos;
 }

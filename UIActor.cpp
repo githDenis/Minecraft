@@ -1,38 +1,8 @@
 #include "UIActor.h"
 
-void UIActor::SetMesh(UIMesh* mesh) noexcept
-{
-	this->mesh = mesh;
-}
-
-void UIActor::SetTexture(Texture* texture) noexcept
-{
-	this->texture = texture;
-}
-
 void UIActor::SetPenSize(float size) const noexcept
 {
 	glLineWidth(size);
-}
-
-void UIActor::SetPosition(const glm::vec3& vector) noexcept
-{
-	pos = vector;
-}
-
-UIMesh* UIActor::GetMesh() noexcept
-{
-	return mesh;
-}
-
-const glm::vec3& UIActor::GetPosition() const noexcept
-{
-	return pos;
-}
-
-Texture* UIActor::GetTexture() noexcept
-{
-	return texture;
 }
 
 glm::mat4 UIActor::GetModelMatrix() const noexcept

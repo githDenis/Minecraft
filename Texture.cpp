@@ -44,11 +44,6 @@ void Texture::SetImage(const char* filePath)
 	stbi_image_free(imageBuf);
 }
 
-unsigned int Texture::GetID() const noexcept
-{
-	return texture;
-}
-
 UV Texture::GetUV(int imageID, int xDivider, int yDivider) noexcept
 {
 	float imageWidth = 1.f / xDivider;

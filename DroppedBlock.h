@@ -3,7 +3,7 @@
 #include "Mesh.h"
 #include "Actor.h"
 #include "Render.h"
-#include "Chunck.h"
+#include "Chunk.h"
 #include "World.h"
 
 class DroppedBlock
@@ -23,19 +23,39 @@ private:
 	char buf[BUF_SIZE];
 
 public:
-	void Init(UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT], const Texture* texture, const BlockClass& blockClass, 
-		const BlockType& blockType, const glm::vec3& blockPos);
+	void SetAliveState(bool state) noexcept
+	{
+		isAlive = state;
+	}
+
+	const glm::vec3& GetPosition() const noexcept
+	{
+		return actor.GetPosition();
+	}
+
+	const Rotator& GetRotation() const noexcept
+	{
+		return actor.GetRotation();
+	}
+
+	BlockType GetBlockType() const noexcept
+	{
+		return blockType;
+	}
+
+	bool IsAlive() const noexcept
+	{
+		return isAlive;
+	}
+
+	void Init(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], const Texture* texture, BlockClass blockClass, 
+		BlockType blockType, const glm::vec3& blockPos);
 	void Draw(Render* render);
 	void SimulatePhysics(float deltaTime);
 	void ProcessCollision(class World* world);
 	void ProcessRotation(float deltaTime);
 	bool ProcessCollisionWithPlayer(class Player* player);
-	void SetAliveState(bool state) noexcept;
 
-	const glm::vec3& GetPosition() const noexcept;
-	const Rotator& GetRotation() const noexcept;
-	const BlockType& GetBlockType() const noexcept;
-	bool IsAlive() const noexcept;
 	const char* GetBlockText() noexcept;
 
 	DroppedBlock() noexcept = default;

@@ -43,15 +43,15 @@ void Player::Jump() noexcept
 	yVelocity = JUMP_VELOCITY;
 }
 
-void Player::PlaceBlock(World* world, Render* render, UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT],
-	const BlockType& blockType)
+void Player::PlaceBlock(World* world, Render* render, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT],
+	BlockType blockType)
 {
 	glm::vec3 pos = camera.GetPosition();
 	glm::vec3 forward = camera.GetFrontMovementVector();
 	world->PlaceBlock(uvs, render, pos, forward, blockType);
 }
 
-void Player::DestroyBlock(World* world, UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT], const Texture* texture,
+void Player::DestroyBlock(World* world, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], const Texture* texture,
 	Render* render)
 {
 	glm::vec3 pos = camera.GetPosition();
@@ -80,7 +80,7 @@ void Player::DrawHotBar(Render* render)
 	inventory.ShowHotBar(render);
 }
 
-void Player::AddItemToInventory(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT])
+void Player::AddItemToInventory(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT])
 {
 	inventory.AddItem(droppedBlock, texture, uvs);
 }
@@ -90,34 +90,21 @@ void Player::ProcessHoveringForInventory(InputManager* inputManager, Render* ren
 	inventory.ProcessMouseHovering(inputManager, render);
 }
 
-const Camera& Player::GetCamera() const noexcept
+void Player::SetHeldItem(HeldItem* heldItem)
 {
-	return camera;
+	this->heldItem = heldItem;
 }
 
-const glm::vec3& Player::GetPosition() const noexcept
+void Player::DrawHeldItem(Render* render)
 {
-	return camera.GetPosition();
-}
-
-const glm::vec3& Player::GetOldPosition() const noexcept
-{
-	return camera.GetOldPosition();
+	heldItem->UpdatePosition(&camera);
+	heldItem->UpdateRotation(&camera);
+	heldItem->Draw(render);
 }
 
 glm::vec3 Player::GetSignMovementVector() noexcept
 {
 	return camera.GetSignMovementVector();
-}
-
-bool Player::IsOnGroundState() const noexcept
-{
-	return isOnGround;
-}
-
-bool Player::IsInventoryUsing() const noexcept
-{
-	return isInventoryUsing;
 }
 
 bool Player::Colides(World* world, const glm::vec3& blockPos)

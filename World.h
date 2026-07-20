@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Framework.h"
-#include "Chunck.h"
+#include "Chunk.h"
 #include "DroppedBlock.h"
 
 struct BlockInfoInWorld
@@ -21,36 +21,36 @@ public:
 	static constexpr float BREAK_BLOCK_DISTANCE = 10.f;
 
 private:
-	std::unique_ptr<Chunck[]> chunks = std::make_unique<Chunck[]>(CHUNKS_COUNT);
+	std::unique_ptr<Chunk[]> chunks = std::make_unique<Chunk[]>(CHUNKS_COUNT);
 	Vector<BlockInfoInWorld> blocksInfo;
 	Vector<class DroppedBlock> droppedBlocks;
 
 public:
-	void GenerateChuncksPositions(const glm::vec3& playerPos);
-	void GenerateChuncks(Texture* textures);
-	void GenerateFolliage();
-	void ApplyChanchedBlocks(const glm::vec3& newPos);
-	void GenerateChuncksMeshes(UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT]);
-	
+	void GenerateChunksPositions(const glm::vec3& playerPos) noexcept;
+	void GenerateChunks(Texture* textures) noexcept;
+	void GenerateFolliage() noexcept;
+	void ApplyChanchedBlocks(const glm::vec3& newPos) noexcept;
+	void GenerateChunksMeshes(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
+
 	void RegenerateWorld(const glm::vec2& newPos, const glm::vec3& playerPos, int dx, int dy,
-		UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT]);
-	void RegenerateChunckContent(Chunck& chunck);
-	void ReneretateChunckPosition(const glm::vec2& newPos);
-	void DrawChuncks(Render* render);
-	void DrawDroppedBlocks(Render* render);
-	void SimulatePhysicsForDroppedBlocks(float deltaTime);
-	void ProcessCollisionForDroppedBlocks();
-	void ProcessRotationForDroppedBlocks(float deltaTime);
-	void ProcessCollisionWithPlayerForDroppedBlocks(class Player* player, Texture* texture, 
-		UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT]);
+		UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
+	void RegenerateChunkContent(Chunk& ñhunk) noexcept;
+	void ReneretateChunkPosition(const glm::vec2& newPos) noexcept;
+	void DrawChunks(Render* render) noexcept;
+	void DrawDroppedBlocks(Render* render) noexcept;
+	void SimulatePhysicsForDroppedBlocks(float deltaTime) noexcept;
+	void ProcessCollisionForDroppedBlocks() noexcept;
+	void ProcessRotationForDroppedBlocks(float deltaTime) noexcept;
+	void ProcessCollisionWithPlayerForDroppedBlocks(class Player* player, Texture* texture,
+		UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
 
-	void PlaceBlock(UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT], Render* render, const glm::vec3& pos,
-		glm::vec3& forwardVector, const BlockType& blockType);
-	void DestroyBlock(UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT], const Texture* texture, Render* render,
-		const glm::vec3& pos, const glm::vec3& forwardVector);
+	void PlaceBlock(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], Render* render, const glm::vec3& pos,
+		glm::vec3& forwardVector, BlockType blockType) noexcept;
+	void DestroyBlock(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], const Texture* texture, Render* render,
+		const glm::vec3& pos, const glm::vec3& forwardVector) noexcept;
 
-	BlockType GetBlockType(const glm::vec3& blockPos, const glm::vec3& playerPos) const;
+	BlockType GetBlockType(const glm::vec3& blockPos, const glm::vec3& playerPos) const noexcept;
 	glm::vec3 GetBlockPos(const glm::vec3& pos, const glm::vec3& playerPos) const noexcept;
-	glm::vec2 GetChunckPos(const glm::vec3& pos) const noexcept;
-	int GetChunckIndex(const glm::vec3& pos, const glm::vec3& playerPos) const noexcept;
+	glm::vec2 GetChunkPos(const glm::vec3& pos) const noexcept;
+	int GetChunkIndex(const glm::vec3& pos, const glm::vec3& playerPos) const noexcept;
 };

@@ -101,12 +101,12 @@ public:
 		}
 	}
 
-	inline T* GetPtr() const noexcept
+	T* GetPtr() const noexcept
 	{
 		return ptr;
 	}
 
-	inline unsigned int GetSize() const noexcept
+	unsigned int GetSize() const noexcept
 	{
 		return size;
 	}

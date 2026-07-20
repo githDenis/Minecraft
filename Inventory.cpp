@@ -111,7 +111,7 @@ void Inventory::ShowHotBar(Render* render) noexcept
 	}
 }
 
-void Inventory::AddItem(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT])
+void Inventory::AddItem(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT])
 {
 	static int currentItemsInventoryStartIndex = SLOT_COUNT_IN_ROW * (ROW_COUNT - 1);
 	int index = 0;

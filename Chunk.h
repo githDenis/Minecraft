@@ -25,7 +25,7 @@ enum class BlockClass : unsigned char {
 	BC_TRANSPARENT
 };
 
-class Chunck
+class Chunk
 {
 public:
 	static const int BLOCKS_COUNT = static_cast<int>(BlockType::BT_AIR);
@@ -50,29 +50,45 @@ private:
 	Actor transparentActor;
 
 public:
-	void LoadTexture(Texture* textures) noexcept;
-	void Generate();
-	void GenerateTree();
-	void GenerateFolliageType(const BlockType& type, int intencity);
-	void GenerateMeshVerteciesAndTextCoords(UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT]);
-	void AddCubeToMesh(const glm::vec3& pos, Mesh& mesh, unsigned int& vertexOffset);
-	void AddCrossPlanesToMesh(const glm::vec3& pos, Mesh& mesh);
-	void AddCubeTextureCoords(const UV& up, const UV& front, const UV& down, Mesh& mesh);
-	void AddCrossPlanesTextureCoords(const UV& front);
+	void LoadTexture(Texture* textures) noexcept
+	{
+		this->textures = textures;
+	}
+
+	void SetPosition(const glm::vec3& vector) noexcept
+	{
+		position = vector;
+	}
+
+	void PlaceBlock(const glm::vec3& blockPos, BlockType blockType) noexcept
+	{
+		blockTypes[static_cast<int>(blockPos.x)][static_cast<int>(blockPos.y)][static_cast<int>(blockPos.z)] =
+			static_cast<unsigned char>(blockType);
+	}
+
+	const glm::vec3& GetPosition() const noexcept
+	{
+		return position;
+	}
+
+	void Generate() noexcept;
+	void GenerateTree() noexcept;
+	void GenerateFolliageType(BlockType type, int intencity) noexcept;
+	void GenerateMeshVerticesAndTextCoords(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
+	void AddCubeToMesh(const glm::vec3& pos, Mesh& mesh, unsigned int& vertexOffset) noexcept;
+	void AddCrossPlanesToMesh(const glm::vec3& pos, Mesh& mesh) noexcept;
+	void AddCubeTextureCoords(const UV& up, const UV& front, const UV& down, Mesh& mesh) noexcept;
+	void AddCrossPlanesTextureCoords(const UV& front) noexcept;
 	void InitMesh();
 	void Draw(Render* render);
-	void SetPosition(const glm::vec3& vector) noexcept;
-	void PlaceBlock(const glm::vec3& blockPos, const BlockType& blockType);
-	void SetBlockType(const glm::vec3& blockPos, const BlockType& newType);
 
 	BlockClass GetBlockClass(const glm::vec3& blockPos) const noexcept;
 	BlockType GetBlockType(const glm::vec3& blockPos) const noexcept;
-	const glm::vec3& GetPosition() const noexcept;
 	unsigned int Hash(int x, int z, int seed) const noexcept;
 
-	Chunck() noexcept = default;
-	Chunck(const Chunck&) = delete;
-	
-	Chunck& operator=(const Chunck&) = delete;
-	Chunck& operator=(Chunck&& another) noexcept;
+	Chunk() noexcept = default;
+	Chunk(const Chunk&) = delete;
+
+	Chunk& operator=(const Chunk&) = delete;
+	Chunk& operator=(Chunk&& another) noexcept;
 };

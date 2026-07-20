@@ -12,14 +12,38 @@ private:
 	glm::vec3 pos{ 0.f, 0.f, 0.f };
 
 public:
+	void SetMesh(UIMesh* mesh) noexcept
+	{
+		this->mesh = mesh;
+	}
+
+	void SetTexture(Texture* texture) noexcept
+	{
+		this->texture = texture;
+	}
+
+	void SetPosition(const glm::vec3& vector) noexcept
+	{
+		pos = vector;
+	}
+
+	UIMesh* GetMesh() noexcept
+	{
+		return mesh;
+	}
+
+	const glm::vec3& GetPosition() const noexcept
+	{
+		return pos;
+	}
+
+	Texture* GetTexture() noexcept
+	{
+		return texture;
+	}
+
 	UIActor() noexcept {};
 
-	void SetMesh(UIMesh* mesh) noexcept;
-	void SetTexture(Texture* texture) noexcept;
 	void SetPenSize(float size) const noexcept;
-	void SetPosition(const glm::vec3& vector) noexcept;
-	UIMesh* GetMesh() noexcept;
-	const glm::vec3& GetPosition() const noexcept;
-	Texture* GetTexture() noexcept;
 	glm::mat4 GetModelMatrix() const noexcept;
 };

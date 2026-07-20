@@ -12,6 +12,14 @@ struct Rotator
 	float yaw;
 	float pitch;
 	float roll;
+
+	Rotator& operator+(const Rotator& other) noexcept
+	{
+		yaw += other.yaw;
+		pitch += other.pitch;
+		roll += other.roll;
+		return *this;
+	}
 };
 
 struct UV

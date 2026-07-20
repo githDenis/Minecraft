@@ -2,6 +2,8 @@
 #include "Actor.h"
 #include "Texture.h"
 #include "World.h"
+#include "PlayerHand.h"
+#include "HeldBlock.h"
 
 Application::~Application()
 {
@@ -18,36 +20,6 @@ void Application::InitOpenGLContext()
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 }
 
-void Application::SetWindow(Window* window) noexcept
-{
-	this->window = window;
-}
-
-void Application::SetInputManager(InputManager* inputManager) noexcept
-{
-	this->inputManager = inputManager;
-}
-
-void Application::SetRender(Render* render) noexcept
-{
-	this->render = render;
-}
-
-void Application::SetShaderProgram(ShaderProgram* shaderProgram) noexcept
-{
-	this->shaderProgram = shaderProgram;
-}
-
-void Application::SetUIShaderProgram(ShaderProgram* shaderProgram) noexcept
-{
-	UIShaderProgram = shaderProgram;
-}
-
-void Application::SetPlayer(Player* player) noexcept
-{
-	this->player = player;
-}
-
 void Application::Run()
 {
 	//16x16 texture
@@ -55,7 +27,15 @@ void Application::Run()
 	texture.Create();
 	texture.SetImage("E:\\C++\\Minecraft\\Textures\\Textures.jpg");
 
-	UV uvs[Chunck::BLOCKS_COUNT][Chunck::UVS_COUNT] = {
+	Texture textTexture;
+	textTexture.Create();
+	textTexture.SetImage("E:\\C++\\Minecraft\\Textures\\Font.jpg");
+
+	Texture playerHandTexture;
+	playerHandTexture.Create();
+	playerHandTexture.SetImage("E:\\C++\\Minecraft\\Textures\\PlayerHandTexture.jpg");
+
+	UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT] = {
 		{ texture.GetUV(0, 16, 16), texture.GetUV(3, 16, 16), texture.GetUV(2, 16, 16) },      //Ground with grass
 		{ texture.GetUV(2, 16, 16), texture.GetUV(2, 16, 16), texture.GetUV(2, 16, 16) },      //Ground
 		{ texture.GetUV(21, 16, 16), texture.GetUV(20, 16, 16), texture.GetUV(21, 16, 16) },   //Tree
@@ -68,9 +48,13 @@ void Application::Run()
 		{ texture.GetUV(177, 16, 16), texture.GetUV(177, 16, 16), texture.GetUV(177, 16, 16) },//Water
 	};
 
-	Texture textTexture;
-	textTexture.Create();
-	textTexture.SetImage("E:\\C++\\Minecraft\\Textures\\Font.jpg");
+	PlayerHand playerHand;
+	playerHand.Init(&playerHandTexture);
+
+	HeldBlock heldBlock;
+	heldBlock.Init(&texture);
+
+	HeldItem* items[] = { &playerHand, &heldBlock };
 
 	UIMesh targetMesh;
 	targetMesh.GenerateCrossTarget(window->GetWidth(), window->GetHeight());
@@ -80,12 +64,13 @@ void Application::Run()
 	UIActor targetActor;
 	targetActor.SetMesh(&targetMesh);
 
-	world.GenerateChuncksPositions(player->GetPosition());
-	world.GenerateChuncks(&texture);
+	world.GenerateChunksPositions(player->GetPosition());
+	world.GenerateChunks(&texture);
 	world.GenerateFolliage();
-	world.GenerateChuncksMeshes(uvs);
+	world.GenerateChunksMeshes(uvs);
 
 	player->InitInventory(&textTexture);
+	player->SetHeldItem(&heldBlock);
 
 	float lastTime = glfwGetTime();
 
@@ -131,26 +116,26 @@ void Application::Run()
 
 		glm::vec3 pos{ player->GetPosition() };
 
-		int chunkX = static_cast<int>(std::floor(pos.x / (float)Chunck::CHUNK_WIDTH));
-		int chunkY = static_cast<int>(std::floor(pos.z / (float)Chunck::CHUNK_LENGTH));
+		int chunkX = static_cast<int>(std::floor(pos.x / (float)Chunk::CHUNK_WIDTH));
+		int chunkY = static_cast<int>(std::floor(pos.z / (float)Chunk::CHUNK_LENGTH));
 
-		static int oldChunckX = chunkX;
-		static int oldChunckY = chunkY;
+		static int oldChunkX = chunkX;
+		static int oldChunkY = chunkY;
 
-		int chunckDx = chunkX - oldChunckX;
-		int chunckDy = chunkY - oldChunckY;
+		int chunkDx = chunkX - oldChunkX;
+		int chunkDy = chunkY - oldChunkY;
 
-		if (chunckDx != 0 || chunckDy != 0)
+		if (chunkDx != 0 || chunkDy != 0)
 		{
 			glm::vec2 newPos{ chunkX - World::DRAW_CHUNK_RADIUS, chunkY - World::DRAW_CHUNK_RADIUS };
 
-			world.RegenerateWorld(newPos, pos, chunckDx, chunckDy, uvs);
+			world.RegenerateWorld(newPos, pos, chunkDx, chunkDy, uvs);
 
-			oldChunckX = chunkX;
-			oldChunckY = chunkY;
+			oldChunkX = chunkX;
+			oldChunkY = chunkY;
 		}
 
-		world.DrawChuncks(render);
+		world.DrawChunks(render);
 
 		world.SimulatePhysicsForDroppedBlocks(deltaTime);
 		world.ProcessCollisionForDroppedBlocks();
@@ -160,6 +145,8 @@ void Application::Run()
 
 		player->UpdatePhysics(deltaTime);
 		player->ProcessCollision(&world);
+
+		player->DrawHeldItem(render);
 
 		UIShaderProgram->Use();
 

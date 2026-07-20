@@ -15,6 +15,16 @@ private:
 	static void MouseMoveCallback(GLFWwindow* window, double x, double y);
 
 public:
+	const glm::vec2 GetMousePosition() noexcept
+	{
+		return mousePos;
+	}
+
+	GLFWwindow* GetWindow() const noexcept
+	{
+		return window->GetHandle();
+	}
+
 	explicit InputManager(Window* window) noexcept;
 
 	void BindMouseCallback();
@@ -31,9 +41,4 @@ public:
 
 	bool IsKeyHoldForTime(int key, int milliseconds) noexcept;
 	bool IsMouseButtonHoldForTime(int button, int milliseconds) noexcept;
-
-	static const glm::vec2 GetMousePosition() noexcept;
-
-	GLFWwindow* GetWindow() const noexcept;
-
 };

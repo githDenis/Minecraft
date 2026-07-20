@@ -14,14 +14,25 @@ private:
 	bool useTexture = false;
 
 public:
+	unsigned int GetVAO() const
+	{
+		return VAO;
+	}
+
+	unsigned int GetVertexArraySize() const noexcept
+	{
+		return vertexArraySize;
+	}
+
+	bool IsUseTexture() const noexcept
+	{
+		return useTexture;
+	}
+
 	~UIMesh();
 	void GenerateCrossTarget(int windowWidth, int windowHeight) noexcept;
 	void GenerateRectangle(float width, float height, int windowWidth, int windowHeight) noexcept;
 	void SetColor(const Color& color) noexcept;
 	void SetRectabgleUV(const UV& uv) noexcept;
 	void Init();
-
-	unsigned int GetVAO() const;
-	unsigned int GetVertexArraySize() const noexcept;
-	bool IsUseTexture() const noexcept;
 };

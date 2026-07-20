@@ -40,18 +40,3 @@ void Window::Hide()
 {
 	glfwHideWindow(window);
 }
-
-GLFWwindow* Window::GetHandle() const noexcept
-{
-	return window;
-}
-
-int Window::GetWidth() const noexcept
-{
-	return width;
-}
-
-int Window::GetHeight() const noexcept
-{
-	return height;
-}

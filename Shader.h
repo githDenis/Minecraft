@@ -11,10 +11,13 @@ private:
 	char* shaderCode;
 
 public:
+	unsigned int GetID() const noexcept
+	{
+		return shader;
+	}
+
 	~Shader();
 	void Create(unsigned int type);
 	void ReadShaderFile(const char* filePath);
 	void Compile() const;
-
-	unsigned int GetID() const noexcept;
 };

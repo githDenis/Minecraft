@@ -8,9 +8,9 @@ Mesh::~Mesh()
 	glDeleteBuffers(1, &texCoordsVBO);
 }
 
-void Mesh::GenerateCube()
+void Mesh::GenerateCube() noexcept
 {
-	float cubeVertecies[] =
+	static constexpr float cubeVertices[] =
 	{
 		// FRONT (-Z)
 		-0.2f, -0.2f, -0.2f,
@@ -49,7 +49,7 @@ void Mesh::GenerateCube()
 		-0.2f,  0.2f,  0.2f,
 	};
 
-	unsigned int cubeIndecies[] =
+	static constexpr unsigned int cubeIndices[] =
 	{
 		// FRONT
 		0, 1, 2,
@@ -75,12 +75,90 @@ void Mesh::GenerateCube()
 		20, 21, 22,
 		22, 23, 20,
 	};
-	indeciesArraySize = sizeof(cubeVertecies) / sizeof(float);
-	vertecies.AddArray(cubeVertecies, indeciesArraySize);
-	indecies.AddArray(cubeIndecies, sizeof(cubeVertecies) / sizeof(unsigned int));
+
+	static constexpr int vertSize = sizeof(cubeVertices) / sizeof(cubeVertices[0]);
+	indicesArraySize = sizeof(cubeIndices) / sizeof(cubeIndices[0]);
+
+	vertices.AddArray(cubeVertices, vertSize);
+	indices.AddArray(cubeIndices, indicesArraySize);
 }
 
-void Mesh::SetCubeUV(const UV& upUV, const UV& frontUV, const UV& downUV)
+void Mesh::GenerateCubeWithOffset(const glm::vec3& offset) noexcept
+{
+	float cubeVertices[] =
+	{
+		// FRONT (-Z)
+		-0.2f + offset.x, -0.2f + offset.y, -0.2f + offset.z,
+		0.2f + offset.x, -0.2f + offset.y, -0.2f + offset.z,
+		0.2f + offset.x,  0.2f + offset.y, -0.2f + offset.z,
+		-0.2f + offset.x,  0.2f + offset.y, -0.2f + offset.z,
+
+		// BACK (+Z)
+		-0.2f + offset.x, -0.2f + offset.y,  0.2f + offset.z,
+		-0.2f + offset.x,  0.2f + offset.y,  0.2f + offset.z,
+		0.2f + offset.x,  0.2f + offset.y,  0.2f + offset.z,
+		0.2f + offset.x, -0.2f + offset.y,  0.2f + offset.z,
+
+		// LEFT (-X)
+	   -0.2f + offset.x, -0.2f + offset.y, -0.2f + offset.z,
+	   -0.2f + offset.x,  0.2f + offset.y, -0.2f + offset.z,
+	   -0.2f + offset.x,  0.2f + offset.y,  0.2f + offset.z,
+	   -0.2f + offset.x, -0.2f + offset.y,  0.2f + offset.z,
+
+	   // RIGHT (+X)
+	  0.2f + offset.x, -0.2f + offset.y, -0.2f + offset.z,
+	  0.2f + offset.x, -0.2f + offset.y,  0.2f + offset.z,
+	  0.2f + offset.x,  0.2f + offset.y,  0.2f + offset.z,
+	  0.2f + offset.x,  0.2f + offset.y, -0.2f + offset.z,
+
+	  // BOTTOM (-Y)
+	  -0.2f + offset.x, -0.2f + offset.y, -0.2f + offset.z,
+	  -0.2f + offset.x, -0.2f + offset.y,  0.2f + offset.z,
+	  0.2f + offset.x, -0.2f + offset.y,  0.2f + offset.z,
+	  0.2f + offset.x, -0.2f + offset.y, -0.2f + offset.z,
+
+	  // TOP (+Y)
+	  -0.2f + offset.x,  0.2f + offset.y, -0.2f + offset.z,
+	  0.2f + offset.x,  0.2f + offset.y, -0.2f + offset.z,
+	  0.2f + offset.x,  0.2f + offset.y,  0.2f + offset.z,
+	  -0.2f + offset.x,  0.2f + offset.y,  0.2f + offset.z,
+	};
+
+	static constexpr unsigned int cubeIndices[] =
+	{
+		// FRONT
+		0, 1, 2,
+		2, 3, 0,
+
+		// BACK
+		4, 5, 6,
+		6, 7, 4,
+
+		// LEFT
+		8, 9, 10,
+		10, 11, 8,
+
+		// RIGHT
+		12, 13, 14,
+		14, 15, 12,
+
+		// BOTTOM
+		16, 17, 18,
+		18, 19, 16,
+
+		// TOP
+		20, 21, 22,
+		22, 23, 20,
+	};
+
+	static constexpr int vertSize = sizeof(cubeVertices) / sizeof(cubeVertices[0]);
+	indicesArraySize = sizeof(cubeIndices) / sizeof(cubeIndices[0]);
+
+	vertices.AddArray(cubeVertices, vertSize);
+	indices.AddArray(cubeIndices, indicesArraySize);
+}
+
+void Mesh::SetCubeUV(const UV& upUV, const UV& frontUV, const UV& downUV) noexcept
 {
 	float cubeTextureCoords[] =
 	{
@@ -124,9 +202,9 @@ void Mesh::SetCubeUV(const UV& upUV, const UV& frontUV, const UV& downUV)
 	textCoords.AddArray(cubeTextureCoords, sizeof(cubeTextureCoords) / sizeof(float));
 }
 
-void Mesh::GenerateCrossPlanes()
+void Mesh::GenerateCrossPlanes() noexcept
 {
-	float vertecies[] =
+	static constexpr float vertices[] =
 	{
 		// Plane 1
 		0.f, 0.f, 0.f,
@@ -153,7 +231,7 @@ void Mesh::GenerateCrossPlanes()
 		0.f, 0.3f, 0.3f
 	};
 
-	unsigned int indecies[] =
+	static constexpr unsigned int indices[] =
 	{
 		// Plane 1
 		0, 1, 2,
@@ -171,15 +249,15 @@ void Mesh::GenerateCrossPlanes()
 		12, 13, 14,
 		14, 15, 12,
 	};
-	static constexpr int vertSize = sizeof(vertecies) / sizeof(float);
-	static constexpr int indSize = sizeof(indecies) / sizeof(unsigned int);
-	indeciesArraySize = vertSize;
 
-	this->vertecies.AddArray(vertecies, vertSize);
-	this->indecies.AddArray(indecies, indSize);
+	static constexpr int vertSize = sizeof(vertices) / sizeof(vertices[0]);
+	indicesArraySize = sizeof(indices) / sizeof(indices[0]);
+
+	this->vertices.AddArray(vertices, vertSize);
+	this->indices.AddArray(indices, indicesArraySize);
 }
 
-void Mesh::SetCrossPlanesUV(const UV& front)
+void Mesh::SetCrossPlanesUV(const UV& front) noexcept
 {
 	float coords[] =
 	{
@@ -207,7 +285,7 @@ void Mesh::SetCrossPlanesUV(const UV& front)
 		front.u1, front.v0,
 		front.u0, front.v0,
 	};
-	static constexpr int size = sizeof(coords) / sizeof(float);
+	static constexpr int size = sizeof(coords) / sizeof(coords[0]);
 	textCoords.AddArray(coords, size);
 }
 
@@ -236,10 +314,10 @@ void Mesh::InitMesh()
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertecies.GetSize(), vertecies.GetPtr(), GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.GetSize(), vertices.GetPtr(), GL_DYNAMIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indecies.GetSize(), indecies.GetPtr(), GL_DYNAMIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices.GetSize(), indices.GetPtr(), GL_DYNAMIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
 	glEnableVertexAttribArray(0);
@@ -252,36 +330,11 @@ void Mesh::InitMesh()
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	indeciesArraySize = indecies.GetSize();
+	indicesArraySize = indices.GetSize();
 
-	vertecies.Clear();
-	indecies.Clear();
+	vertices.Clear();
+	indices.Clear();
 	textCoords.Clear();
-}
-
-unsigned int Mesh::GetVAO() const
-{
-	return VAO;
-}
-
-int Mesh::GetIndeciesArraySize() const noexcept
-{
-	return indeciesArraySize;
-}
-
-Vector<float>& Mesh::GetVertecies() noexcept
-{
-	return vertecies;
-}
-
-Vector<unsigned int>& Mesh::GetIndecies() noexcept
-{
-	return indecies;
-}
-
-Vector<float>& Mesh::GetTextCoords() noexcept
-{
-	return textCoords;
 }
 
 Mesh& Mesh::operator=(const Mesh& another) noexcept
@@ -290,7 +343,7 @@ Mesh& Mesh::operator=(const Mesh& another) noexcept
 	VBO = another.VBO;
 	EBO = another.EBO;
 	texCoordsVBO = another.texCoordsVBO;
-	indeciesArraySize = another.indeciesArraySize;
+	indicesArraySize = another.indicesArraySize;
 	return *this;
 };
 
@@ -300,12 +353,12 @@ Mesh& Mesh::operator=(Mesh&& another) noexcept
 	VBO = another.VBO;
 	EBO = another.EBO;
 	texCoordsVBO = another.texCoordsVBO;
-	indeciesArraySize = another.indeciesArraySize;
+	indicesArraySize = another.indicesArraySize;
 
 	another.VAO = 0;
 	another.VBO = 0;
 	another.EBO = 0;
 	another.texCoordsVBO = 0;
-	another.indeciesArraySize = 0;
+	another.indicesArraySize = 0;
 	return *this;
 }

@@ -54,8 +54,3 @@ void Shader::Compile() const
 		std::cout << "Shader compilation completed successfully\n";
 	}
 }
-
-unsigned int Shader::GetID() const noexcept
-{
-	return shader;
-}

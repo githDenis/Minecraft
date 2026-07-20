@@ -37,7 +37,7 @@ void Render::DrawActor(Actor& actor, bool isTransparent)
 	}
 	glBindTexture(GL_TEXTURE_2D, actor.GetTexture());
 	glBindVertexArray(actor.GetMesh()->GetVAO());
-	glDrawElements(GL_TRIANGLES, actor.GetMesh()->GetIndeciesArraySize(), GL_UNSIGNED_INT, NULL);
+	glDrawElements(GL_TRIANGLES, actor.GetMesh()->GetIndicesArraySize(), GL_UNSIGNED_INT, NULL);
 
 	if (isTransparent)
 	{
