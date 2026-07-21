@@ -35,7 +35,7 @@ void Render::DrawActor(Actor& actor, bool isTransparent)
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
-	glBindTexture(GL_TEXTURE_2D, actor.GetTexture());
+	glBindTexture(GL_TEXTURE_2D, actor.GetTextureID());
 	glBindVertexArray(actor.GetMesh()->GetVAO());
 	glDrawElements(GL_TRIANGLES, actor.GetMesh()->GetIndicesArraySize(), GL_UNSIGNED_INT, NULL);
 
@@ -58,7 +58,16 @@ void Render::DrawUIActor(UIActor& actor, int mode)
 
 	glBindVertexArray(actor.GetMesh()->GetVAO());
 
-	int vertexCount = mode == GL_LINES ? actor.GetMesh()->GetVertexArraySize() / 2 : actor.GetMesh()->GetVertexArraySize() - 2;
+	int vertexCount = 0;
+	if (mode == GL_TRIANGLES)
+	{
+		vertexCount = actor.GetMesh()->GetVertexArraySize() - 2;
+	}
+	else
+	{
+		vertexCount = actor.GetMesh()->GetVertexArraySize() / 2;
+	}
+	glLineWidth(actor.GetPenSize());
 	glDrawArrays(mode, 0, vertexCount);
 
 	glEnable(GL_DEPTH_TEST);

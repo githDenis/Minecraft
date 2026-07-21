@@ -1,4 +1,6 @@
 #include "Player.h"
+#include "PlayerHand.h"
+#include "HeldBlock.h"
 
 Player::Player(Window* mainWindow, InputManager* inputManager) noexcept
 {
@@ -8,7 +10,12 @@ Player::Player(Window* mainWindow, InputManager* inputManager) noexcept
 	inventory.SetMainWindow(mainWindow);
 }
 
-void Player::UpdateCamera(float deltaTime)
+void Player::SetHandTexture(Texture* texture) noexcept
+{
+	playerHandTexture = texture;
+}
+
+void Player::UpdateCamera(float deltaTime) noexcept
 {
 	camera.Update();
 	camera.UpdateTranslation(deltaTime);
@@ -44,7 +51,7 @@ void Player::Jump() noexcept
 }
 
 void Player::PlaceBlock(World* world, Render* render, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT],
-	BlockType blockType)
+	BlockType blockType) noexcept
 {
 	glm::vec3 pos = camera.GetPosition();
 	glm::vec3 forward = camera.GetFrontMovementVector();
@@ -52,7 +59,7 @@ void Player::PlaceBlock(World* world, Render* render, UV uvs[Chunk::BLOCKS_COUNT
 }
 
 void Player::DestroyBlock(World* world, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], const Texture* texture,
-	Render* render)
+	Render* render) noexcept
 {
 	glm::vec3 pos = camera.GetPosition();
 	glm::vec3 forward = camera.GetFrontMovementVector();
@@ -70,36 +77,82 @@ void Player::UseInventory() noexcept
 	camera.SetLockedState(isInventoryUsing);
 }
 
-void Player::DrawInventory(Render* render)
+void Player::DrawInventory(Render* render) noexcept
 {
 	inventory.ShowInventory(render);
 }
 
-void Player::DrawHotBar(Render* render)
+void Player::DrawHotBar(Render* render) noexcept
 {
 	inventory.ShowHotBar(render);
 }
 
-void Player::AddItemToInventory(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT])
+void Player::DrawCurrentItemFrame(Render* render) noexcept
+{
+	inventory.ShowCurrentItemFrame(render);
+}
+
+void Player::AddItemToInventory(DroppedBlock& droppedBlock, Texture* texture, 
+	UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
 {
 	inventory.AddItem(droppedBlock, texture, uvs);
 }
 
-void Player::ProcessHoveringForInventory(InputManager* inputManager, Render* render)
+void Player::ProcessHoveringForInventory(InputManager* inputManager, Render* render) noexcept
 {
 	inventory.ProcessMouseHovering(inputManager, render);
 }
 
-void Player::SetHeldItem(HeldItem* heldItem)
+void Player::UpdateHeldItem(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
 {
-	this->heldItem = heldItem;
+	BlockType blockType = inventory.GetCurrentItemBlockType();
+
+	if (blockType == BlockType::BT_AIR)
+	{
+		playerHand.Init(playerHandTexture);
+		heldItem = &playerHand;
+	}
+	else
+	{
+		BlockClass blockClass = inventory.GetCurrentItemBlockClass();
+
+		heldBlock.SetBlockType(blockType);
+		heldBlock.SetBlockClass(blockClass);
+		heldBlock.SetUVS(uvs);
+		heldBlock.Init(inventory.GetCurrentSlot().block.GetTexture());
+		heldItem = &heldBlock;
+	}
 }
 
-void Player::DrawHeldItem(Render* render)
+void Player::StartShakingHeldItem() noexcept
 {
+	if (!heldItem) return;
+	heldItem->StartShaking();
+}
+
+void Player::StopShakingHeldItem() noexcept
+{
+	if (!heldItem) return;
+	heldItem->StopShaking();
+}
+
+void Player::DrawHeldItem(Render* render) noexcept
+{
+	if (!heldItem) return;
+
 	heldItem->UpdatePosition(&camera);
 	heldItem->UpdateRotation(&camera);
 	heldItem->Draw(render);
+}
+
+void Player::SelectLeftItem() noexcept
+{
+	inventory.SelectLeftItem();
+}
+
+void Player::SelectRightItem() noexcept
+{
+	inventory.SelectRightItem();
 }
 
 glm::vec3 Player::GetSignMovementVector() noexcept
@@ -107,7 +160,7 @@ glm::vec3 Player::GetSignMovementVector() noexcept
 	return camera.GetSignMovementVector();
 }
 
-bool Player::Colides(World* world, const glm::vec3& blockPos)
+bool Player::Colides(World* world, const glm::vec3& blockPos) noexcept
 {
 	int minX = floor(blockPos.x - 0.2f);
 	int maxX = floor(blockPos.x + 0.2f);
@@ -138,7 +191,7 @@ bool Player::Colides(World* world, const glm::vec3& blockPos)
 	return false;
 }
 
-bool Player::ColidesAxis(World* world, const glm::vec3& blockPos)
+bool Player::ColidesAxis(World* world, const glm::vec3& blockPos) noexcept
 {
 	BlockType blockType = static_cast<BlockType>(world->GetBlockType(blockPos, GetPosition()));
 	return blockType >= BlockType::BT_GROUND_GRASS && blockType <= BlockType::BT_SAND;

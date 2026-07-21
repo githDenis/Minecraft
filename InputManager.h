@@ -10,9 +10,12 @@ private:
 	Window* window;
 	bool keysOldStates[GLFW_KEY_LAST + 1];
 	bool mouseButtonsOldStates[GLFW_MOUSE_BUTTON_LAST + 1];
+
 	static glm::vec2 mousePos;
+	static int scrollDelta;
 
 	static void MouseMoveCallback(GLFWwindow* window, double x, double y);
+	static void MouseScrollCallback(GLFWwindow* window, double x, double y);
 
 public:
 	const glm::vec2 GetMousePosition() noexcept
@@ -28,6 +31,8 @@ public:
 	explicit InputManager(Window* window) noexcept;
 
 	void BindMouseCallback();
+	void BindMouseScrollCallback();
+
 	void EnableGamemode() noexcept;
 	void EnableUIMode() noexcept;
 
@@ -41,4 +46,6 @@ public:
 
 	bool IsKeyHoldForTime(int key, int milliseconds) noexcept;
 	bool IsMouseButtonHoldForTime(int button, int milliseconds) noexcept;
+
+	int GetMouseScrollDelta() noexcept;
 };

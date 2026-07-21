@@ -5,7 +5,8 @@
 #include "World.h"
 #include "Inventory.h"
 #include "DroppedBlock.h"
-#include "HeldItem.h"
+#include "PlayerHand.h"
+#include "HeldBlock.h"
 
 class Player
 {
@@ -18,6 +19,9 @@ private:
 	Camera camera;
 	Inventory inventory;
 	HeldItem* heldItem;
+	Texture* playerHandTexture;
+	PlayerHand playerHand;
+	HeldBlock heldBlock;
 	bool isOnGround = false;
 	bool isInventoryUsing = false;
 
@@ -49,24 +53,30 @@ public:
 
 	explicit Player(Window* mainWindow, InputManager* inputManager) noexcept;
 
-	void UpdateCamera(float deltaTime);
+	void SetHandTexture(Texture* texture) noexcept;
+	void UpdateCamera(float deltaTime) noexcept;
 	void ProcessCollision(World* world) noexcept;
 	void UpdatePhysics(float deltaTime) noexcept;
 	void Jump() noexcept;
 	void PlaceBlock(World* world, Render* render, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT],
-		BlockType blockType);
+		BlockType blockType) noexcept;
 	void DestroyBlock(World* world, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], const Texture* texture,
-		Render* render);
+		Render* render) noexcept;
 	void InitInventory(Texture* textTexture) noexcept;
 	void UseInventory() noexcept;
-	void DrawInventory(Render* render);
-	void DrawHotBar(Render* render);
-	void AddItemToInventory(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]);
-	void ProcessHoveringForInventory(InputManager* inputManager, Render* render);
-	void SetHeldItem(HeldItem* heldItem);
-	void DrawHeldItem(Render* render);
+	void DrawInventory(Render* render) noexcept;
+	void DrawHotBar(Render* render) noexcept;
+	void DrawCurrentItemFrame(Render* render) noexcept;
+	void AddItemToInventory(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
+	void ProcessHoveringForInventory(InputManager* inputManager, Render* render) noexcept;
+	void UpdateHeldItem(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
+	void StartShakingHeldItem() noexcept;
+	void StopShakingHeldItem() noexcept;
+	void DrawHeldItem(Render* render) noexcept;
+	void SelectLeftItem() noexcept;
+	void SelectRightItem() noexcept;
 
 	glm::vec3 GetSignMovementVector() noexcept;
-	bool Colides(World* world, const glm::vec3& blockPos);
-	bool ColidesAxis(World* world, const glm::vec3& blockPos);
+	bool Colides(World* world, const glm::vec3& blockPos) noexcept;
+	bool ColidesAxis(World* world, const glm::vec3& blockPos) noexcept;
 };

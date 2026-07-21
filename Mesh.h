@@ -48,6 +48,7 @@ public:
 	void SetCubeUV(const UV& upUV, const UV& frontUV, const UV& downUV) noexcept;
 
 	void GenerateCrossPlanes() noexcept;
+	void GenerateCrossPlanesWithOffset(const glm::vec3& offset) noexcept;
 	void SetCrossPlanesUV(const UV& front) noexcept;
 
 	void InitMesh();

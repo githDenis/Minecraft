@@ -257,6 +257,61 @@ void Mesh::GenerateCrossPlanes() noexcept
 	this->indices.AddArray(indices, indicesArraySize);
 }
 
+void Mesh::GenerateCrossPlanesWithOffset(const glm::vec3& offset) noexcept
+{
+	float vertices[] =
+	{
+		// Plane 1
+		0.f + offset.x, 0.f + offset.y, 0.f + offset.z,
+		0.f + offset.x, 0.3f + offset.y, 0.f + offset.z,
+		0.3f + offset.x, 0.3f + offset.y, 0.3f + offset.z,
+		0.3f + offset.x, 0.f + offset.y, 0.3f + offset.z,
+
+		//(обратная Plane 1)
+		0.f + offset.x, 0.f + offset.y, 0.f + offset.z,
+		0.3f + offset.x, 0.f + offset.y, 0.3f + offset.z,
+		0.3f + offset.x, 0.3f + offset.y, 0.3f + offset.z,
+		0.f + offset.x, 0.3f + offset.y, 0.f + offset.z,
+
+		// Plane 2
+		0.f + offset.x, 0.f + offset.y, 0.3f + offset.z,
+		0.f + offset.x, 0.3f + offset.y, 0.3f + offset.z,
+		0.3f + offset.x, 0.3f + offset.y, 0.f + offset.z,
+		0.3f + offset.x, 0.f + offset.y, 0.f + offset.z,
+
+		//(обратная Plane 2)
+		0.f + offset.x, 0.f + offset.y, 0.3f + offset.z,
+		0.3f + offset.x, 0.f + offset.y, 0.f + offset.z,
+		0.3f + offset.x, 0.3f + offset.y, 0.f + offset.z,
+		0.f + offset.x, 0.3f + offset.y, 0.3f + offset.z
+	};
+
+	static constexpr unsigned int indices[] =
+	{
+		// Plane 1
+		0, 1, 2,
+		2, 3, 0,
+
+		//(обратная Plane 1)
+		8, 9, 10,
+		10, 11, 8,
+
+		// Plane 2
+		4, 5, 6,
+		6, 7, 4,
+
+		//(обратная Plane 2)
+		12, 13, 14,
+		14, 15, 12,
+	};
+
+	static constexpr int vertSize = sizeof(vertices) / sizeof(vertices[0]);
+	indicesArraySize = sizeof(indices) / sizeof(indices[0]);
+
+	this->vertices.AddArray(vertices, vertSize);
+	this->indices.AddArray(indices, indicesArraySize);
+}
+
 void Mesh::SetCrossPlanesUV(const UV& front) noexcept
 {
 	float coords[] =

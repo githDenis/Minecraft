@@ -1,6 +1,7 @@
 #include "InputManager.h"
 
 glm::vec2 InputManager::mousePos = glm::vec2(0.f, 0.f);
+int InputManager::scrollDelta = 0;
 
 InputManager::InputManager(Window* window) noexcept
 {
@@ -14,9 +15,19 @@ void InputManager::MouseMoveCallback(GLFWwindow* window, double x, double y)
 	mousePos = glm::vec2(x, y);
 }
 
+void InputManager::MouseScrollCallback(GLFWwindow* window, double x, double y)
+{
+	scrollDelta = y;
+}
+
 void InputManager::BindMouseCallback()
 {
 	glfwSetCursorPosCallback(window->GetHandle(), InputManager::MouseMoveCallback);
+}
+
+void InputManager::BindMouseScrollCallback()
+{
+	glfwSetScrollCallback(window->GetHandle(), InputManager::MouseScrollCallback);
 }
 
 void InputManager::EnableGamemode() noexcept
@@ -105,7 +116,6 @@ bool InputManager::IsMouseButtonReleased(int button) noexcept
 	return false;
 }
 
-
 bool InputManager::IsKeyHoldForTime(int key, int milliseconds) noexcept
 {
 	static std::chrono::time_point<std::chrono::steady_clock> start;
@@ -182,4 +192,11 @@ bool InputManager::IsMouseButtonHoldForTime(int button, int milliseconds) noexce
 		duration.zero();
 	}
 	return res;
+}
+
+int InputManager::GetMouseScrollDelta() noexcept
+{
+	int copy = scrollDelta;
+	scrollDelta = 0;
+	return copy;
 }

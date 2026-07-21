@@ -59,9 +59,14 @@ public:
 		return mesh;
 	}
 
-	unsigned int GetTexture() const noexcept
+	unsigned int GetTextureID() const noexcept
 	{
 		return texture->GetID();
+	}
+
+	Texture* GetTexture() const noexcept
+	{
+		return texture;
 	}
 
 	glm::mat4 GetModelMattrix() noexcept;

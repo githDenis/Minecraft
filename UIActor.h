@@ -10,6 +10,7 @@ private:
 	UIMesh* mesh;
 	Texture* texture;
 	glm::vec3 pos{ 0.f, 0.f, 0.f };
+	float penSize = 3.f;
 
 public:
 	void SetMesh(UIMesh* mesh) noexcept
@@ -42,8 +43,13 @@ public:
 		return texture;
 	}
 
+	float GetPenSize() const noexcept
+	{
+		return penSize;
+	}
+
 	UIActor() noexcept {};
 
-	void SetPenSize(float size) const noexcept;
+	void SetPenSize(float size) noexcept;
 	glm::mat4 GetModelMatrix() const noexcept;
 };

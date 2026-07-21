@@ -16,7 +16,8 @@ public:
 private:
 	Mesh mesh;
 	Actor actor;
-	BlockType blockType;
+	BlockType blockType = BlockType::BT_AIR;
+	BlockClass blockClass = BlockClass::BC_OPAQUE;
 	float velocity = 0.f;
 	bool isOnGround = false;
 	bool isAlive = false;
@@ -26,6 +27,11 @@ public:
 	void SetAliveState(bool state) noexcept
 	{
 		isAlive = state;
+	}
+
+	Texture* GetTexture() const noexcept
+	{
+		return actor.GetTexture();
 	}
 
 	const glm::vec3& GetPosition() const noexcept
@@ -41,6 +47,11 @@ public:
 	BlockType GetBlockType() const noexcept
 	{
 		return blockType;
+	}
+
+	BlockClass GetBlockClass() const noexcept
+	{
+		return blockClass;
 	}
 
 	bool IsAlive() const noexcept

@@ -1,8 +1,8 @@
 #include "UIActor.h"
 
-void UIActor::SetPenSize(float size) const noexcept
+void UIActor::SetPenSize(float size) noexcept
 {
-	glLineWidth(size);
+	penSize = size;
 }
 
 glm::mat4 UIActor::GetModelMatrix() const noexcept

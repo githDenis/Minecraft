@@ -8,5 +8,5 @@ private:
 	static constexpr glm::vec3 scale = glm::vec3(0.6f, 0.6f, 4.f);
 
 public:
-	virtual void Init(Texture* texture) override;
+	void Init(Texture* texture);
 };

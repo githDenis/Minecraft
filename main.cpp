@@ -26,6 +26,7 @@ int main()
 
 	InputManager inputManager(&window);
 	inputManager.BindMouseCallback();
+	inputManager.BindMouseScrollCallback();
 	inputManager.EnableGamemode();
 
  	Render render(&window, &shaderProgram, &UIShaderProgram);

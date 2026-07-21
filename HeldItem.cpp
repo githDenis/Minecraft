@@ -12,11 +12,27 @@ void HeldItem::UpdatePosition(Camera* camera)
 
 void HeldItem::UpdateRotation(Camera* camera)
 {
-	Rotator rot = camera->GetRotation();
-	rot.yaw = -rot.yaw;
-	rot.pitch = -rot.pitch;
+	Rotator cameraRot = camera->GetRotation();
+	cameraRot.yaw = -cameraRot.yaw;
+	cameraRot.pitch = -cameraRot.pitch;
 
-	actor.SetRotation(rot + rotation);
+	if (isShaking)
+	{
+		static Rotator rot = rotation;
+		rot.pitch += pitchShakeK;
+		rot.yaw += yawShakeK;
+
+		if (rot.pitch < rotation.pitch - pitchShakeAngle || rot.pitch > rotation.pitch + pitchShakeAngle)
+		{
+			pitchShakeK *= -1.f;
+			yawShakeK *= -1.f;
+		}
+		actor.SetRotation(cameraRot + rot);
+	}
+	else
+	{
+		actor.SetRotation(cameraRot + rotation);
+	}
 }
 
 void HeldItem::Draw(Render* render)

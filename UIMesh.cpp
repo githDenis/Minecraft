@@ -10,7 +10,7 @@ void UIMesh::GenerateCrossTarget(int windowWidth, int windowHeight) noexcept
 {
 	float aspect1 = (float)windowWidth / (float)windowHeight;
 
-	float vertecies[] =
+	float vertices[] =
 	{
 		 0.f / aspect1,  0.03f,
 		 0.f / aspect1, -0.03f,
@@ -19,9 +19,9 @@ void UIMesh::GenerateCrossTarget(int windowWidth, int windowHeight) noexcept
 		-0.03f / aspect1, 0.f,
 	};
 
-	static constexpr int vertexArraySize = sizeof(vertecies) / sizeof(float);
+	static constexpr int vertexArraySize = sizeof(vertices) / sizeof(vertices[0]);
 	this->vertexArraySize = vertexArraySize;
-	this->vertecies.AddArray(vertecies, vertexArraySize);
+	this->vertices.AddArray(vertices, vertexArraySize);
 }
 
 void UIMesh::GenerateRectangle(float width, float height, int windowWidth, int windowHeight) noexcept
@@ -33,7 +33,7 @@ void UIMesh::GenerateRectangle(float width, float height, int windowWidth, int w
 	float y1 = height / -2;
 	float y2 = height / 2;
 
-	float vertecies[] =
+	float vertices[] =
 	{
 		x1 / aspect1, y1,
 		x1 / aspect1, y2,
@@ -44,16 +44,41 @@ void UIMesh::GenerateRectangle(float width, float height, int windowWidth, int w
 		x1 / aspect1, y1,
 	};
 
-	static constexpr int vertexArraySize = sizeof(vertecies) / sizeof(float);
+	static constexpr int vertexArraySize = sizeof(vertices) / sizeof(vertices[0]);
+
 	this->vertexArraySize = vertexArraySize;
-	this->vertecies.AddArray(vertecies, vertexArraySize);
+	this->vertices.AddArray(vertices, vertexArraySize);
+}
+
+void UIMesh::GenerateFrame(float width, float height, int windowWidth, int windowHeight) noexcept
+{
+	float aspect1 = (float)windowWidth / (float)windowHeight;
+
+	float x1 = width / -2;
+	float x2 = width / 2;
+	float y1 = height / -2;
+	float y2 = height / 2;
+
+	float vertices[] =
+	{
+		x1 / aspect1, y1,
+		x1 / aspect1, y2,
+
+		x2 / aspect1, y2,
+		x2 / aspect1, y1,
+	};
+
+	static constexpr int vertexArraySize = sizeof(vertices) / sizeof(vertices[0]);
+
+	this->vertexArraySize = vertexArraySize;
+	this->vertices.AddArray(vertices, vertexArraySize);
 }
 
 void UIMesh::SetColor(const Color& color) noexcept
 {
 	useTexture = false;
 
-	for (int i = 0; i < vertecies.GetSize(); i++)
+	for (int i = 0; i < vertices.GetSize(); i++)
 	{
 		colors.Add(color.red);
 		colors.Add(color.green);
@@ -93,10 +118,10 @@ void UIMesh::Init()
 
 	glBindVertexArray(VAO);
 
-	if (vertecies.GetPtr())
+	if (vertices.GetPtr())
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, vertecies.GetSize() * sizeof(float), vertecies.GetPtr(), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, vertices.GetSize() * sizeof(float), vertices.GetPtr(), GL_STATIC_DRAW);
 		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, NULL);
 		glEnableVertexAttribArray(0);
 	}
@@ -118,9 +143,9 @@ void UIMesh::Init()
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	
-	if (vertecies.GetSize() > 0)
+	if (vertices.GetSize() > 0)
 	{
-		vertecies.Clear();
+		vertices.Clear();
 	}
 
 	if (colors.GetSize() > 0)

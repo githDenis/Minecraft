@@ -17,12 +17,13 @@ void Inventory::Init(Texture* textTexture) noexcept
 {
 	InitInventoryWindow();
 	GenerateSlots(textTexture);
+	InitCurrentFrame();
 }
 
 void Inventory::InitInventoryWindow() noexcept
 {
 	mesh.GenerateRectangle(INVENTORY_WIDTH, INVENTORY_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
-	mesh.SetColor(Color(0.7f, 0.7f, 0.7f));
+	mesh.SetColor(INVENTORY_COLOR);
 	mesh.Init();
 
 	actor.SetMesh(&mesh);
@@ -68,6 +69,17 @@ void Inventory::GenerateSlots(Texture* textTexture) noexcept
 	}
 }
 
+void Inventory::InitCurrentFrame() noexcept
+{
+	currentItemFrameMesh.GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
+	currentItemFrameMesh.SetColor(CURRENT_FRAME_COLOR);
+	currentItemFrameMesh.Init();
+
+	currentItemFrameActor.SetMesh(&currentItemFrameMesh);
+	currentItemFrameActor.SetPosition(HOT_BAR_POS);
+	currentItemFrameActor.SetPenSize(10.f);
+}
+
 void Inventory::ShowInventory(Render* render) noexcept
 {
 	render->DrawUIActor(actor, GL_TRIANGLES);
@@ -109,6 +121,11 @@ void Inventory::ShowHotBar(Render* render) noexcept
 		render->DrawUIActor(slots[i].actor, GL_TRIANGLES);
 		slots[i].countText.Draw(render);
 	}
+}
+
+void Inventory::ShowCurrentItemFrame(Render* render)
+{
+	render->DrawUIActor(currentItemFrameActor, GL_LINE_LOOP);
 }
 
 void Inventory::AddItem(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT])
@@ -205,5 +222,27 @@ void Inventory::ProcessMouseHovering(InputManager* inputManager, Render* render)
 			slots[i].description.SetPosition(glm::vec3(NDCPos.x, NDCPos.y + 0.1f, 0.f));
 			slots[i].description.Draw(render);
 		}
+	}
+}
+
+void Inventory::SelectLeftItem()
+{
+	if (currentItem - 1 >= SLOT_COUNT_IN_ROW * (ROW_COUNT - 1))
+	{
+		currentItem--;
+		glm::vec3 currentPos = currentItemFrameActor.GetPosition();
+		glm::vec3 newPos = currentPos - glm::vec3(SLOT_WIDTH / 2 + SLOT_PADDING, 0.f, 0.f);
+		currentItemFrameActor.SetPosition(newPos);
+	}
+}
+
+void Inventory::SelectRightItem()
+{
+	if (currentItem + 1 <= SLOTS_COUNT - 1)
+	{
+		currentItem++;
+		glm::vec3 currentPos = currentItemFrameActor.GetPosition();
+		glm::vec3 newPos = currentPos + glm::vec3(SLOT_WIDTH / 2 + SLOT_PADDING, 0.f, 0.f);
+		currentItemFrameActor.SetPosition(newPos);
 	}
 }

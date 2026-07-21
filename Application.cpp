@@ -48,13 +48,7 @@ void Application::Run()
 		{ texture.GetUV(177, 16, 16), texture.GetUV(177, 16, 16), texture.GetUV(177, 16, 16) },//Water
 	};
 
-	PlayerHand playerHand;
-	playerHand.Init(&playerHandTexture);
-
-	HeldBlock heldBlock;
-	heldBlock.Init(&texture);
-
-	HeldItem* items[] = { &playerHand, &heldBlock };
+	player->SetHandTexture(&playerHandTexture);
 
 	UIMesh targetMesh;
 	targetMesh.GenerateCrossTarget(window->GetWidth(), window->GetHeight());
@@ -70,8 +64,7 @@ void Application::Run()
 	world.GenerateChunksMeshes(uvs);
 
 	player->InitInventory(&textTexture);
-	player->SetHeldItem(&heldBlock);
-
+	
 	float lastTime = glfwGetTime();
 
 	while (!glfwWindowShouldClose(window->GetHandle()))
@@ -95,14 +88,32 @@ void Application::Run()
 			player->UseInventory();
 		}
 
+		if (inputManager->IsMouseButtonReleased(GLFW_MOUSE_BUTTON_LEFT))
+		{
+			player->StopShakingHeldItem();
+		}
+
 		if (inputManager->IsMouseButtonHoldForTime(GLFW_MOUSE_BUTTON_LEFT, 800))
 		{
+			player->StartShakingHeldItem();
 			player->DestroyBlock(&world, uvs, &texture, render);
 		}
 
 		if (inputManager->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
 		{
 			player->PlaceBlock(&world, render, uvs, BlockType::BT_GROUND);
+		}
+
+		int scrollDelta = inputManager->GetMouseScrollDelta();
+
+		if (scrollDelta > 0)
+		{
+			player->SelectLeftItem();
+		}
+
+		if (scrollDelta < 0)
+		{
+			player->SelectRightItem();
 		}
 
 		static const Color clearColor = { 0.f, 0.5f, 0.8f };
@@ -146,6 +157,7 @@ void Application::Run()
 		player->UpdatePhysics(deltaTime);
 		player->ProcessCollision(&world);
 
+		player->UpdateHeldItem(uvs);
 		player->DrawHeldItem(render);
 
 		UIShaderProgram->Use();
@@ -156,6 +168,7 @@ void Application::Run()
 			targetActor.SetPenSize(3.f);
 			render->DrawUIActor(targetActor, GL_LINES);
 			player->DrawHotBar(render);
+			player->DrawCurrentItemFrame(render);
 		}
 		else
 		{

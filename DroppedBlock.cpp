@@ -22,7 +22,9 @@ void DroppedBlock::Init(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], const Tex
 
 	glm::vec3 spawnPos = blockPos + glm::vec3(0.f, 1.f, 0.f);
 	actor.SetPosition(spawnPos);
+
 	this->blockType = blockType;
+	this->blockClass = blockClass;
 	isAlive = true;
 }
 
@@ -96,10 +98,12 @@ DroppedBlock& DroppedBlock::operator=(DroppedBlock&& another) noexcept
 	actor = std::move(another.actor);
 	isAlive = another.isAlive;
 	blockType = another.blockType;
+	blockClass = another.blockClass;
 	strcpy(buf, another.buf);
 	actor.SetMesh(&mesh);
 	another.isAlive = false;
 	another.blockType = BlockType::BT_AIR;
+	another.blockClass = BlockClass::BC_OPAQUE;
 	strcpy(another.buf, "");
 	return *this;
 }
