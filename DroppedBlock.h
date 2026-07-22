@@ -71,6 +71,6 @@ public:
 
 	DroppedBlock() noexcept = default;
 	DroppedBlock(const DroppedBlock& another) noexcept = delete;
-	DroppedBlock& operator=(const DroppedBlock& another) noexcept = delete;
+	DroppedBlock& operator=(const DroppedBlock& another) noexcept;
 	DroppedBlock& operator=(DroppedBlock&& another) noexcept;
 };

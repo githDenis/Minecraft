@@ -12,6 +12,15 @@ glm::mat4 Actor::GetModelMattrix() noexcept
 	return model;
 }
 
+Actor& Actor::operator=(const Actor& another) noexcept
+{
+	mesh = another.mesh;
+	texture = another.texture;
+	position = another.position;
+	rotation = another.rotation;
+	return *this;
+}
+
 Actor& Actor::operator=(Actor&& another) noexcept
 {
 	mesh = another.mesh;

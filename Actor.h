@@ -70,5 +70,6 @@ public:
 	}
 
 	glm::mat4 GetModelMattrix() noexcept;
+	Actor& operator=(const Actor& another) noexcept;
 	Actor& operator=(Actor&& another) noexcept;
 };

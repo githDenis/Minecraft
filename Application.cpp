@@ -101,7 +101,7 @@ void Application::Run()
 
 		if (inputManager->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
 		{
-			player->PlaceBlock(&world, render, uvs, BlockType::BT_GROUND);
+			player->PlaceBlock(&world, render, uvs);
 		}
 
 		int scrollDelta = inputManager->GetMouseScrollDelta();

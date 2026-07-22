@@ -50,12 +50,18 @@ void Player::Jump() noexcept
 	yVelocity = JUMP_VELOCITY;
 }
 
-void Player::PlaceBlock(World* world, Render* render, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT],
-	BlockType blockType) noexcept
+void Player::PlaceBlock(World* world, Render* render, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
 {
 	glm::vec3 pos = camera.GetPosition();
 	glm::vec3 forward = camera.GetFrontMovementVector();
-	world->PlaceBlock(uvs, render, pos, forward, blockType);
+
+	BlockType currentBlockType = inventory.GetCurrentItemBlockType();
+
+	if (currentBlockType != BlockType::BT_AIR)
+	{
+		world->PlaceBlock(uvs, render, pos, forward, currentBlockType);
+		inventory.DecreaseCurrentItem();
+	}
 }
 
 void Player::DestroyBlock(World* world, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], const Texture* texture,

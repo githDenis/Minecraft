@@ -89,7 +89,20 @@ const char* DroppedBlock::GetBlockText() noexcept
 	case BlockType::BT_GRASS: return "Grass";
 	case BlockType::BT_YELLOW_FLOWER: return "Yellow flower";
 	case BlockType::BT_RED_FLOWER: return "Red flower";
+	default: return "";
 	}
+}
+
+DroppedBlock& DroppedBlock::operator=(const DroppedBlock& another) noexcept
+{
+	mesh = another.mesh;
+	actor = another.actor;
+	isAlive = another.isAlive;
+	blockType = another.blockType;
+	blockClass = another.blockClass;
+	strcpy(buf, another.buf);
+	actor.SetMesh(&mesh);
+	return *this;
 }
 
 DroppedBlock& DroppedBlock::operator=(DroppedBlock&& another) noexcept

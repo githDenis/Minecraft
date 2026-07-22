@@ -246,3 +246,29 @@ void Inventory::SelectRightItem()
 		currentItemFrameActor.SetPosition(newPos);
 	}
 }
+
+void Inventory::DecreaseCurrentItem()
+{
+	slots[currentItem].count--;
+
+	if (slots[currentItem].count <= 0)
+	{
+		slots[currentItem].countText.SetText("");
+		slots[currentItem].description.SetText("");
+		slots[currentItem].mesh.GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
+		slots[currentItem].mesh.SetColor(SLOT_COLOR);
+		slots[currentItem].mesh.Init();
+		slots[currentItem].actor.SetMesh(&slots[currentItem].mesh);
+		slots[currentItem].block = DroppedBlock();
+	}
+	else
+	{
+		std::string text = std::to_string(slots[currentItem].count);
+		slots[currentItem].countText.SetText(text.c_str());
+	}
+}
+
+void Inventory::ResetSlot()
+{
+
+}

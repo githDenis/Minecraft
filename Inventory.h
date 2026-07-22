@@ -79,4 +79,6 @@ public:
 	void ProcessMouseHovering(InputManager* inputManager, Render* render);
 	void SelectLeftItem();
 	void SelectRightItem();
+	void DecreaseCurrentItem();
+	void ResetSlot();
 };

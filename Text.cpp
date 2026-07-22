@@ -13,6 +13,7 @@ void Text::Init()
 void Text::Draw(Render* render)
 {
 	int size = strlen(buf);
+
 	glm::vec3 charPos = startPos;
 
 	for (int i = 0; i < size; i++)

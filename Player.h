@@ -58,8 +58,7 @@ public:
 	void ProcessCollision(World* world) noexcept;
 	void UpdatePhysics(float deltaTime) noexcept;
 	void Jump() noexcept;
-	void PlaceBlock(World* world, Render* render, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT],
-		BlockType blockType) noexcept;
+	void PlaceBlock(World* world, Render* render, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
 	void DestroyBlock(World* world, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], const Texture* texture,
 		Render* render) noexcept;
 	void InitInventory(Texture* textTexture) noexcept;
