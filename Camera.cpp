@@ -3,17 +3,15 @@
 void Camera::Update()
 {
 	glm::vec2 mousePos = inputManager->GetMousePosition();
-	double x = mousePos.x;
-	double y = mousePos.y;
+	float x = mousePos.x;
+	float y = mousePos.y;
 
 	if (!isLocked)
 	{
-		static float xLast = 0;
-		static float yLast = 0;
-		float xOffset = static_cast<float>(x) - xLast;
-		float yOffset = yLast - static_cast<float>(y);
-		xLast = static_cast<float>(x);
-		yLast = static_cast<float>(y);
+		float xOffset = x - xLast;
+		float yOffset = yLast - y;
+		xLast = x;
+		yLast = y;
 
 		xOffset *= SENSITIVITY;
 		yOffset *= SENSITIVITY;
@@ -89,22 +87,4 @@ void Camera::SetAxisValue(char axis, float value) noexcept
 	{
 		pos.z = value;
 	}
-}
-
-glm::vec3 Camera::GetSignMovementVector() const noexcept
-{
-	glm::vec3 newVec{ movement.x, movement.y, movement.z };
-	if (newVec.x >= 0.08) newVec.x = 1.f;
-	else if (newVec.x <= -0.08) newVec.x = -1.f;
-	else newVec.x = 0;
-
-	if (newVec.y >= 0.08) newVec.y = 1.f;
-	else if (newVec.y <= -0.08) newVec.y = -1.f;
-	else newVec.y = 0.f;
-
-	if (newVec.z >= 0.08) newVec.z = 1.f;
-	else if (newVec.z <= -0.08) newVec.z = -1.f;
-	else newVec.z = 0.f;
-
-	return newVec;
 }

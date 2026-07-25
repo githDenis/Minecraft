@@ -68,4 +68,6 @@ public:
 
 	void Init();
 	void Draw(Render* render);
+
+	Text& operator=(Text& another) noexcept;
 };

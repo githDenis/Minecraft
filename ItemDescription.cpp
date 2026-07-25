@@ -12,7 +12,7 @@ void ItemDescription::SetTextTexture(Texture* textTexture) noexcept
 	text.SetTexture(textTexture);
 }
 
-void ItemDescription::Init(float& width, float& height) noexcept
+void ItemDescription::Init(float width, float height) noexcept
 {
 	this->width = width;
 
@@ -51,4 +51,15 @@ void ItemDescription::Draw(Render* render) noexcept
 		render->DrawUIActor(actor, GL_TRIANGLES);
 		text.Draw(render);
 	}
+}
+
+ItemDescription& ItemDescription::operator=(const ItemDescription& another) noexcept
+{
+	width = another.width;
+	window = another.window;
+	textTexture = another.textTexture;
+	mesh = another.mesh;
+	actor = another.actor;
+	text = const_cast<Text&>(another.text);
+	return *this;
 }

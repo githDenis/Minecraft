@@ -158,3 +158,13 @@ void UIMesh::Init()
 		textCoords.Clear();
 	}
 }
+
+UIMesh& UIMesh::operator=(const UIMesh& another) noexcept
+{
+	VAO = another.VAO;
+	VBO = another.VBO;
+	colorVBO = another.colorVBO;
+	vertexArraySize = another.vertexArraySize;
+	useTexture = another.useTexture;
+	return *this;
+}

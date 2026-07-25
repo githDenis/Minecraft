@@ -36,4 +36,6 @@ public:
 	void SetColor(const Color& color) noexcept;
 	void SetRectabgleUV(const UV& uv) noexcept;
 	void Init();
+
+	UIMesh& operator=(const UIMesh& another) noexcept;
 };

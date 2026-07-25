@@ -52,4 +52,6 @@ public:
 
 	void SetPenSize(float size) noexcept;
 	glm::mat4 GetModelMatrix() const noexcept;
+
+	UIActor& operator=(const UIActor& another) noexcept;
 };

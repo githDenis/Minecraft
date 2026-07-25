@@ -12,3 +12,12 @@ glm::mat4 UIActor::GetModelMatrix() const noexcept
 	model = glm::translate(model, pos);
 	return model;
 }
+
+UIActor& UIActor::operator=(const UIActor& another) noexcept
+{
+	mesh = another.mesh;
+	texture = another.texture;
+	pos = another.pos;
+	penSize = another.penSize;
+	return *this;
+}

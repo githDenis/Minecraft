@@ -26,6 +26,11 @@ private:
 	Vector<class DroppedBlock> droppedBlocks;
 
 public:
+	Vector<DroppedBlock>& GetDroppedBlocksArray() noexcept
+	{
+		return droppedBlocks;
+	}
+
 	void GenerateChunksPositions(const glm::vec3& playerPos) noexcept;
 	void GenerateChunks(Texture* textures) noexcept;
 	void GenerateFolliage() noexcept;
@@ -44,7 +49,7 @@ public:
 	void ProcessCollisionWithPlayerForDroppedBlocks(class Player* player, Texture* texture,
 		UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
 
-	void PlaceBlock(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], Render* render, const glm::vec3& pos,
+	bool PlaceBlock(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], Render* render, const glm::vec3& pos,
 		glm::vec3& forwardVector, BlockType blockType) noexcept;
 	void DestroyBlock(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], const Texture* texture, Render* render,
 		const glm::vec3& pos, const glm::vec3& forwardVector) noexcept;

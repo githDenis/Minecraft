@@ -59,8 +59,12 @@ void Player::PlaceBlock(World* world, Render* render, UV uvs[Chunk::BLOCKS_COUNT
 
 	if (currentBlockType != BlockType::BT_AIR)
 	{
-		world->PlaceBlock(uvs, render, pos, forward, currentBlockType);
-		inventory.DecreaseCurrentItem();
+		bool placeResult = world->PlaceBlock(uvs, render, pos, forward, currentBlockType);
+
+		if (placeResult)
+		{
+			inventory.DecreaseCurrentItem();
+		}
 	}
 }
 
@@ -91,6 +95,11 @@ void Player::DrawInventory(Render* render) noexcept
 void Player::DrawHotBar(Render* render) noexcept
 {
 	inventory.ShowHotBar(render);
+}
+
+void Player::DrawDraggingItem(Render* render) noexcept
+{
+	inventory.ShowDraggingItem(render);
 }
 
 void Player::DrawCurrentItemFrame(Render* render) noexcept
@@ -161,9 +170,33 @@ void Player::SelectRightItem() noexcept
 	inventory.SelectRightItem();
 }
 
-glm::vec3 Player::GetSignMovementVector() noexcept
+void Player::ProcessingMouseCkick(InputManager* inputManager, Texture* itemTexture, Texture* textTexture,
+	UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
 {
-	return camera.GetSignMovementVector();
+	inventory.ProcessingMouseCkick(inputManager, itemTexture, textTexture, uvs);
+}
+
+void Player::ProcessingMouseRelease(World* world, Texture* texture, Texture* textTexture,
+	UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
+{
+	inventory.ProcessingMouseRelease(world, this, texture, textTexture, uvs);
+}
+
+void Player::UpdateDraggingItemPosition(InputManager* inputManager) noexcept
+{
+	inventory.UpdateDraggingItemPosition(inputManager);
+}
+
+void Player::ThrowOutItemFromInventory(InputManager* inputManger, World* world, Texture* texture,
+	UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
+{
+	inventory.ThrowOutItemFromInventory(inputManger, world, this, texture, uvs);
+}
+
+void Player::ThrowOutItemFromHotbar(World* world, Texture* texture, 
+	UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
+{
+	inventory.ThrowOutItemFromHotbar(world, this, texture, uvs);
 }
 
 bool Player::Colides(World* world, const glm::vec3& blockPos) noexcept

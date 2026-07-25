@@ -65,6 +65,7 @@ public:
 	void UseInventory() noexcept;
 	void DrawInventory(Render* render) noexcept;
 	void DrawHotBar(Render* render) noexcept;
+	void DrawDraggingItem(Render* render) noexcept;
 	void DrawCurrentItemFrame(Render* render) noexcept;
 	void AddItemToInventory(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
 	void ProcessHoveringForInventory(InputManager* inputManager, Render* render) noexcept;
@@ -74,8 +75,17 @@ public:
 	void DrawHeldItem(Render* render) noexcept;
 	void SelectLeftItem() noexcept;
 	void SelectRightItem() noexcept;
+	void ProcessingMouseCkick(InputManager* inputManager, Texture* itemTexture, Texture* textTexture,
+		UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
+	void ProcessingMouseRelease(World* world, Texture* texture, Texture* textTexture,
+		UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
+	void UpdateDraggingItemPosition(InputManager* inputManager) noexcept;
 
-	glm::vec3 GetSignMovementVector() noexcept;
+	void ThrowOutItemFromInventory(InputManager* inputManger, World* world, Texture* texture,
+		UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
+	void ThrowOutItemFromHotbar(World* world, Texture* texture,
+		UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
+
 	bool Colides(World* world, const glm::vec3& blockPos) noexcept;
 	bool ColidesAxis(World* world, const glm::vec3& blockPos) noexcept;
 };

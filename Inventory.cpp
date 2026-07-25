@@ -1,5 +1,6 @@
 #include "Inventory.h"
 #include "Structs.h"
+#include "Player.h"
 #include <string>
 
 void Inventory::SetMainWindow(Window* mainWindow) noexcept
@@ -51,6 +52,7 @@ void Inventory::GenerateSlots(Texture* textTexture) noexcept
 			{
 				slotPos.y -= SLOT_HEIGHT / 2;
 			}
+
 			slots[x + y * SLOT_COUNT_IN_ROW].actor.SetPosition(slotPos);
 			slots[x + y * SLOT_COUNT_IN_ROW].actor.SetMesh(&slots[x + y * SLOT_COUNT_IN_ROW].mesh);
 
@@ -80,6 +82,36 @@ void Inventory::InitCurrentFrame() noexcept
 	currentItemFrameActor.SetPenSize(10.f);
 }
 
+void Inventory::InitDraggingSlot(Slot& slot, Texture* itemTexture, Texture* textTexture,
+	UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
+{
+	BlockType blockType = slot.block.GetBlockType();
+
+	draggingSlot.mesh.GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
+	draggingSlot.mesh.SetRectabgleUV(uvs[static_cast<int>(blockType)][1]);
+	draggingSlot.mesh.Init();
+	draggingSlot.actor.SetMesh(&draggingSlot.mesh);
+	draggingSlot.actor.SetTexture(itemTexture);
+
+	draggingSlot.countText.SetCharsInRow(10);
+	draggingSlot.countText.SetCharsInColumn(10);
+	draggingSlot.countText.SetCharsCount(10 * 10);
+	draggingSlot.countText.SetText("");
+	draggingSlot.countText.Init();
+
+	draggingSlot.count = slot.count;
+
+	draggingSlot.block = std::move(slot.block);
+
+	std::string blockDescription = draggingSlot.block.GetBlockText();
+	float desctiptionWidth = blockDescription.length() * Text::CHAR_WIDTH / 2;
+	float desctiptionHeight = Text::CHAR_HEIGHT;
+
+	draggingSlot.description.SetWindow(mainWindow);
+	draggingSlot.description.SetTextTexture(textTexture);
+	draggingSlot.description.Init(desctiptionWidth, desctiptionHeight);
+}
+
 void Inventory::ShowInventory(Render* render) noexcept
 {
 	render->DrawUIActor(actor, GL_TRIANGLES);
@@ -106,12 +138,10 @@ void Inventory::ShowInventory(Render* render) noexcept
 
 void Inventory::ShowHotBar(Render* render) noexcept
 {
-	static int currentItemsInventoryStartIndex = SLOT_COUNT_IN_ROW * (ROW_COUNT - 1);
-
-	for (int i = currentItemsInventoryStartIndex; i < SLOTS_COUNT; i++)
+	for (int i = START_HOT_BAR_SLOT_INDEX; i < SLOTS_COUNT; i++)
 	{
 		glm::vec3 pos = HOT_BAR_POS + glm::vec3(
-			SLOT_WIDTH / 2 * (i - currentItemsInventoryStartIndex) +  SLOT_PADDING *  (i - currentItemsInventoryStartIndex),
+			SLOT_WIDTH / 2 * (i - START_HOT_BAR_SLOT_INDEX) +  SLOT_PADDING *  (i - START_HOT_BAR_SLOT_INDEX),
 			0.f,
 			0.f);
 
@@ -123,17 +153,17 @@ void Inventory::ShowHotBar(Render* render) noexcept
 	}
 }
 
-void Inventory::ShowCurrentItemFrame(Render* render)
+void Inventory::ShowCurrentItemFrame(Render* render) noexcept
 {
 	render->DrawUIActor(currentItemFrameActor, GL_LINE_LOOP);
 }
 
-void Inventory::AddItem(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT])
+void Inventory::AddItem(DroppedBlock& droppedBlock, Texture* texture, 
+	UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
 {
-	static int currentItemsInventoryStartIndex = SLOT_COUNT_IN_ROW * (ROW_COUNT - 1);
 	int index = 0;
 
-	for (int i = currentItemsInventoryStartIndex; i < SLOTS_COUNT; i++)
+	for (int i = START_HOT_BAR_SLOT_INDEX; i < SLOTS_COUNT; i++)
 	{
 		if (slots[i].count == 0)
 		{
@@ -179,9 +209,8 @@ void Inventory::AddItem(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chu
 			
 			std::string blockDescription = slots[i].block.GetBlockText();
 			float desctiptionWidth = blockDescription.length() * Text::CHAR_WIDTH / 2;
-			float desctiptionHeight = Text::CHAR_HEIGHT;
 
-			slots[i].description.Init(desctiptionWidth, desctiptionHeight);
+			slots[i].description.Init(desctiptionWidth, DESCRIPTION_HEIGHT);
 			break;
 		}
 		
@@ -202,14 +231,9 @@ void Inventory::AddItem(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chu
 	}
 }
 
-void Inventory::ProcessMouseHovering(InputManager* inputManager, Render* render)
+void Inventory::ProcessMouseHovering(InputManager* inputManager, Render* render) noexcept
 {
-	glm::vec2 mousePos = inputManager->GetMousePosition();
-
-	float x = (mousePos.x / mainWindow->GetWidth()) * 2.0f - 1.0f;
-	float y = 1.0f - (mousePos.y / mainWindow->GetHeight()) * 2.0f;
-
-	glm::vec2 NDCPos = glm::vec2(x, y);
+	glm::vec2 NDCPos = inputManager->GetMouseNDC();
 
 	for (int i = 0; i < SLOTS_COUNT; i++)
 	{
@@ -225,9 +249,9 @@ void Inventory::ProcessMouseHovering(InputManager* inputManager, Render* render)
 	}
 }
 
-void Inventory::SelectLeftItem()
+void Inventory::SelectLeftItem() noexcept 
 {
-	if (currentItem - 1 >= SLOT_COUNT_IN_ROW * (ROW_COUNT - 1))
+	if (currentItem - 1 >= START_HOT_BAR_SLOT_INDEX)
 	{
 		currentItem--;
 		glm::vec3 currentPos = currentItemFrameActor.GetPosition();
@@ -236,7 +260,7 @@ void Inventory::SelectLeftItem()
 	}
 }
 
-void Inventory::SelectRightItem()
+void Inventory::SelectRightItem() noexcept
 {
 	if (currentItem + 1 <= SLOTS_COUNT - 1)
 	{
@@ -247,19 +271,13 @@ void Inventory::SelectRightItem()
 	}
 }
 
-void Inventory::DecreaseCurrentItem()
+void Inventory::DecreaseCurrentItem() noexcept
 {
 	slots[currentItem].count--;
 
 	if (slots[currentItem].count <= 0)
 	{
-		slots[currentItem].countText.SetText("");
-		slots[currentItem].description.SetText("");
-		slots[currentItem].mesh.GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
-		slots[currentItem].mesh.SetColor(SLOT_COLOR);
-		slots[currentItem].mesh.Init();
-		slots[currentItem].actor.SetMesh(&slots[currentItem].mesh);
-		slots[currentItem].block = DroppedBlock();
+		ResetSlot(slots[currentItem]);
 	}
 	else
 	{
@@ -268,7 +286,274 @@ void Inventory::DecreaseCurrentItem()
 	}
 }
 
-void Inventory::ResetSlot()
+void Inventory::ThrowOutItemFromInventory(InputManager* inputManager, World* world, Player* player, 
+	Texture* texture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
 {
+	glm::vec2 NDCPos = inputManager->GetMouseNDC();
 
+	for (int i = 0; i < SLOTS_COUNT; i++)
+	{
+		glm::vec3 slotPos = slots[i].actor.GetPosition();
+
+		if ((NDCPos.x >= slotPos.x - SLOT_WIDTH / 4 && NDCPos.x <= slotPos.x + SLOT_WIDTH / 4) &&
+			(NDCPos.y >= slotPos.y - SLOT_HEIGHT / 2 && NDCPos.y <= slotPos.y + SLOT_HEIGHT / 2))
+		{
+			if (!isItemDragging && slots[i].count > 0)
+			{
+				BlockClass blockClass = slots[i].block.GetBlockClass();
+				BlockType blockType = slots[i].block.GetBlockType();
+				
+				if (slots[i].count > 0)
+				{
+					slots[i].count--;
+					std::string text = std::to_string(slots[i].count);
+					slots[i].countText.SetText(text.c_str());
+
+					DroppedBlock droppedBlock;
+					glm::vec3 pos = player->GetPosition() + player->GetCamera().GetFrontMovementVector() * 4.f;
+					droppedBlock.Init(uvs, texture, blockClass, blockType, pos);
+					world->GetDroppedBlocksArray().Add(std::move(droppedBlock));
+				}
+
+				if (slots[currentItem].count <= 0)
+				{
+					ResetSlot(slots[i]);
+				}
+				return;
+			}
+		}
+	}
+}
+
+void Inventory::ThrowOutItemFromHotbar(World* world, Player* player, Texture* texture,
+	UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
+{
+	BlockClass blockClass = slots[currentItem].block.GetBlockClass();
+	BlockType blockType = slots[currentItem].block.GetBlockType();
+
+	if (slots[currentItem].count > 0)
+	{
+		slots[currentItem].count--;
+		std::string text = std::to_string(slots[currentItem].count);
+		slots[currentItem].countText.SetText(text.c_str());
+
+		DroppedBlock droppedBlock;
+		glm::vec3 pos = player->GetPosition() + player->GetCamera().GetFrontMovementVector() * 4.f;
+		droppedBlock.Init(uvs, texture, blockClass, blockType, pos);
+		world->GetDroppedBlocksArray().Add(std::move(droppedBlock));
+	}
+	
+	if (slots[currentItem].count <= 0)
+	{
+		ResetSlot(slots[currentItem]);
+	}
+}
+
+void Inventory::ResetSlot(Slot& slot) noexcept
+{
+	slot.count = 0;
+	slot.countText.SetText("");
+	slot.description.SetText("");
+	slot.description.ResetMesh();
+	slot.mesh.GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
+	slot.mesh.SetColor(SLOT_COLOR);
+	slot.mesh.Init();
+	slot.actor.SetMesh(&slot.mesh);
+	slot.block = DroppedBlock();
+}
+
+void Inventory::ProcessingMouseCkick(InputManager* inputManager, Texture* itemTexture, Texture* textTexture,
+	UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
+{
+	glm::vec2 NDCPos = inputManager->GetMouseNDC();
+
+	for (int i = 0; i < SLOTS_COUNT; i++)
+	{
+		glm::vec3 slotPos = slots[i].actor.GetPosition();
+
+		if ((NDCPos.x >= slotPos.x - SLOT_WIDTH / 4 && NDCPos.x <= slotPos.x + SLOT_WIDTH / 4) &&
+			(NDCPos.y >= slotPos.y - SLOT_HEIGHT / 2 && NDCPos.y <= slotPos.y + SLOT_HEIGHT / 2))
+		{
+			if (!isItemDragging && slots[i].count > 0)
+			{
+				isItemDragging = true;
+				draggingItemIndex = i;
+
+				InitDraggingSlot(slots[i], itemTexture, textTexture, uvs);
+				ResetSlot(slots[i]);
+			}
+		}
+	}
+}
+
+void Inventory::ProcessingMouseRelease(World* world, Player* player, Texture* texture, Texture* textTexture,
+	UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
+{
+	if (isItemDragging)
+	{
+		isItemDragging = false;
+
+		float x = draggingSlot.actor.GetPosition().x;
+		float y = draggingSlot.actor.GetPosition().y;
+
+		float startX = START_SLOT_POS.x;
+		float endX = START_SLOT_POS.x + (SLOT_WIDTH + SLOT_PADDING) * SLOT_COUNT_IN_ROW;
+
+		float startY = START_SLOT_POS.y;
+		float endY = START_SLOT_POS.y - (SLOT_HEIGHT + SLOT_PADDING) * ROW_COUNT;
+
+		BlockType blockType = draggingSlot.block.GetBlockType();
+		BlockClass blockClass = draggingSlot.block.GetBlockClass();
+
+		if ((x >= startX && x <= endX) && (y <= startY && y >= endY))
+		{
+			for (int i = 0; i < SLOTS_COUNT; i++)
+			{
+				glm::vec3 slotPos = slots[i].actor.GetPosition();
+
+				if ((x >= slotPos.x - SLOT_WIDTH / 4 && x <= slotPos.x + SLOT_WIDTH / 4) &&
+					(y >= slotPos.y - SLOT_HEIGHT / 2 && y <= slotPos.y + SLOT_HEIGHT / 2))
+				{
+					if (slots[i].count <= 0)
+					{
+						slots[i].count = draggingSlot.count;
+
+						slots[i].block = std::move(draggingSlot.block);
+						slots[i].block.SetAliveState(false);
+						slots[i].mesh.SetRectabgleUV(uvs[static_cast<int>(blockType)][1]);
+						slots[i].mesh.Init();
+
+						slots[i].actor.SetMesh(&slots[i].mesh);
+						slots[i].actor.SetTexture(texture);
+
+						std::string textCount = std::to_string(slots[i].count);
+						slots[i].countText.SetText(textCount.c_str());
+
+						std::string blockDescription = slots[i].block.GetBlockText();
+						float desctiptionWidth = blockDescription.length() * Text::CHAR_WIDTH / 2;
+						float desctiptionHeight = Text::CHAR_HEIGHT;
+
+						slots[i].description.Init(desctiptionWidth, desctiptionHeight);
+					}
+					else
+					{
+						SwapSlots(slots[draggingItemIndex], slots[i], texture, textTexture, uvs);
+					}
+				}
+			}
+		}
+		else
+		{
+			for (int i = 0; i < draggingSlot.count; i++)
+			{
+				DroppedBlock droppedBlock;
+				glm::vec3 pos = player->GetPosition() + player->GetCamera().GetFrontMovementVector() * 4.f;
+				droppedBlock.Init(uvs, texture, blockClass, blockType, pos);
+				world->GetDroppedBlocksArray().Add(std::move(droppedBlock));
+			}
+		}
+		ResetSlot(draggingSlot);
+		draggingSlot.actor.SetPosition(glm::vec3(-5.f, 0.f, 0.f));
+	}
+}
+
+void Inventory::UpdateDraggingItemPosition(InputManager* inputManager) noexcept
+{
+	if (isItemDragging)
+	{
+		glm::vec2 NDCPos = inputManager->GetMouseNDC();
+		glm::vec3 pos(NDCPos.x, NDCPos.y, 0.f);
+		draggingSlot.actor.SetPosition(pos);
+	}
+}
+
+void Inventory::ShowDraggingItem(Render* render) noexcept
+{
+	if (isItemDragging)
+	{
+		render->DrawUIActor(draggingSlot.actor, GL_TRIANGLES);
+	}
+}
+
+void Inventory::SwapSlots(Slot& slot1, Slot& slot2, Texture* itemTexture, Texture* textTexture,
+	UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
+{
+	std::string textCount;
+	std::string blockDescription;
+	float desctiptionWidth;
+
+	textCount = std::to_string(draggingSlot.count);
+	blockDescription = draggingSlot.block.GetBlockText();
+	desctiptionWidth = blockDescription.length() * Text::CHAR_WIDTH / 2;
+
+	// ------------------------ Copy Slot ------------------------ //
+	copySlot.countText.SetMainWindow(mainWindow);
+	copySlot.countText.SetTexture(textTexture);
+	copySlot.countText.SetCharsInRow(10);
+	copySlot.countText.SetCharsInColumn(10);
+	copySlot.countText.SetCharsCount(10 * 10);
+	copySlot.countText.SetText(textCount.c_str());
+	copySlot.countText.Init();
+
+	copySlot.description.SetWindow(mainWindow);
+	copySlot.description.SetTextTexture(textTexture);
+	copySlot.description.Init(desctiptionWidth, DESCRIPTION_HEIGHT);
+
+	copySlot.block = std::move(draggingSlot.block);
+
+	copySlot.mesh.GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
+	copySlot.mesh.SetRectabgleUV(uvs[static_cast<int>(copySlot.block.GetBlockType())][1]);
+	copySlot.mesh.Init();
+
+	copySlot.actor.SetMesh(&copySlot.mesh);
+	copySlot.actor.SetTexture(itemTexture);
+
+	copySlot.count = draggingSlot.count;
+	// ------------------------ Copy Slot ------------------------ //
+
+
+	// ------------------------ Slot 1 ------------------------ //
+	textCount = std::to_string(slot2.count);
+	blockDescription = slot2.block.GetBlockText();
+	desctiptionWidth = blockDescription.length() * Text::CHAR_WIDTH / 2;
+
+	slot1.countText.SetText(textCount.c_str());
+	slot1.countText.Init();
+
+	slot1.description.SetTextTexture(textTexture);
+	slot1.description.Init(desctiptionWidth, DESCRIPTION_HEIGHT);
+
+	slot1.block = std::move(slot2.block);
+
+	slot1.mesh.SetRectabgleUV(uvs[static_cast<int>(slot1.block.GetBlockType())][1]);
+	slot1.mesh.Init();
+
+	slot1.actor.SetMesh(&slot1.mesh);
+	slot1.actor.SetTexture(itemTexture);
+
+	slot1.count = slot2.count;
+	// ------------------------ Slot 1 ------------------------ //
+
+
+	// ------------------------ Slot 2 ------------------------ //
+	textCount = std::to_string(copySlot.count);
+	blockDescription = copySlot.block.GetBlockText();
+	desctiptionWidth = blockDescription.length() * Text::CHAR_WIDTH / 2;
+
+	slot2.countText.SetText(textCount.c_str());
+	slot2.countText.Init();
+
+	slot2.description.SetTextTexture(textTexture);
+	slot2.description.Init(desctiptionWidth, DESCRIPTION_HEIGHT);
+
+	slot2.block = std::move(copySlot.block);
+
+	slot2.mesh.SetRectabgleUV(uvs[static_cast<int>(slot2.block.GetBlockType())][1]);
+	slot2.mesh.Init();
+
+	slot2.actor.SetMesh(&slot2.mesh);
+	slot2.actor.SetTexture(itemTexture);
+
+	slot2.count = copySlot.count;
+	// ------------------------ Slot 2 ------------------------ //
 }

@@ -18,10 +18,17 @@ private:
 	Text text;
 
 public:
+	void ResetMesh() noexcept
+	{
+		mesh = UIMesh();
+	}
+
 	void SetWindow(Window* window) noexcept;
 	void SetTextTexture(Texture* textTexture) noexcept;
-	void Init(float& width, float& height) noexcept;
+	void Init(float width, float height) noexcept;
 	void SetPosition(const glm::vec3& pos) noexcept;
 	void SetText(const char* text) noexcept;
 	void Draw(Render* render) noexcept;
+
+	ItemDescription& operator=(const ItemDescription& another) noexcept;
 };

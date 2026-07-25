@@ -274,7 +274,7 @@ void World::ProcessCollisionWithPlayerForDroppedBlocks(class Player* player, Tex
 	}
 }
 
-void World::PlaceBlock(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], Render* render, const glm::vec3& pos,
+bool World::PlaceBlock(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], Render* render, const glm::vec3& pos,
 	glm::vec3& forwardVector, BlockType blockType) noexcept
 {
 	glm::vec3 start = pos;
@@ -305,9 +305,10 @@ void World::PlaceBlock(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], Render* re
 				.blockType = blockType,
 			};
 			blocksInfo.Add(blockInfo);
-			return;
+			return true;
 		}
 	}
+	return false;
 }
 
 void World::DestroyBlock(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], const Texture* texture, Render* render,

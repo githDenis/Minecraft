@@ -73,6 +73,8 @@ void Application::Run()
 		float deltaTime = currentTime - lastTime;
 		lastTime = currentTime;
 
+		shaderProgram->Use();
+
 		if (inputManager->IsKeyPressed(GLFW_KEY_ESCAPE))
 		{
 			break;
@@ -86,22 +88,60 @@ void Application::Run()
 		if (inputManager->IsKeyPressed(GLFW_KEY_I))
 		{
 			player->UseInventory();
+			
+			if (player->IsInventoryUsing())
+			{
+				inputManager->SetCursorPosition(window->GetWidth() / 2, window->GetHeight() / 2);
+			}
+			else
+			{
+				inputManager->SetCursorPosition(window->GetWidth() / 2, window->GetHeight() / 2);
+			}
 		}
 
 		if (inputManager->IsMouseButtonReleased(GLFW_MOUSE_BUTTON_LEFT))
-		{
-			player->StopShakingHeldItem();
+		{			
+			if (player->IsInventoryUsing())
+			{
+				player->ProcessingMouseRelease(&world, &texture, &textTexture, uvs);
+			}
+			else
+			{
+				player->StopShakingHeldItem();
+			}
 		}
 
 		if (inputManager->IsMouseButtonHoldForTime(GLFW_MOUSE_BUTTON_LEFT, 800))
 		{
-			player->StartShakingHeldItem();
-			player->DestroyBlock(&world, uvs, &texture, render);
+			if (!player->IsInventoryUsing())
+			{
+				player->StartShakingHeldItem();
+				player->DestroyBlock(&world, uvs, &texture, render);
+			}
+			else
+			{
+				player->ProcessingMouseCkick(inputManager, &texture, &textTexture, uvs);
+			}
 		}
 
 		if (inputManager->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
 		{
-			player->PlaceBlock(&world, render, uvs);
+			if (!player->IsInventoryUsing())
+			{
+				player->PlaceBlock(&world, render, uvs);
+			}
+		}
+
+		if (inputManager->IsKeyPressed(GLFW_KEY_Q))
+		{
+			if (!player->IsInventoryUsing())
+			{
+				player->ThrowOutItemFromHotbar(&world, &texture, uvs);
+			}
+			else
+			{
+				player->ThrowOutItemFromInventory(inputManager, &world, &texture, uvs);
+			}
 		}
 
 		int scrollDelta = inputManager->GetMouseScrollDelta();
@@ -119,10 +159,7 @@ void Application::Run()
 		static const Color clearColor = { 0.f, 0.5f, 0.8f };
 		render->Clear(clearColor);
 
-		shaderProgram->Use();
-
 		player->UpdateCamera(deltaTime);
-
 		render->ApplyCameraData(player->GetCamera());
 
 		glm::vec3 pos{ player->GetPosition() };
@@ -175,6 +212,8 @@ void Application::Run()
 			inputManager->EnableUIMode();
 			player->DrawInventory(render);
 			player->ProcessHoveringForInventory(inputManager, render);
+			player->UpdateDraggingItemPosition(inputManager);
+			player->DrawDraggingItem(render);
 		}
 		glfwSwapBuffers(window->GetHandle());
 		glfwPollEvents();

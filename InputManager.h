@@ -36,6 +36,8 @@ public:
 	void EnableGamemode() noexcept;
 	void EnableUIMode() noexcept;
 
+	void SetCursorPosition(double x, double y) noexcept;
+
 	bool IsKeyDown(int key) noexcept;
 	bool IsKeyPressed(int key) noexcept;
 	bool IsKeyReleased(int key) noexcept;
@@ -48,4 +50,5 @@ public:
 	bool IsMouseButtonHoldForTime(int button, int milliseconds) noexcept;
 
 	int GetMouseScrollDelta() noexcept;
+	glm::vec2 GetMouseNDC() noexcept;
 };

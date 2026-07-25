@@ -30,6 +30,8 @@ private:
 	Rotator rotation{ 0, 0, 0 };
 	float FOV;
 	bool isLocked = false;
+	float xLast = 0.f;
+	float yLast = 0.f;
 
 public:
 	void SetInputManager(InputManager* inputManger) noexcept
@@ -51,6 +53,11 @@ public:
 	{
 		oldPos = pos;
 		pos = vector;
+	}
+
+	Rotator& GetRotation() noexcept
+	{
+		return rotation;
 	}
 
 	glm::mat4 GetViewMatrix() const noexcept
@@ -93,14 +100,7 @@ public:
 		return oldPos;
 	}
 
-	Rotator& GetRotation() noexcept
-	{
-		return rotation;
-	}
-
 	void Update();
 	void UpdateTranslation(float deltaTime);
 	void SetAxisValue(char axis, float value) noexcept;
-	
-	glm::vec3 GetSignMovementVector() const noexcept;
 };

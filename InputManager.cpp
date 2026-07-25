@@ -40,6 +40,11 @@ void InputManager::EnableUIMode() noexcept
 	glfwSetInputMode(window->GetHandle(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
+void InputManager::SetCursorPosition(double x, double y) noexcept
+{
+	glfwSetCursorPos(window->GetHandle(), x, y);
+}
+
 bool InputManager::IsKeyDown(int key) noexcept
 {
 	return glfwGetKey(window->GetHandle(), key) == GLFW_PRESS;
@@ -199,4 +204,14 @@ int InputManager::GetMouseScrollDelta() noexcept
 	int copy = scrollDelta;
 	scrollDelta = 0;
 	return copy;
+}
+
+glm::vec2 InputManager::GetMouseNDC() noexcept
+{
+	glm::vec2 pos = GetMousePosition();
+
+	float x = pos.x / window->GetWidth() * 2.f - 1.f;
+	float y = 1.f - (pos.y / window->GetHeight() * 2.f);
+
+	return glm::vec2(x, y);
 }
