@@ -100,7 +100,6 @@ DroppedBlock& DroppedBlock::operator=(const DroppedBlock& another) noexcept
 	isAlive = another.isAlive;
 	blockType = another.blockType;
 	blockClass = another.blockClass;
-	strcpy(buf, another.buf);
 	actor.SetMesh(&mesh);
 	return *this;
 }
@@ -112,11 +111,9 @@ DroppedBlock& DroppedBlock::operator=(DroppedBlock&& another) noexcept
 	isAlive = another.isAlive;
 	blockType = another.blockType;
 	blockClass = another.blockClass;
-	strcpy(buf, another.buf);
 	actor.SetMesh(&mesh);
 	another.isAlive = false;
 	another.blockType = BlockType::BT_AIR;
 	another.blockClass = BlockClass::BC_OPAQUE;
-	strcpy(another.buf, "");
 	return *this;
 }

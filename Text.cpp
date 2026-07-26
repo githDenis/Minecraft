@@ -35,22 +35,3 @@ void Text::Draw(Render* render)
 		}
 	}
 }
-
-Text& Text::operator=(Text& another) noexcept
-{
-	charsInRow = another.charsInRow;
-	charsInColumn = another.charsInColumn;
-	charsCount = another.charsCount;
-	window = another.window;
-	texture = another.texture;
-	strcpy(buf, another.buf);
-	meshes = another.meshes;
-	actors = another.actors;
-	startPos = another.startPos;
-
-	for (int i = 0; i < another.charsCount; i++)
-	{
-		uvs[i] = another.uvs[i];
-	}
-	return *this;
-}

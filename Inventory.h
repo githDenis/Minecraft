@@ -15,17 +15,6 @@ struct Slot
 	ItemDescription description;
 	DroppedBlock block;
 	int count;
-
-	Slot& operator=(Slot& another) noexcept
-	{
-		mesh = another.mesh;
-		actor = another.actor;
-		countText = another.countText;
-		description = another.description;
-		block = another.block;
-		count = another.count;
-		return *this;
-	}
 };
 
 class Inventory
@@ -39,12 +28,22 @@ public:
 	static constexpr int SLOTS_COUNT = SLOT_COUNT_IN_ROW * ROW_COUNT;
 	static constexpr float SLOT_PADDING = 0.003f;
 
-	static constexpr float INVENTORY_WIDTH = SLOT_WIDTH * static_cast<float>(SLOT_COUNT_IN_ROW + 1);
-	static constexpr float INVENTORY_HEIGHT = SLOT_HEIGHT * static_cast<float>(ROW_COUNT + 1);
-	static constexpr Color INVENTORY_COLOR = Color(0.7f, 0.7f, 0.7f);
+	static const int CRAFT_SLOT_IN_COLUMN = 2;
+	static const int CRAFT_SLOT_IN_ROW = 2;
+	static const int CRAFT_SLOT_COUNT = CRAFT_SLOT_IN_COLUMN * CRAFT_SLOT_IN_ROW;
+	static constexpr glm::vec3 START_CRAFT_SLOT_POS = glm::vec3(-SLOT_WIDTH / 4, 0.5f, 0.f);
 
-	static constexpr glm::vec3 INVENTORY_POS = glm::vec3(0.f, 0.3f, 0.f);
-	static constexpr glm::vec3 START_SLOT_POS = glm::vec3(-0.29f, 0.55f, 0.f);
+	static constexpr glm::vec3 CRAFT_RESULT_SLOT_POS = glm::vec3(SLOT_WIDTH, 0.5f - SLOT_HEIGHT / 2, 0.f);
+
+	static constexpr float INVENTORY_WIDTH = SLOT_WIDTH * static_cast<float>(SLOT_COUNT_IN_ROW + 1);
+	static constexpr float INVENTORY_HEIGHT = SLOT_HEIGHT * 
+		static_cast<float>(ROW_COUNT + CRAFT_SLOT_IN_ROW + 2);
+	static constexpr Color INVENTORY_COLOR = Color(0.7f, 0.7f, 0.7f);
+	static const char* CRAFTING_TEXT;
+	static constexpr glm::vec3 CRAFTING_TEXT_POS = glm::vec3(-SLOT_WIDTH / 3, 0.65f, 0.f);
+
+	static constexpr glm::vec3 INVENTORY_POS = glm::vec3(0.f, 0.15f, 0.f);
+	static constexpr glm::vec3 START_SLOT_POS = glm::vec3(-0.29f, 0.2f, 0.f);
 	static constexpr glm::vec3 HOT_BAR_POS = glm::vec3(-0.29f, -0.9f, 0.f);
 	static constexpr int START_HOT_BAR_SLOT_INDEX = SLOT_COUNT_IN_ROW * (ROW_COUNT - 1);
 
@@ -60,6 +59,11 @@ private:
 	UIActor actor;
 	std::array<Slot, SLOTS_COUNT> slots;
 
+	std::array<Slot, CRAFT_SLOT_COUNT> craftSlots;
+
+	Slot craftResultSlot;
+	Text craftingText;
+
 	Slot draggingSlot;
 	bool isItemDragging = false;
 
@@ -72,9 +76,12 @@ private:
 
 	void InitInventoryWindow() noexcept;
 	void GenerateSlots(Texture* textTexture) noexcept;
+	void GenerateCraftSlots(Texture* textTexture) noexcept;
+	void GenerateCraftResultSlot(Texture* textTexture) noexcept;
 	void InitCurrentFrame() noexcept;
 	void InitDraggingSlot(Slot& slot, Texture* itemTexture, Texture* textTexture,
 		UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
+	void InitCraftingText(Texture* textTexture) noexcept;
 
 public:
 	Slot& GetCurrentSlot() noexcept

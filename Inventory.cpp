@@ -3,6 +3,8 @@
 #include "Player.h"
 #include <string>
 
+const char* Inventory::CRAFTING_TEXT = "Crafting";
+
 void Inventory::SetMainWindow(Window* mainWindow) noexcept
 {
 	this->mainWindow = mainWindow;
@@ -12,13 +14,23 @@ void Inventory::SetMainWindow(Window* mainWindow) noexcept
 		slots[i].countText.SetMainWindow(mainWindow);
 		slots[i].description.SetWindow(mainWindow);
 	}
+
+	for (int i = 0; i < CRAFT_SLOT_COUNT; i++)
+	{
+		craftSlots[i].countText.SetMainWindow(mainWindow);
+		craftSlots[i].description.SetWindow(mainWindow);
+	}
+	craftingText.SetMainWindow(mainWindow);
 }
 
 void Inventory::Init(Texture* textTexture) noexcept
 {
 	InitInventoryWindow();
 	GenerateSlots(textTexture);
+	GenerateCraftSlots(textTexture);
+	GenerateCraftResultSlot(textTexture);
 	InitCurrentFrame();
+	InitCraftingText(textTexture);
 }
 
 void Inventory::InitInventoryWindow() noexcept
@@ -71,6 +83,62 @@ void Inventory::GenerateSlots(Texture* textTexture) noexcept
 	}
 }
 
+void Inventory::GenerateCraftSlots(Texture* textTexture) noexcept
+{
+	for (int y = 0; y < CRAFT_SLOT_IN_ROW; y++)
+	{
+		for (int x = 0; x < CRAFT_SLOT_IN_COLUMN; x++)
+		{
+			craftSlots[x + y * CRAFT_SLOT_IN_ROW].mesh.GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
+			craftSlots[x + y * CRAFT_SLOT_IN_ROW].mesh.SetColor(SLOT_COLOR);
+			craftSlots[x + y * CRAFT_SLOT_IN_ROW].mesh.Init();
+
+			glm::vec3 slotPos = START_CRAFT_SLOT_POS +
+				glm::vec3(
+					SLOT_WIDTH / 2 * x + SLOT_PADDING * x,
+					-SLOT_HEIGHT * y - SLOT_PADDING * y,
+					0.f);
+
+			craftSlots[x + y * CRAFT_SLOT_IN_ROW].actor.SetPosition(slotPos);
+			craftSlots[x + y * CRAFT_SLOT_IN_ROW].actor.SetMesh(&craftSlots[x + y * CRAFT_SLOT_IN_ROW].mesh);
+
+			craftSlots[x + y * CRAFT_SLOT_IN_ROW].countText.SetTexture(textTexture);
+			craftSlots[x + y * CRAFT_SLOT_IN_ROW].countText.SetCharsInRow(10);
+			craftSlots[x + y * CRAFT_SLOT_IN_ROW].countText.SetCharsInColumn(10);
+			craftSlots[x + y * CRAFT_SLOT_IN_ROW].countText.SetCharsCount(10 * 10);
+			craftSlots[x + y * CRAFT_SLOT_IN_ROW].countText.SetText("");
+			craftSlots[x + y * CRAFT_SLOT_IN_ROW].countText.SetStartPosition(slotPos);
+			craftSlots[x + y * CRAFT_SLOT_IN_ROW].countText.Init();
+
+			craftSlots[x + y * CRAFT_SLOT_IN_ROW].description.SetTextTexture(textTexture);
+
+			craftSlots[x + y * CRAFT_SLOT_IN_ROW].count = 0;
+		}
+	}
+}
+
+void Inventory::GenerateCraftResultSlot(Texture* textTexture) noexcept
+{
+	craftResultSlot.mesh.GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
+	craftResultSlot.mesh.SetColor(SLOT_COLOR);
+	craftResultSlot.mesh.Init();
+
+	craftResultSlot.actor.SetPosition(CRAFT_RESULT_SLOT_POS);
+	craftResultSlot.actor.SetMesh(&craftResultSlot.mesh);
+
+	craftResultSlot.countText.SetTexture(textTexture);
+	craftResultSlot.countText.SetCharsInRow(10);
+	craftResultSlot.countText.SetCharsInColumn(10);
+	craftResultSlot.countText.SetCharsCount(10 * 10);
+	craftResultSlot.countText.SetText("");
+	craftResultSlot.countText.SetStartPosition(CRAFT_RESULT_SLOT_POS);
+	craftResultSlot.countText.Init();
+
+	craftResultSlot.description.SetTextTexture(textTexture);
+
+	craftResultSlot.count = 0;
+}
+
 void Inventory::InitCurrentFrame() noexcept
 {
 	currentItemFrameMesh.GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
@@ -112,6 +180,17 @@ void Inventory::InitDraggingSlot(Slot& slot, Texture* itemTexture, Texture* text
 	draggingSlot.description.Init(desctiptionWidth, desctiptionHeight);
 }
 
+void Inventory::InitCraftingText(Texture* textTexture) noexcept
+{
+	craftingText.SetCharsInRow(10);
+	craftingText.SetCharsInColumn(10);
+	craftingText.SetCharsCount(10 * 10);
+	craftingText.SetText(CRAFTING_TEXT);
+	craftingText.SetTexture(textTexture);
+	craftingText.SetStartPosition(CRAFTING_TEXT_POS);
+	craftingText.Init();
+}
+
 void Inventory::ShowInventory(Render* render) noexcept
 {
 	render->DrawUIActor(actor, GL_TRIANGLES);
@@ -134,6 +213,18 @@ void Inventory::ShowInventory(Render* render) noexcept
 			slots[x + y * SLOT_COUNT_IN_ROW].countText.Draw(render);
 		}
 	}
+
+	for (int y = 0; y < CRAFT_SLOT_IN_ROW; y++)
+	{
+		for (int x = 0; x < CRAFT_SLOT_IN_COLUMN; x++)
+		{
+			render->DrawUIActor(craftSlots[x + y * CRAFT_SLOT_IN_ROW].actor, GL_TRIANGLES);
+			craftSlots[x + y * CRAFT_SLOT_IN_ROW].countText.Draw(render);
+		}
+	}
+
+	render->DrawUIActor(craftResultSlot.actor, GL_TRIANGLES);
+	craftingText.Draw(render);
 }
 
 void Inventory::ShowHotBar(Render* render) noexcept
@@ -315,7 +406,7 @@ void Inventory::ThrowOutItemFromInventory(InputManager* inputManager, World* wor
 					world->GetDroppedBlocksArray().Add(std::move(droppedBlock));
 				}
 
-				if (slots[currentItem].count <= 0)
+				if (slots[i].count <= 0)
 				{
 					ResetSlot(slots[i]);
 				}
@@ -437,7 +528,16 @@ void Inventory::ProcessingMouseRelease(World* world, Player* player, Texture* te
 					}
 					else
 					{
-						SwapSlots(slots[draggingItemIndex], slots[i], texture, textTexture, uvs);
+						if (blockType == slots[i].block.GetBlockType())
+						{
+							slots[i].count += draggingSlot.count;
+							std::string textCount = std::to_string(slots[i].count);
+							slots[i].countText.SetText(textCount.c_str());
+						}
+						else
+						{
+							SwapSlots(slots[draggingItemIndex], slots[i], texture, textTexture, uvs);
+						}
 					}
 				}
 			}

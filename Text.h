@@ -11,7 +11,7 @@
 class Text
 {
 public:
-	static const int BUF_SIZE = 20;
+	static const int BUF_SIZE = 18;
 	static constexpr float CHAR_WIDTH = 0.1f;
 	static constexpr float CHAR_HEIGHT = 0.13f;
 
@@ -68,6 +68,4 @@ public:
 
 	void Init();
 	void Draw(Render* render);
-
-	Text& operator=(Text& another) noexcept;
 };

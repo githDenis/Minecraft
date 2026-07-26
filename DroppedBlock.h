@@ -10,8 +10,7 @@ class DroppedBlock
 {
 public:
 	static constexpr float GRAVITY = 6.f;
-	static constexpr float ROTATION_SPEED = 8.f;
-	static const int BUF_SIZE = 20;
+	static constexpr float ROTATION_SPEED = 10.f;
 
 private:
 	Mesh mesh;
@@ -21,7 +20,6 @@ private:
 	float velocity = 0.f;
 	bool isOnGround = false;
 	bool isAlive = false;
-	char buf[BUF_SIZE];
 
 public:
 	void SetAliveState(bool state) noexcept

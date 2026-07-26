@@ -29,6 +29,4 @@ public:
 	void SetPosition(const glm::vec3& pos) noexcept;
 	void SetText(const char* text) noexcept;
 	void Draw(Render* render) noexcept;
-
-	ItemDescription& operator=(const ItemDescription& another) noexcept;
 };
