@@ -25,7 +25,7 @@ void Application::Run()
 	//16x16 texture
 	Texture texture;
 	texture.Create();
-	texture.SetImage("E:\\C++\\Minecraft\\Textures\\Textures.jpg");
+	texture.SetImage("E:\\C++\\Minecraft\\Textures\\Texture.jpg");
 
 	Texture textTexture;
 	textTexture.Create();
@@ -36,16 +36,17 @@ void Application::Run()
 	playerHandTexture.SetImage("E:\\C++\\Minecraft\\Textures\\PlayerHandTexture.jpg");
 
 	UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT] = {
-		{ texture.GetUV(0, 16, 16), texture.GetUV(3, 16, 16), texture.GetUV(2, 16, 16) },      //Ground with grass
-		{ texture.GetUV(2, 16, 16), texture.GetUV(2, 16, 16), texture.GetUV(2, 16, 16) },      //Ground
-		{ texture.GetUV(21, 16, 16), texture.GetUV(20, 16, 16), texture.GetUV(21, 16, 16) },   //Tree
-		{ texture.GetUV(53, 16, 16), texture.GetUV(53, 16, 16), texture.GetUV(53, 16, 16) },   //Leaves
-		{ texture.GetUV(16, 16, 16), texture.GetUV(16, 16, 16), texture.GetUV(16, 16, 16) },   //Stone
-		{ texture.GetUV(142, 16, 16), texture.GetUV(142, 16, 16), texture.GetUV(142, 16, 16) },//Sand
-		{ texture.GetUV(39, 16, 16), texture.GetUV(39, 16, 16), texture.GetUV(53, 16, 16) },   //Grass
-		{ texture.GetUV(13, 16, 16), texture.GetUV(13, 16, 16), texture.GetUV(13, 16, 16) },   //Yellow flower
-		{ texture.GetUV(12, 16, 16), texture.GetUV(12, 16, 16), texture.GetUV(12, 16, 16) },   //Red flower
-		{ texture.GetUV(177, 16, 16), texture.GetUV(177, 16, 16), texture.GetUV(177, 16, 16) },//Water
+		{ texture.GetUV(0, 32, 16), texture.GetUV(3, 32, 16), texture.GetUV(2, 32, 16) },      //Ground with grass
+		{ texture.GetUV(2, 32, 16), texture.GetUV(2, 32, 16), texture.GetUV(2, 32, 16) },      //Ground
+		{ texture.GetUV(37, 32, 16), texture.GetUV(36, 32, 16), texture.GetUV(37, 32, 16) },   //Tree
+		{ texture.GetUV(117, 32, 16), texture.GetUV(117, 32, 16), texture.GetUV(117, 32, 16) },//Leaves
+		{ texture.GetUV(1, 32, 16), texture.GetUV(1, 32, 16), texture.GetUV(1, 32, 16) },      //Stone
+		{ texture.GetUV(34, 32, 16), texture.GetUV(34, 32, 16), texture.GetUV(34, 32, 16) },   //Sand
+		{ texture.GetUV(4, 32, 16), texture.GetUV(4, 32, 16), texture.GetUV(4, 32, 16) },      //Planks
+		{ texture.GetUV(87, 32, 16), texture.GetUV(87, 32, 16), texture.GetUV(87, 32, 16) },   //Grass
+		{ texture.GetUV(29, 32, 16), texture.GetUV(29, 32, 16), texture.GetUV(29, 32, 16) },   //Yellow flower
+		{ texture.GetUV(28, 32, 16), texture.GetUV(28, 32, 16), texture.GetUV(28, 32, 16) },   //Red flower
+		{ texture.GetUV(369, 32, 16), texture.GetUV(369, 32, 16), texture.GetUV(369, 32, 16) },//Water
 	};
 
 	player->SetHandTexture(&playerHandTexture);
@@ -104,6 +105,7 @@ void Application::Run()
 			if (player->IsInventoryUsing())
 			{
 				player->ProcessingMouseRelease(&world, &texture, &textTexture, uvs);
+				player->CheckCrafting(&texture, uvs);
 			}
 			else
 			{

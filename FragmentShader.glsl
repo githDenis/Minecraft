@@ -10,7 +10,7 @@ void main()
 {
     vec4 color = texture(aTexture, TexCoord);
 
-    if (color.r < 0.1 && color.g < 0.1 && color.b < 0.1)
+    if (color.r < 0.15 && color.g < 0.15 && color.b < 0.15)
     {
         discard;
     }

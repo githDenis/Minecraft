@@ -82,7 +82,7 @@ const char* DroppedBlock::GetBlockText() noexcept
 	{
 	case BlockType::BT_GROUND_GRASS: return "Ground with grass";
 	case BlockType::BT_GROUND: return "Ground";
-	case BlockType::BT_TREE: return "Tree";
+	case BlockType::BT_WOOD: return "Tree";
 	case BlockType::BT_LEAVES: return "Leaves";
 	case BlockType::BT_STONE: return "Stone";
 	case BlockType::BT_SAND: return "Sand";

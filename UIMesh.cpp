@@ -86,7 +86,7 @@ void UIMesh::SetColor(const Color& color) noexcept
 	}
 }
 
-void UIMesh::SetRectabgleUV(const UV& uv) noexcept
+void UIMesh::SetRectangleUV(const UV& uv) noexcept
 {
 	useTexture = true;
 

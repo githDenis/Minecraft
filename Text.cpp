@@ -24,7 +24,7 @@ void Text::Draw(Render* render)
 			UV uv{ uvs[index] };
 
 			meshes[i].GenerateRectangle(CHAR_WIDTH, CHAR_HEIGHT, window->GetWidth(), window->GetHeight());
-			meshes[i].SetRectabgleUV(uv);
+			meshes[i].SetRectangleUV(uv);
 			meshes[i].Init();
 
 			actors[i].SetMesh(&meshes[i]);

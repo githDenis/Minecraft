@@ -156,7 +156,7 @@ void Chunk::GenerateTree() noexcept
 
 					for (int i = treeY; i < treeY + treeHeight; i++)
 					{
-						blockTypes[x][i][z] = static_cast<unsigned char>(BlockType::BT_TREE);
+						blockTypes[x][i][z] = static_cast<unsigned char>(BlockType::BT_WOOD);
 					}
 					// Tree trunk
 
@@ -516,7 +516,7 @@ BlockClass Chunk::GetBlockClass(const glm::vec3& blockPos) const noexcept
 		[static_cast<int>(blockPos.z)]
 		);
 
-	if (blockType >= BlockType::BT_GROUND_GRASS && blockType <= BlockType::BT_SAND)
+	if (blockType >= BlockType::BT_GROUND_GRASS && blockType <= BlockType::BT_PLANKS)
 	{
 		return BlockClass::BC_OPAQUE;
 	}

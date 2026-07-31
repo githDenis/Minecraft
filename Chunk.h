@@ -8,10 +8,11 @@
 enum class BlockType : unsigned char {
 	BT_GROUND_GRASS,
 	BT_GROUND,
-	BT_TREE,
+	BT_WOOD,
 	BT_LEAVES,
 	BT_STONE,
 	BT_SAND,
+	BT_PLANKS,
 	BT_GRASS,
 	BT_YELLOW_FLOWER,
 	BT_RED_FLOWER,

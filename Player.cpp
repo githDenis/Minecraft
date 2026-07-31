@@ -170,8 +170,8 @@ void Player::SelectRightItem() noexcept
 	inventory.SelectRightItem();
 }
 
-void Player::ProcessingMouseCkick(InputManager* inputManager, Texture* itemTexture, Texture* textTexture,
-	UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
+void Player::ProcessingMouseCkick(InputManager* inputManager, 
+	Texture* itemTexture, Texture* textTexture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
 {
 	inventory.ProcessingMouseCkick(inputManager, itemTexture, textTexture, uvs);
 }
@@ -197,6 +197,11 @@ void Player::ThrowOutItemFromHotbar(World* world, Texture* texture,
 	UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
 {
 	inventory.ThrowOutItemFromHotbar(world, this, texture, uvs);
+}
+
+void Player::CheckCrafting(Texture* itemTexture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT])
+{
+	inventory.CheckCrafting(itemTexture, uvs);
 }
 
 bool Player::Colides(World* world, const glm::vec3& blockPos) noexcept
@@ -233,5 +238,5 @@ bool Player::Colides(World* world, const glm::vec3& blockPos) noexcept
 bool Player::ColidesAxis(World* world, const glm::vec3& blockPos) noexcept
 {
 	BlockType blockType = static_cast<BlockType>(world->GetBlockType(blockPos, GetPosition()));
-	return blockType >= BlockType::BT_GROUND_GRASS && blockType <= BlockType::BT_SAND;
+	return blockType >= BlockType::BT_GROUND_GRASS && blockType <= BlockType::BT_PLANKS;
 }
