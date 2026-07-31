@@ -30,7 +30,7 @@ void DroppedBlock::Init(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], const Tex
 
 void DroppedBlock::Draw(Render* render)
 {
-	render->DrawActor(actor, false);
+	render->DrawActor(actor, false, false);
 }
 
 void DroppedBlock::SimulatePhysics(float deltaTime)
@@ -86,6 +86,8 @@ const char* DroppedBlock::GetBlockText() noexcept
 	case BlockType::BT_LEAVES: return "Leaves";
 	case BlockType::BT_STONE: return "Stone";
 	case BlockType::BT_SAND: return "Sand";
+	case BlockType::BT_PLANKS: return "Planks";
+	case BlockType::BT_CRAFTING_TABLE: return "Crafting table";
 	case BlockType::BT_GRASS: return "Grass";
 	case BlockType::BT_YELLOW_FLOWER: return "Yellow flower";
 	case BlockType::BT_RED_FLOWER: return "Red flower";

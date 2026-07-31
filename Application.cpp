@@ -43,6 +43,7 @@ void Application::Run()
 		{ texture.GetUV(1, 32, 16), texture.GetUV(1, 32, 16), texture.GetUV(1, 32, 16) },      //Stone
 		{ texture.GetUV(34, 32, 16), texture.GetUV(34, 32, 16), texture.GetUV(34, 32, 16) },   //Sand
 		{ texture.GetUV(4, 32, 16), texture.GetUV(4, 32, 16), texture.GetUV(4, 32, 16) },      //Planks
+		{ texture.GetUV(75, 32, 16), texture.GetUV(107, 32, 16), texture.GetUV(75, 32, 16) },  //Crafting table
 		{ texture.GetUV(87, 32, 16), texture.GetUV(87, 32, 16), texture.GetUV(87, 32, 16) },   //Grass
 		{ texture.GetUV(29, 32, 16), texture.GetUV(29, 32, 16), texture.GetUV(29, 32, 16) },   //Yellow flower
 		{ texture.GetUV(28, 32, 16), texture.GetUV(28, 32, 16), texture.GetUV(28, 32, 16) },   //Red flower

@@ -193,6 +193,8 @@
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="FolliageFragmentShader.glsl" />
+    <None Include="FolliageVertexShader.glsl" />
     <None Include="FragmentShader.glsl" />
     <None Include="UIFragmentShader.glsl" />
     <None Include="UIVertexShader.glsl" />

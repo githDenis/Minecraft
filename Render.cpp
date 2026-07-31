@@ -1,9 +1,11 @@
 #include "Render.h"
 
-Render::Render(Window* window, ShaderProgram* shaderProgram, ShaderProgram* UIshaderProgram) noexcept
+Render::Render(Window* window, ShaderProgram* shaderProgram, ShaderProgram* folliageShaderProgram,
+	ShaderProgram* UIshaderProgram) noexcept
 {
 	this->window = window;
 	this->shaderProgram = shaderProgram;
+	this->folliageShaderProgram = folliageShaderProgram;
 	this->UIShaderProgram = UIshaderProgram;
 }
 
@@ -26,9 +28,17 @@ void Render::SetViewport()
 	glViewport(0, 0, window->GetWidth(), window->GetHeight());
 }
 
-void Render::DrawActor(Actor& actor, bool isTransparent)
+void Render::DrawActor(Actor& actor, bool isFolliage, bool isTransparent)
 {
-	shaderProgram->SetMatrix4VariableValue("model", actor.GetModelMattrix());
+	if (!isFolliage)
+	{
+		shaderProgram->SetMatrix4VariableValue("model", actor.GetModelMattrix());
+	}
+	else
+	{
+		folliageShaderProgram->Use();
+		folliageShaderProgram->SetMatrix4VariableValue("model", actor.GetModelMattrix());
+	}
 
 	if (isTransparent)
 	{
@@ -43,6 +53,7 @@ void Render::DrawActor(Actor& actor, bool isTransparent)
 	{
 		glDisable(GL_BLEND);
 	}
+	shaderProgram->Use();
 }
 
 void Render::DrawUIActor(UIActor& actor, int mode)
@@ -76,6 +87,13 @@ void Render::DrawUIActor(UIActor& actor, int mode)
 
 void Render::ApplyCameraData(const Camera& camera)
 {
+	shaderProgram->Use();
 	shaderProgram->SetMatrix4VariableValue("view", camera.GetViewMatrix());
 	shaderProgram->SetMatrix4VariableValue("projection", camera.GetProjectionMatrix(window->GetWidth(), window->GetHeight()));
+
+	folliageShaderProgram->Use();
+	folliageShaderProgram->SetMatrix4VariableValue("view", camera.GetViewMatrix());
+	folliageShaderProgram->SetMatrix4VariableValue("projection", camera.GetProjectionMatrix(window->GetWidth(), window->GetHeight()));
+
+	shaderProgram->Use();
 }

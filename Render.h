@@ -13,15 +13,17 @@ class Render
 private:
 	Window* window;
 	ShaderProgram* shaderProgram;
+	ShaderProgram* folliageShaderProgram;
 	ShaderProgram* UIShaderProgram;
 
 public:
-	explicit Render(Window* window, ShaderProgram* shaderProgram, ShaderProgram* UIshaderProgram) noexcept;
+	explicit Render(Window* window, ShaderProgram* shaderProgram, ShaderProgram* folliageShaderProgram,
+		ShaderProgram* UIshaderProgram) noexcept;
 
 	void Init();
 	void Clear(const Color& color);
 	void SetViewport();
-	void DrawActor(Actor& actor, bool isTransparent);
+	void DrawActor(Actor& actor, bool isFolliage, bool isTransparent);
 	void DrawUIActor(UIActor& actor, int mode);
 	void ApplyCameraData(const Camera& camera);
 };

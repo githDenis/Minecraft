@@ -19,6 +19,7 @@ int main()
 	app.Init();
 
 	ShaderProgram shaderProgram;
+	ShaderProgram folliageShaderProgram;
 	ShaderProgram UIShaderProgram;
 
 	Window window("Game window", WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -29,7 +30,7 @@ int main()
 	inputManager.BindMouseScrollCallback();
 	inputManager.EnableGamemode();
 
- 	Render render(&window, &shaderProgram, &UIShaderProgram);
+ 	Render render(&window, &shaderProgram, &folliageShaderProgram, &UIShaderProgram);
 
 	Player player(&window, &inputManager);
 
@@ -55,6 +56,25 @@ int main()
 	shaderProgram.AddShader(fragmentShader);
 	shaderProgram.Link();
 	// World Shaders
+
+
+	// Folliage Shaders
+	Shader folVertexShader;
+	folVertexShader.Create(ShaderType::ST_VERTEX);
+	folVertexShader.ReadShaderFile("E:\\C++\\Minecraft\\FolliageVertexShader.glsl");
+	folVertexShader.Compile();
+
+	Shader folFragmentShader;
+	folFragmentShader.Create(ShaderType::ST_FRAGMENT);
+	folFragmentShader.ReadShaderFile("E:\\C++\\Minecraft\\FolliageFragmentShader.glsl");
+	folFragmentShader.Compile();
+
+	folliageShaderProgram.Create();
+	folliageShaderProgram.AddShader(folVertexShader);
+	folliageShaderProgram.AddShader(folFragmentShader);
+	folliageShaderProgram.Link();
+	// Folliage Shaders
+
 
 	// UI Shaders
 	Shader UIVertexShader;

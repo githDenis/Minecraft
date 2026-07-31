@@ -37,5 +37,5 @@ void HeldItem::UpdateRotation(Camera* camera)
 
 void HeldItem::Draw(Render* render)
 {
-	render->DrawActor(actor, false);
+	render->DrawActor(actor, false, false);
 }

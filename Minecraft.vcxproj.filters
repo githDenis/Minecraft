@@ -187,6 +187,12 @@
     <None Include="UIFragmentShader.glsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="FolliageFragmentShader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="FolliageVertexShader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="C:\Users\Roma&amp;Denis\Downloads\Wood.jpg">

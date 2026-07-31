@@ -734,12 +734,12 @@ int Inventory::GetOutputItemCountFromRecipe() noexcept
 			if (slots[j].block.GetBlockType() != BlockType::BT_AIR)
 			{
 				counts[j - CRAFT_SLOT_START_INDEX]--;
-
-				if (counts[j - CRAFT_SLOT_START_INDEX] >= 0)
-				{
-					result++;
-				}
 			}
+		}
+
+		if (counts[0] >= 0 && counts[1] >= 0 && counts[2] >= 0 && counts[3] >= 0)
+		{
+			result++;
 		}
 	}
 	return result;

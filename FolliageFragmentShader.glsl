@@ -10,8 +10,12 @@ void main()
 {
     vec4 color = texture(aTexture, TexCoord);
 
-    FragColor = color;
-
-    color.a *= 0.4;
-    FragColor = color;
+    if (color.r < 0.15 && color.g < 0.15 && color.b < 0.15)
+    {
+        discard;
+    }
+    else
+    {
+        FragColor = color;
+    }
 }

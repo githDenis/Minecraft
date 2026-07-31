@@ -98,10 +98,11 @@ private:
 			4,
 		},
 
-		//Recipe {
-		//	{ BlockType::BT_WOOD, BlockType::BT_WOOD, ,BlockType::BT_WOOD, BlockType::BT_WOOD },
-		//	Bl
-		//},
+		Recipe {
+			{ BlockType::BT_PLANKS, BlockType::BT_PLANKS, BlockType::BT_PLANKS, BlockType::BT_PLANKS },
+			BlockType::BT_CRAFTING_TABLE,
+			1,
+		},
 	};
 
 

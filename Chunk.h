@@ -13,6 +13,7 @@ enum class BlockType : unsigned char {
 	BT_STONE,
 	BT_SAND,
 	BT_PLANKS,
+	BT_CRAFTING_TABLE,
 	BT_GRASS,
 	BT_YELLOW_FLOWER,
 	BT_RED_FLOWER,
@@ -40,14 +41,17 @@ public:
 private:
 	unsigned char blockTypes[CHUNK_WIDTH][CHUNK_HEIGHT][CHUNK_LENGTH];
 	unsigned int opaqueMeshVertexOffset;
+	unsigned int folliageMeshVertexOffset;
 	unsigned int transparentMeshVertexOffset;
 
 	Mesh opaqueMesh;
+	Mesh folliageMesh;
 	Mesh transparentMesh;
 
 	glm::vec3 position;
 	Texture* textures;
 	Actor opaqueActor;
+	Actor folliageActor;
 	Actor transparentActor;
 
 public:
@@ -77,9 +81,9 @@ public:
 	void GenerateFolliageType(BlockType type, int intencity) noexcept;
 	void GenerateMeshVerticesAndTextCoords(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
 	void AddCubeToMesh(const glm::vec3& pos, Mesh& mesh, unsigned int& vertexOffset) noexcept;
-	void AddCrossPlanesToMesh(const glm::vec3& pos, Mesh& mesh) noexcept;
+	void AddCrossPlanesToMesh(const glm::vec3& pos, Mesh& mesh, unsigned int& vertexOffset) noexcept;
 	void AddCubeTextureCoords(const UV& up, const UV& front, const UV& down, Mesh& mesh) noexcept;
-	void AddCrossPlanesTextureCoords(const UV& front) noexcept;
+	void AddCrossPlanesTextureCoords(const UV& front, Mesh& mesh) noexcept;
 	void InitMesh();
 	void Draw(Render* render);
 

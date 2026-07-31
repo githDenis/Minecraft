@@ -14,10 +14,12 @@ Chunk& Chunk::operator=(Chunk&& another) noexcept
 	}
 
 	opaqueMeshVertexOffset = another.opaqueMeshVertexOffset;
+	folliageMeshVertexOffset = another.folliageMeshVertexOffset;
 	transparentMeshVertexOffset = another.transparentMeshVertexOffset;
 	position = another.position;
 	textures = another.textures;
 	opaqueMesh = std::move(another.opaqueMesh);
+	folliageMesh = std::move(another.folliageMesh);
 	transparentMesh = std::move(another.transparentMesh);
 
 	for (int x = 0; x < CHUNK_WIDTH; x++)
@@ -218,6 +220,7 @@ void Chunk::GenerateFolliageType(BlockType type, int intencity) noexcept
 void Chunk::GenerateMeshVerticesAndTextCoords(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
 {
 	opaqueMeshVertexOffset = 0;
+	folliageMeshVertexOffset = 0;
 	transparentMeshVertexOffset = 0;
 
 	for (int x = 0; x < CHUNK_WIDTH; x++)
@@ -247,8 +250,8 @@ void Chunk::GenerateMeshVerticesAndTextCoords(UV uvs[Chunk::BLOCKS_COUNT][Chunk:
 				}
 				else if (blockClass == BlockClass::BC_FOLLIAGE)
 				{
-					AddCrossPlanesToMesh(glm::vec3{ blockPos }, opaqueMesh);
-					AddCrossPlanesTextureCoords(uvs[static_cast<int>(blockType)][0]);
+					AddCrossPlanesToMesh(glm::vec3{ blockPos }, folliageMesh, folliageMeshVertexOffset);
+					AddCrossPlanesTextureCoords(uvs[static_cast<int>(blockType)][0], folliageMesh);
 				}
 				else
 				{
@@ -351,7 +354,7 @@ void Chunk::AddCubeToMesh(const glm::vec3& pos, Mesh& mesh, unsigned int& vertex
 	vertexOffset += 24;
 }
 
-void Chunk::AddCrossPlanesToMesh(const glm::vec3& pos, Mesh& mesh) noexcept
+void Chunk::AddCrossPlanesToMesh(const glm::vec3& pos, Mesh& mesh, unsigned int& vertexOffset) noexcept
 {
 	float vertices[] =
 	{
@@ -383,20 +386,20 @@ void Chunk::AddCrossPlanesToMesh(const glm::vec3& pos, Mesh& mesh) noexcept
 	unsigned int indices[] =
 	{
 		// Plane 1
-		0 + opaqueMeshVertexOffset, 1 + opaqueMeshVertexOffset, 2 + opaqueMeshVertexOffset,
-		2 + opaqueMeshVertexOffset, 3 + opaqueMeshVertexOffset, 0 + opaqueMeshVertexOffset,
+		0 + vertexOffset, 1 + vertexOffset, 2 + vertexOffset,
+		2 + vertexOffset, 3 + vertexOffset, 0 + vertexOffset,
 
 		//(Opposite Plane 1)
-		8 + opaqueMeshVertexOffset, 9 + opaqueMeshVertexOffset, 10 + opaqueMeshVertexOffset,
-		10 + opaqueMeshVertexOffset, 11 + opaqueMeshVertexOffset, 8 + opaqueMeshVertexOffset,
+		8 + vertexOffset, 9 + vertexOffset, 10 + vertexOffset,
+		10 + vertexOffset, 11 + vertexOffset, 8 + vertexOffset,
 
 		// Plane 2
-		4 + opaqueMeshVertexOffset, 5 + opaqueMeshVertexOffset, 6 + opaqueMeshVertexOffset,
-		6 + opaqueMeshVertexOffset, 7 + opaqueMeshVertexOffset, 4 + opaqueMeshVertexOffset,
+		4 + vertexOffset, 5 + vertexOffset, 6 + vertexOffset,
+		6 + vertexOffset, 7 + vertexOffset, 4 + vertexOffset,
 
 		//(Opposite Plane 2)
-		12 + opaqueMeshVertexOffset, 13 + opaqueMeshVertexOffset, 14 + opaqueMeshVertexOffset,
-		14 + opaqueMeshVertexOffset, 15 + opaqueMeshVertexOffset, 12 + opaqueMeshVertexOffset,
+		12 + vertexOffset, 13 + vertexOffset, 14 + vertexOffset,
+		14 + vertexOffset, 15 + vertexOffset, 12 + vertexOffset,
 	};
 	static constexpr int vertSize = sizeof(vertices) / sizeof(vertices[0]);
 	static constexpr int indSize = sizeof(indices) / sizeof(indices[0]);
@@ -404,7 +407,7 @@ void Chunk::AddCrossPlanesToMesh(const glm::vec3& pos, Mesh& mesh) noexcept
 	mesh.GetVertices().AddArray(vertices, vertSize);
 	mesh.GetIndices().AddArray(indices, indSize);
 
-	opaqueMeshVertexOffset += 16;
+	vertexOffset += 16;
 }
 
 void Chunk::AddCubeTextureCoords(const UV& up, const UV& front, const UV& down, Mesh& mesh) noexcept
@@ -457,7 +460,7 @@ void Chunk::AddCubeTextureCoords(const UV& up, const UV& front, const UV& down, 
 	mesh.GetTextCoords().AddArray(coords, size);
 }
 
-void Chunk::AddCrossPlanesTextureCoords(const UV& front) noexcept
+void Chunk::AddCrossPlanesTextureCoords(const UV& front, Mesh& mesh) noexcept
 {
 	float coords[] =
 	{
@@ -486,12 +489,13 @@ void Chunk::AddCrossPlanesTextureCoords(const UV& front) noexcept
 		front.u0, front.v0,
 	};
 	static constexpr int size = sizeof(coords) / sizeof(coords[0]);
-	opaqueMesh.GetTextCoords().AddArray(coords, size);
+	mesh.GetTextCoords().AddArray(coords, size);
 }
 
 void Chunk::InitMesh()
 {
 	opaqueMesh.InitMesh();
+	folliageMesh.InitMesh();
 	transparentMesh.InitMesh();
 }
 
@@ -500,12 +504,17 @@ void Chunk::Draw(Render* render)
 	opaqueActor.SetTexture(textures);
 	opaqueActor.SetMesh(&opaqueMesh);
 	opaqueActor.SetPosition(position);
-	render->DrawActor(opaqueActor, false);
+	render->DrawActor(opaqueActor, false, false);
+
+	folliageActor.SetTexture(textures);
+	folliageActor.SetMesh(&folliageMesh);
+	folliageActor.SetPosition(position);
+	render->DrawActor(folliageActor, true, false);
 
 	transparentActor.SetTexture(textures);
 	transparentActor.SetMesh(&transparentMesh);
 	transparentActor.SetPosition(position);
-	render->DrawActor(transparentActor, true);
+	render->DrawActor(transparentActor, false, true);
 }
 
 BlockClass Chunk::GetBlockClass(const glm::vec3& blockPos) const noexcept
@@ -516,7 +525,7 @@ BlockClass Chunk::GetBlockClass(const glm::vec3& blockPos) const noexcept
 		[static_cast<int>(blockPos.z)]
 		);
 
-	if (blockType >= BlockType::BT_GROUND_GRASS && blockType <= BlockType::BT_PLANKS)
+	if (blockType >= BlockType::BT_GROUND_GRASS && blockType < BlockType::BT_GRASS)
 	{
 		return BlockClass::BC_OPAQUE;
 	}
