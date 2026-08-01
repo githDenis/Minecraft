@@ -147,6 +147,14 @@ void Application::Run()
 			}
 		}
 
+		if (inputManager->IsKeyPressed(GLFW_KEY_LEFT_SHIFT))
+		{
+			if (player->IsItemDragging())
+			{
+				player->SplitItems(&texture, uvs);
+			}
+		}
+
 		int scrollDelta = inputManager->GetMouseScrollDelta();
 
 		if (scrollDelta > 0)

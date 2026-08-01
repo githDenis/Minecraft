@@ -199,6 +199,11 @@ void Player::ThrowOutItemFromHotbar(World* world, Texture* texture,
 	inventory.ThrowOutItemFromHotbar(world, this, texture, uvs);
 }
 
+void Player::SplitItems(Texture* itemTexture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
+{
+	inventory.SplitItems(itemTexture, uvs);
+}
+
 void Player::CheckCrafting(Texture* itemTexture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT])
 {
 	inventory.CheckCrafting(itemTexture, uvs);

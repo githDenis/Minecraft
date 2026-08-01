@@ -658,6 +658,60 @@ void Inventory::SwapSlots(Slot& slot1, Slot& slot2, Texture* itemTexture, Textur
 	// ------------------------ Slot 2 ------------------------ //
 }
 
+void Inventory::SplitItems(Texture* itemTexture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
+{
+	float x = draggingSlot.actor.GetPosition().x;
+	float y = draggingSlot.actor.GetPosition().y;
+
+	BlockType blockType = draggingSlot.block.GetBlockType();
+
+	for (int i = 0; i < SLOTS_COUNT; i++)
+	{
+		glm::vec3 slotPos = slots[i].actor.GetPosition();
+
+		if ((x >= slotPos.x - SLOT_WIDTH / 4 && x <= slotPos.x + SLOT_WIDTH / 4) &&
+			(y >= slotPos.y - SLOT_HEIGHT / 2 && y <= slotPos.y + SLOT_HEIGHT / 2))
+		{
+			if (draggingSlot.count > 0)
+			{
+				draggingSlot.count--;
+
+				slots[i].count++;
+
+				BlockClass blockClass = draggingSlot.block.GetBlockClass();
+				BlockType blockType = draggingSlot.block.GetBlockType();
+
+				DroppedBlock block;
+				block.Init(uvs, itemTexture, blockClass, blockType, glm::vec3(0.f, 0.f, 0.f));
+
+				slots[i].block = std::move(block);
+				slots[i].block.SetAliveState(false);
+				slots[i].mesh.SetRectangleUV(uvs[static_cast<int>(blockType)][1]);
+				slots[i].mesh.Init();
+
+				slots[i].actor.SetMesh(&slots[i].mesh);
+				slots[i].actor.SetTexture(itemTexture);
+
+				std::string textCount = std::to_string(slots[i].count);
+				slots[i].countText.SetText(textCount.c_str());
+
+				std::string blockDescription = slots[i].block.GetBlockText();
+				float desctiptionWidth = blockDescription.length() * Text::CHAR_WIDTH / 2;
+				float desctiptionHeight = Text::CHAR_HEIGHT;
+
+				slots[i].description.Init(desctiptionWidth, desctiptionHeight);
+
+				if (draggingSlot.count <= 0)
+				{
+					ResetSlot(draggingSlot);
+					isItemDragging = false;
+					return;
+				}
+			}
+		}
+	}
+}
+
 void Inventory::CheckCrafting(Texture* itemTexture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
 {
 	std::array<BlockType, 4> currentRecipe;

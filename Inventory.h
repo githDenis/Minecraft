@@ -131,6 +131,11 @@ public:
 		return slots[currentItem].block.GetBlockClass();
 	}
 
+	bool IsItemDragging() const noexcept
+	{
+		return isItemDragging;
+	}
+
 	void SetMainWindow(Window* mainWindow) noexcept;
 	void Init(Texture* textTexture) noexcept;
 	void ShowInventory(Render* render) noexcept;
@@ -158,6 +163,8 @@ public:
 	void ShowDraggingItem(Render* render) noexcept;
 	void SwapSlots(Slot& slot1, Slot& slot2, Texture* itemTexture, Texture* textTexture,
 		UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
+	void SplitItems(Texture* itemTexture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
+
 	void CheckCrafting(Texture* itemTexture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
 	int GetOutputItemCountFromRecipe() noexcept;
 	void UseCraftRecouses(int count) noexcept;
