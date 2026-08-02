@@ -16,8 +16,8 @@ public:
 	static constexpr float CHAR_HEIGHT = 0.13f;
 
 private:
-	int charsInRow;
-	int charsInColumn;
+	short charsInRow;
+	short charsInColumn;
 	int charsCount;
 
 	Window* window;
@@ -41,12 +41,12 @@ public:
 		this->texture = texture;
 	}
 
-	void SetCharsInRow(int charsInRow) noexcept
+	void SetCharsInRow(short charsInRow) noexcept
 	{
 		this->charsInRow = charsInRow;
 	}
 
-	void SetCharsInColumn(int charsInColumn) noexcept
+	void SetCharsInColumn(short charsInColumn) noexcept
 	{
 		this->charsInColumn = charsInColumn;
 	}

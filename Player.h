@@ -91,7 +91,7 @@ public:
 	void ThrowOutItemFromHotbar(World* world, Texture* texture,
 		UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
 	void SplitItems(Texture* itemTexture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
-	void CheckCrafting(Texture* itemTexture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]);
+	void CheckCrafting(World* world, Texture* itemTexture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
 
 	bool Colides(World* world, const glm::vec3& blockPos) noexcept;
 	bool ColidesAxis(World* world, const glm::vec3& blockPos) noexcept;

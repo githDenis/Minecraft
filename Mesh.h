@@ -50,7 +50,7 @@ public:
 	void GenerateCrossPlanes() noexcept;
 	void GenerateCrossPlanesWithOffset(const glm::vec3& offset) noexcept;
 	void SetCrossPlanesUV(const UV& front) noexcept;
-
+	
 	void InitMesh();
 
 	Mesh() noexcept = default;

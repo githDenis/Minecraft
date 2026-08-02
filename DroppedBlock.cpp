@@ -14,6 +14,11 @@ void DroppedBlock::Init(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], const Tex
 	{
 		mesh.GenerateCrossPlanes();
 		mesh.SetCrossPlanesUV(uvs[static_cast<int>(blockType)][0]);
+
+		if (blockType == BlockType::BT_STICK)
+		{
+			actor.SetScale(glm::vec3(0.1f, 1.f, 0.1f));
+		}
 	}
 	mesh.InitMesh();
 
@@ -92,6 +97,7 @@ const char* DroppedBlock::GetBlockText() noexcept
 	case BlockType::BT_GRASS: return "Grass";
 	case BlockType::BT_YELLOW_FLOWER: return "Yellow flower";
 	case BlockType::BT_RED_FLOWER: return "Red flower";
+	case BlockType::BT_STICK: return "Stick";
 	default: return "";
 	}
 }

@@ -17,6 +17,7 @@ enum class BlockType : unsigned char {
 	BT_GRASS,
 	BT_YELLOW_FLOWER,
 	BT_RED_FLOWER,
+	BT_STICK,
 	BT_WATER,
 	BT_AIR,
 };

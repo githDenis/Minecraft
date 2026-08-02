@@ -88,7 +88,7 @@ private:
 	int currentItem = SLOT_COUNT_IN_ROW * (ROW_COUNT - 1);
 	int draggingItemIndex;
 	
-	static const int RECIPES_COUNT = 2;
+	static const int RECIPES_COUNT = 3;
 	
 	std::array<Recipe, RECIPES_COUNT> recipes
 	{
@@ -99,12 +99,17 @@ private:
 		},
 
 		Recipe {
+			{ BlockType::BT_PLANKS, BlockType::BT_AIR, BlockType::BT_PLANKS, BlockType::BT_AIR },
+			BlockType::BT_STICK,
+			4,
+		},
+
+		Recipe {
 			{ BlockType::BT_PLANKS, BlockType::BT_PLANKS, BlockType::BT_PLANKS, BlockType::BT_PLANKS },
 			BlockType::BT_CRAFTING_TABLE,
 			1,
 		},
 	};
-
 
 	void InitInventoryWindow() noexcept;
 	void GenerateSlots(Texture* textTexture) noexcept;
@@ -165,7 +170,7 @@ public:
 		UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
 	void SplitItems(Texture* itemTexture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
 
-	void CheckCrafting(Texture* itemTexture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
+	void CheckCrafting(World* world, Texture* itemTexture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
 	int GetOutputItemCountFromRecipe() noexcept;
 	void UseCraftRecouses(int count) noexcept;
 };

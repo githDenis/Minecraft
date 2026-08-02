@@ -204,21 +204,21 @@ void Player::SplitItems(Texture* itemTexture, UV uvs[Chunk::BLOCKS_COUNT][Chunk:
 	inventory.SplitItems(itemTexture, uvs);
 }
 
-void Player::CheckCrafting(Texture* itemTexture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT])
+void Player::CheckCrafting(World* world, Texture* itemTexture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
 {
-	inventory.CheckCrafting(itemTexture, uvs);
+	inventory.CheckCrafting(world, itemTexture, uvs);
 }
 
 bool Player::Colides(World* world, const glm::vec3& blockPos) noexcept
 {
-	int minX = floor(blockPos.x - 0.2f);
-	int maxX = floor(blockPos.x + 0.2f);
+	int minX = blockPos.x - 0.2f;
+	int maxX = blockPos.x + 0.2f;
 
-	int minY = floor(blockPos.y - 1.f);
-	int maxY = floor(blockPos.y);
+	int minY = blockPos.y - 1.f;
+	int maxY = blockPos.y;
 
-	int minZ = floor(blockPos.z - 0.2f);
-	int maxZ = floor(blockPos.z + 0.2f);
+	int minZ = blockPos.z - 0.2f;
+	int maxZ = blockPos.z + 0.2f;
 
 	glm::vec3 groundVec = blockPos;
 	groundVec.y -= 1.8f;
@@ -242,6 +242,6 @@ bool Player::Colides(World* world, const glm::vec3& blockPos) noexcept
 
 bool Player::ColidesAxis(World* world, const glm::vec3& blockPos) noexcept
 {
-	BlockType blockType = static_cast<BlockType>(world->GetBlockType(blockPos, GetPosition()));
-	return blockType >= BlockType::BT_GROUND_GRASS && blockType <= BlockType::BT_PLANKS;
+	BlockType blockType = world->GetBlockType(blockPos, GetPosition());
+	return blockType >= BlockType::BT_GROUND_GRASS && blockType < BlockType::BT_GRASS;
 }

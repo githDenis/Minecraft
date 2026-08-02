@@ -360,6 +360,13 @@ BlockType World::GetBlockType(const glm::vec3& blockPos, const glm::vec3& player
 	return chunks[chunkIndex].GetBlockType(pos);
 }
 
+BlockClass World::GetBlockClassByType(BlockType type) const noexcept
+{
+	if (type >= BlockType::BT_GROUND_GRASS && type < BlockType::BT_GRASS) return BlockClass::BC_OPAQUE;
+	else if (type >= BlockType::BT_GRASS && type < BlockType::BT_WATER) return BlockClass::BC_FOLLIAGE;
+	else return BlockClass::BC_TRANSPARENT;
+}
+
 glm::vec3 World::GetBlockPos(const glm::vec3& pos, const glm::vec3& playerPos) const noexcept
 {
 	int xChunk = floor(pos.x / Chunk::CHUNK_WIDTH);

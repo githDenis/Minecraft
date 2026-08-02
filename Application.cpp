@@ -47,6 +47,7 @@ void Application::Run()
 		{ texture.GetUV(87, 32, 16), texture.GetUV(87, 32, 16), texture.GetUV(87, 32, 16) },   //Grass
 		{ texture.GetUV(29, 32, 16), texture.GetUV(29, 32, 16), texture.GetUV(29, 32, 16) },   //Yellow flower
 		{ texture.GetUV(28, 32, 16), texture.GetUV(28, 32, 16), texture.GetUV(28, 32, 16) },   //Red flower
+		{ texture.GetUV(208, 32, 16), texture.GetUV(208, 32, 16), texture.GetUV(208, 32, 16) },//Stick
 		{ texture.GetUV(369, 32, 16), texture.GetUV(369, 32, 16), texture.GetUV(369, 32, 16) },//Water
 	};
 
@@ -106,7 +107,7 @@ void Application::Run()
 			if (player->IsInventoryUsing())
 			{
 				player->ProcessingMouseRelease(&world, &texture, &textTexture, uvs);
-				player->CheckCrafting(&texture, uvs);
+				player->CheckCrafting(&world, &texture, uvs);
 			}
 			else
 			{

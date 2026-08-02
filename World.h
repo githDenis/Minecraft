@@ -55,6 +55,7 @@ public:
 		const glm::vec3& pos, const glm::vec3& forwardVector) noexcept;
 
 	BlockType GetBlockType(const glm::vec3& blockPos, const glm::vec3& playerPos) const noexcept;
+	BlockClass GetBlockClassByType(BlockType type) const noexcept;
 	glm::vec3 GetBlockPos(const glm::vec3& pos, const glm::vec3& playerPos) const noexcept;
 	glm::vec2 GetChunkPos(const glm::vec3& pos) const noexcept;
 	int GetChunkIndex(const glm::vec3& pos, const glm::vec3& playerPos) const noexcept;

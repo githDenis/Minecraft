@@ -529,7 +529,7 @@ BlockClass Chunk::GetBlockClass(const glm::vec3& blockPos) const noexcept
 	{
 		return BlockClass::BC_OPAQUE;
 	}
-	else if (blockType >= BlockType::BT_GRASS && blockType <= BlockType::BT_RED_FLOWER)
+	else if (blockType >= BlockType::BT_GRASS && blockType < BlockType::BT_WATER)
 	{
 		return BlockClass::BC_FOLLIAGE;
 	}

@@ -423,7 +423,7 @@ void Inventory::ThrowOutItemFromHotbar(World* world, Player* player, Texture* te
 void Inventory::ThrowOutBlockFromSlot(const Slot& slot, World* world, Player* player, Texture* texture,
 	UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
 {
-	BlockType blockType = slot. block.GetBlockType();
+	BlockType blockType = slot.block.GetBlockType();
 	BlockClass blockClass = slot.block.GetBlockClass();
 	DroppedBlock droppedBlock;
 	glm::vec3 pos = player->GetPosition() + player->GetCamera().GetFrontMovementVector() * 4.f;
@@ -709,7 +709,7 @@ void Inventory::SplitItems(Texture* itemTexture, UV uvs[Chunk::BLOCKS_COUNT][Chu
 	}
 }
 
-void Inventory::CheckCrafting(Texture* itemTexture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
+void Inventory::CheckCrafting(World* world, Texture* itemTexture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
 {
 	std::array<BlockType, 4> currentRecipe;
 
@@ -748,8 +748,11 @@ void Inventory::CheckCrafting(Texture* itemTexture, UV uvs[Chunk::BLOCKS_COUNT][
 			slots[CRAFT_RESULT_SLOT_INDEX].actor.SetMesh(&slots[CRAFT_RESULT_SLOT_INDEX].mesh);
 			slots[CRAFT_RESULT_SLOT_INDEX].actor.SetTexture(itemTexture);
 
+			BlockClass blockClass = world->GetBlockClassByType(recipes[i].outputBlock);
+
 			DroppedBlock newBlock;
-			newBlock.Init(uvs, itemTexture, BlockClass::BC_OPAQUE, recipes[i].outputBlock, glm::vec3(0, 0, 0));
+			
+			newBlock.Init(uvs, itemTexture, blockClass, recipes[i].outputBlock, glm::vec3(0, 0, 0));
 			slots[CRAFT_RESULT_SLOT_INDEX].block = std::move(newBlock);
 
 			slots[CRAFT_RESULT_SLOT_INDEX].count = GetOutputItemCountFromRecipe() * countCoeff;
