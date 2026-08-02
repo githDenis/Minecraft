@@ -40,3 +40,9 @@ void HeldBlock::Init(Texture* texture)
 	actor.SetPosition(offset);
 	actor.SetScale(scale);
 }
+
+void HeldBlock::Draw(Render* render)
+{
+	bool isFoliage = blockClass == BlockClass::BC_FOLLIAGE;
+	render->DrawActor(actor, isFoliage, false);
+}

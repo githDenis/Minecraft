@@ -30,5 +30,5 @@ public:
 
 	void UpdatePosition(Camera* camera);
 	void UpdateRotation(Camera* camera);
-	void Draw(Render* render);
+	virtual void Draw(Render* render);
 };

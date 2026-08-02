@@ -166,13 +166,12 @@ void Inventory::InitDraggingSlot(Slot& slot, Texture* itemTexture, Texture* text
 
 	draggingSlot.block = std::move(slot.block);
 
-	std::string blockDescription = draggingSlot.block.GetBlockText();
-	float desctiptionWidth = blockDescription.length() * Text::CHAR_WIDTH / 2;
-	float desctiptionHeight = Text::CHAR_HEIGHT;
+	const char* blockDescription = draggingSlot.block.GetBlockText();
+	float desctiptionWidth = strlen(blockDescription) * Text::CHAR_WIDTH / 2;
 
 	draggingSlot.description.SetWindow(mainWindow);
 	draggingSlot.description.SetTextTexture(textTexture);
-	draggingSlot.description.Init(desctiptionWidth, desctiptionHeight);
+	draggingSlot.description.Init(desctiptionWidth, DESCRIPTION_HEIGHT);
 }
 
 void Inventory::InitCraftingText(Texture* textTexture) noexcept
@@ -291,8 +290,8 @@ void Inventory::AddItem(DroppedBlock& droppedBlock, Texture* texture,
 			std::string textCount = std::to_string(slots[i].count);
 			slots[i].countText.SetText(textCount.c_str());
 
-			std::string blockDescription = slots[i].block.GetBlockText();
-			float desctiptionWidth = blockDescription.length() * Text::CHAR_WIDTH / 2;
+			const char* blockDescription = slots[i].block.GetBlockText();
+			float desctiptionWidth = strlen(blockDescription) * Text::CHAR_WIDTH / 2;
 
 			slots[i].description.Init(desctiptionWidth, DESCRIPTION_HEIGHT);
 			break;
@@ -522,11 +521,10 @@ void Inventory::ProcessingMouseRelease(World* world, Player* player, Texture* te
 						std::string textCount = std::to_string(slots[i].count);
 						slots[i].countText.SetText(textCount.c_str());
 
-						std::string blockDescription = slots[i].block.GetBlockText();
-						float desctiptionWidth = blockDescription.length() * Text::CHAR_WIDTH / 2;
-						float desctiptionHeight = Text::CHAR_HEIGHT;
+						const char* blockDescription = slots[i].block.GetBlockText();
+						float desctiptionWidth = strlen(blockDescription) * Text::CHAR_WIDTH / 2;
 
-						slots[i].description.Init(desctiptionWidth, desctiptionHeight);
+						slots[i].description.Init(desctiptionWidth, DESCRIPTION_HEIGHT);
 					}
 				}
 				else
@@ -579,12 +577,12 @@ void Inventory::SwapSlots(Slot& slot1, Slot& slot2, Texture* itemTexture, Textur
 	UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
 {
 	std::string textCount;
-	std::string blockDescription;
+	char* blockDescription;
 	float desctiptionWidth;
 
 	textCount = std::to_string(draggingSlot.count);
-	blockDescription = draggingSlot.block.GetBlockText();
-	desctiptionWidth = blockDescription.length() * Text::CHAR_WIDTH / 2;
+	blockDescription = const_cast<char*>(draggingSlot.block.GetBlockText());
+	desctiptionWidth = strlen(blockDescription) * Text::CHAR_WIDTH / 2;
 
 	// ------------------------ Copy Slot ------------------------ //
 	copySlot.countText.SetMainWindow(mainWindow);
@@ -614,8 +612,8 @@ void Inventory::SwapSlots(Slot& slot1, Slot& slot2, Texture* itemTexture, Textur
 
 	// ------------------------ Slot 1 ------------------------ //
 	textCount = std::to_string(slot2.count);
-	blockDescription = slot2.block.GetBlockText();
-	desctiptionWidth = blockDescription.length() * Text::CHAR_WIDTH / 2;
+	blockDescription = const_cast<char*>(slot2.block.GetBlockText());
+	desctiptionWidth = strlen(blockDescription) * Text::CHAR_WIDTH / 2;
 
 	slot1.countText.SetText(textCount.c_str());
 	slot1.countText.Init();
@@ -637,8 +635,8 @@ void Inventory::SwapSlots(Slot& slot1, Slot& slot2, Texture* itemTexture, Textur
 
 	// ------------------------ Slot 2 ------------------------ //
 	textCount = std::to_string(copySlot.count);
-	blockDescription = copySlot.block.GetBlockText();
-	desctiptionWidth = blockDescription.length() * Text::CHAR_WIDTH / 2;
+	blockDescription = const_cast<char*>(copySlot.block.GetBlockText());
+	desctiptionWidth = strlen(blockDescription) * Text::CHAR_WIDTH / 2;
 
 	slot2.countText.SetText(textCount.c_str());
 	slot2.countText.Init();
@@ -695,11 +693,10 @@ void Inventory::SplitItems(Texture* itemTexture, UV uvs[Chunk::BLOCKS_COUNT][Chu
 				std::string textCount = std::to_string(slots[i].count);
 				slots[i].countText.SetText(textCount.c_str());
 
-				std::string blockDescription = slots[i].block.GetBlockText();
-				float desctiptionWidth = blockDescription.length() * Text::CHAR_WIDTH / 2;
-				float desctiptionHeight = Text::CHAR_HEIGHT;
+				const char* blockDescription = copySlot.block.GetBlockText();
+				float desctiptionWidth = strlen(blockDescription) * Text::CHAR_WIDTH / 2;
 
-				slots[i].description.Init(desctiptionWidth, desctiptionHeight);
+				slots[i].description.Init(desctiptionWidth, DESCRIPTION_HEIGHT);
 
 				if (draggingSlot.count <= 0)
 				{

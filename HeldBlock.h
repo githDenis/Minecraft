@@ -16,4 +16,5 @@ public:
 	void SetBlockClass(BlockClass blockClass) noexcept;
 	void SetUVS(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
 	void Init(Texture* texture);
+	virtual void Draw(Render* render) override;
 };

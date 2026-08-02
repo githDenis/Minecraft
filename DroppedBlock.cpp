@@ -30,7 +30,8 @@ void DroppedBlock::Init(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], const Tex
 
 void DroppedBlock::Draw(Render* render)
 {
-	render->DrawActor(actor, false, false);
+	bool isFoliage = blockClass == BlockClass::BC_FOLLIAGE;
+	render->DrawActor(actor, isFoliage, false);
 }
 
 void DroppedBlock::SimulatePhysics(float deltaTime)

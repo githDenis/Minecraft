@@ -25,7 +25,7 @@ void Application::Run()
 	//16x16 texture
 	Texture texture;
 	texture.Create();
-	texture.SetImage("E:\\C++\\Minecraft\\Textures\\Texture.jpg");
+	texture.SetImage("E:\\C++\\Minecraft\\Textures\\Texture.png");
 
 	Texture textTexture;
 	textTexture.Create();

@@ -34,7 +34,6 @@ void Texture::SetImage(const char* filePath)
 	{
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, imageBuf);
-		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else
 	{
