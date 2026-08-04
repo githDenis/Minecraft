@@ -1,18 +1,10 @@
 ﻿#include "Chunk.h"
+#include "World.h"
 
 Chunk& Chunk::operator=(Chunk&& another) noexcept
 {
-	for (int x = 0; x < CHUNK_WIDTH; x++)
-	{
-		for (int y = 0; y < CHUNK_HEIGHT; y++)
-		{
-			for (int z = 0; z < CHUNK_LENGTH; z++)
-			{
-				blockTypes[x][y][z] = another.blockTypes[x][y][z];
-			}
-		}
-	}
-
+	std::memcpy(blockTypes, another.blockTypes, sizeof(blockTypes));
+	std::memset(another.blockTypes, static_cast<unsigned char>(BlockType::BT_AIR), sizeof(another.blockTypes));
 	opaqueMeshVertexOffset = another.opaqueMeshVertexOffset;
 	folliageMeshVertexOffset = another.folliageMeshVertexOffset;
 	transparentMeshVertexOffset = another.transparentMeshVertexOffset;
@@ -21,32 +13,12 @@ Chunk& Chunk::operator=(Chunk&& another) noexcept
 	opaqueMesh = std::move(another.opaqueMesh);
 	folliageMesh = std::move(another.folliageMesh);
 	transparentMesh = std::move(another.transparentMesh);
-
-	for (int x = 0; x < CHUNK_WIDTH; x++)
-	{
-		for (int y = 0; y < CHUNK_HEIGHT; y++)
-		{
-			for (int z = 0; z < CHUNK_LENGTH; z++)
-			{
-				another.blockTypes[x][y][z] = static_cast<unsigned char>(BlockType::BT_AIR);
-			}
-		}
-	}
 	return *this;
 }
 
 void Chunk::Generate() noexcept
 {
-	for (int x = 0; x < CHUNK_WIDTH; x++)
-	{
-		for (int y = 0; y < CHUNK_HEIGHT; y++)
-		{
-			for (int z = 0; z < CHUNK_LENGTH; z++)
-			{
-				blockTypes[x][y][z] = static_cast<unsigned char>(BlockType::BT_AIR);
-			}
-		}
-	}
+	std::memset(blockTypes, static_cast<unsigned char>(BlockType::BT_AIR), sizeof(blockTypes));
 
 	for (int x = 0; x < CHUNK_WIDTH; x++)
 	{
@@ -74,13 +46,27 @@ void Chunk::Generate() noexcept
 				y = 1;
 			}
 
-			BlockType groundBlockType = y < 8 ? BlockType::BT_SAND : BlockType::BT_GROUND;
+			BlockType groundBlockType = y < SAND_LAYER_HEIGHT ? BlockType::BT_SAND : BlockType::BT_GROUND;
 
 			for (int i = 0; i < y; i++)
 			{
 				if (i < y - GROUND_LAYER_HEIGHT)
 				{
-					blockTypes[x][i][z] = static_cast<unsigned char>(BlockType::BT_STONE);
+					int coalChance = Hash(x, i, z, WORLD_SEED);
+					int ironChance = Hash(x, i, z, WORLD_SEED);
+
+					if (coalChance % World::COAL_ORE_INTENCITY == 0)
+					{
+						blockTypes[x][i][z] = static_cast<unsigned char>(BlockType::BT_COAL_ORE);
+					}
+					else if (ironChance % World::IRON_ORE_INTENCITY == 0)
+					{
+						blockTypes[x][i][z] = static_cast<unsigned char>(BlockType::BT_IRON_ORE);
+					}
+					else
+					{
+						blockTypes[x][i][z] = static_cast<unsigned char>(BlockType::BT_STONE);
+					}
 				}
 				else
 				{
@@ -99,7 +85,7 @@ void Chunk::Generate() noexcept
 
 			if (groundBlockType == BlockType::BT_SAND)
 			{
-				for (y; y < 8; y++)
+				for (y; y < SAND_LAYER_HEIGHT; y++)
 				{
 					blockTypes[x][y][z] = static_cast<unsigned char>(BlockType::BT_WATER);
 				}
@@ -116,7 +102,7 @@ void Chunk::GenerateTree() noexcept
 		{
 			int h = Hash(x + position.x, z + position.z, WORLD_SEED);
 
-			if (h % 200 == 0)
+			if (h % World::TREE_INTENCITY == 0)
 			{
 				//Tree position
 				glm::vec3 pos{ x + position.x, 0, z + position.z };
@@ -554,8 +540,20 @@ BlockType Chunk::GetBlockType(const glm::vec3& blockPos) const noexcept
 }
 
 unsigned int Chunk::Hash(int x, int z, int seed) const noexcept
-{
+{ 
 	unsigned int h = x * 374761393u + z * 668265263u + seed * 1442695041u;
+	h = (h ^ (h >> 13)) * 1274126177u;
+	return h ^ (h >> 16);
+}
+
+unsigned int Chunk::Hash(int x, int y, int z, int seed) const noexcept
+{
+	unsigned int h =
+		x * 374761393u +
+		y * 668265263u +
+		z * 1442695041u +
+		seed * 1274126177u;
+
 	h = (h ^ (h >> 13)) * 1274126177u;
 	return h ^ (h >> 16);
 }

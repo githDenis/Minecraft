@@ -13,6 +13,8 @@ public:
 	static constexpr float ROTATION_SPEED = 10.f;
 
 private:
+	static const char* descriptions[Chunk::BLOCKS_COUNT];
+
 	Mesh mesh;
 	Actor actor;
 	BlockType blockType = BlockType::BT_AIR;

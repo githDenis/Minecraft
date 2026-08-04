@@ -20,6 +20,13 @@ public:
 	static constexpr int CENTRAL_CHUNK_INDEX = (CHUNKS_COUNT - 1) / 2;
 	static constexpr float BREAK_BLOCK_DISTANCE = 10.f;
 
+	static const int TREE_INTENCITY = 200;
+	static const int GRASS_INTENCITY = 15;
+	static const int RED_FLOWERS_INTENCITY = 70;
+	static const int YELLOW_FLOWERS_INTENCITY = 50;
+	static const int COAL_ORE_INTENCITY = 20;
+	static const int IRON_ORE_INTENCITY = 32;
+
 private:
 	std::unique_ptr<Chunk[]> chunks = std::make_unique<Chunk[]>(CHUNKS_COUNT);
 	Vector<BlockInfoInWorld> blocksInfo;

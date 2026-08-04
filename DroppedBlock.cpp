@@ -1,6 +1,24 @@
 #include "DroppedBlock.h"
 #include "Player.h"
 
+const char* DroppedBlock::descriptions[Chunk::BLOCKS_COUNT] =
+{
+	"Ground with grass",
+	"Ground",
+	"Tree",
+	"Leaves",
+	"Stone",
+	"Sand",
+	"Coal ore",
+	"Iron ore",
+	"Planks",
+	"Crafting table",
+	"Grass",
+	"Yellow flower",
+	"Red flower",
+	"Stick",
+};
+
 void DroppedBlock::Init(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], const Texture* texture,
 	BlockClass blockClass, BlockType blockType, const glm::vec3& blockPos)
 {
@@ -17,7 +35,7 @@ void DroppedBlock::Init(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], const Tex
 
 		if (blockType == BlockType::BT_STICK)
 		{
-			actor.SetScale(glm::vec3(0.1f, 1.f, 0.1f));
+			actor.SetScale(glm::vec3(0.05f, 1.f, 0.05f));
 		}
 	}
 	mesh.InitMesh();
@@ -84,22 +102,8 @@ bool DroppedBlock::ProcessCollisionWithPlayer(class Player* player)
 
 const char* DroppedBlock::GetBlockText() noexcept
 {
-	switch (blockType)
-	{
-	case BlockType::BT_GROUND_GRASS: return "Ground with grass";
-	case BlockType::BT_GROUND: return "Ground";
-	case BlockType::BT_WOOD: return "Tree";
-	case BlockType::BT_LEAVES: return "Leaves";
-	case BlockType::BT_STONE: return "Stone";
-	case BlockType::BT_SAND: return "Sand";
-	case BlockType::BT_PLANKS: return "Planks";
-	case BlockType::BT_CRAFTING_TABLE: return "Crafting table";
-	case BlockType::BT_GRASS: return "Grass";
-	case BlockType::BT_YELLOW_FLOWER: return "Yellow flower";
-	case BlockType::BT_RED_FLOWER: return "Red flower";
-	case BlockType::BT_STICK: return "Stick";
-	default: return "";
-	}
+	int type = static_cast<int>(blockType);
+	return type < Chunk::BLOCKS_COUNT ? descriptions[type] : "";
 }
 
 DroppedBlock& DroppedBlock::operator=(const DroppedBlock& another) noexcept

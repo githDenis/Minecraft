@@ -32,9 +32,9 @@ void World::GenerateFolliage() noexcept
 	for (int i = 0; i < CHUNKS_COUNT; i++)
 	{
 		chunks[i].GenerateTree();
-		chunks[i].GenerateFolliageType(BlockType::BT_GRASS, 15);
-		chunks[i].GenerateFolliageType(BlockType::BT_YELLOW_FLOWER, 70);
-		chunks[i].GenerateFolliageType(BlockType::BT_RED_FLOWER, 50);
+		chunks[i].GenerateFolliageType(BlockType::BT_GRASS, GRASS_INTENCITY);
+		chunks[i].GenerateFolliageType(BlockType::BT_YELLOW_FLOWER, RED_FLOWERS_INTENCITY);
+		chunks[i].GenerateFolliageType(BlockType::BT_RED_FLOWER, YELLOW_FLOWERS_INTENCITY);
 	}
 }
 
@@ -186,9 +186,9 @@ void World::RegenerateChunkContent(Chunk& chunk) noexcept
 {
 	chunk.Generate();
 	chunk.GenerateTree();
-	chunk.GenerateFolliageType(BlockType::BT_GRASS, 15);
-	chunk.GenerateFolliageType(BlockType::BT_YELLOW_FLOWER, 70);
-	chunk.GenerateFolliageType(BlockType::BT_RED_FLOWER, 50);
+	chunk.GenerateFolliageType(BlockType::BT_GRASS, GRASS_INTENCITY);
+	chunk.GenerateFolliageType(BlockType::BT_YELLOW_FLOWER, RED_FLOWERS_INTENCITY);
+	chunk.GenerateFolliageType(BlockType::BT_RED_FLOWER, YELLOW_FLOWERS_INTENCITY);
 }
 
 void World::ReneretateChunkPosition(const glm::vec2& newPos) noexcept

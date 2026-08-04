@@ -12,6 +12,8 @@ enum class BlockType : unsigned char {
 	BT_LEAVES,
 	BT_STONE,
 	BT_SAND,
+	BT_COAL_ORE,
+	BT_IRON_ORE,
 	BT_PLANKS,
 	BT_CRAFTING_TABLE,
 	BT_GRASS,
@@ -34,9 +36,12 @@ public:
 	static const int BLOCKS_COUNT = static_cast<int>(BlockType::BT_AIR);
 	static const int UVS_COUNT = 3;
 	static const int CHUNK_WIDTH = 16;
-	static const int CHUNK_HEIGHT = 32;
+	static const int CHUNK_HEIGHT = 48;
 	static const int CHUNK_LENGTH = 16;
+
 	static const int GROUND_LAYER_HEIGHT = 10;
+	static const int SAND_LAYER_HEIGHT = 8;
+
 	static const int WORLD_SEED = 42;
 
 private:
@@ -91,6 +96,7 @@ public:
 	BlockClass GetBlockClass(const glm::vec3& blockPos) const noexcept;
 	BlockType GetBlockType(const glm::vec3& blockPos) const noexcept;
 	unsigned int Hash(int x, int z, int seed) const noexcept;
+	unsigned int Hash(int x, int y, int z, int seed) const noexcept;
 
 	Chunk() noexcept = default;
 	Chunk(const Chunk&) = delete;

@@ -42,12 +42,14 @@ void Application::Run()
 		{ texture.GetUV(117, 32, 16), texture.GetUV(117, 32, 16), texture.GetUV(117, 32, 16) },//Leaves
 		{ texture.GetUV(1, 32, 16), texture.GetUV(1, 32, 16), texture.GetUV(1, 32, 16) },      //Stone
 		{ texture.GetUV(34, 32, 16), texture.GetUV(34, 32, 16), texture.GetUV(34, 32, 16) },   //Sand
+		{ texture.GetUV(66, 32, 16), texture.GetUV(66, 32, 16), texture.GetUV(66, 32, 16) },   //Coal ore
+		{ texture.GetUV(65, 32, 16), texture.GetUV(65, 32, 16), texture.GetUV(65, 32, 16) },   //Iron ore
 		{ texture.GetUV(4, 32, 16), texture.GetUV(4, 32, 16), texture.GetUV(4, 32, 16) },      //Planks
 		{ texture.GetUV(75, 32, 16), texture.GetUV(107, 32, 16), texture.GetUV(75, 32, 16) },  //Crafting table
 		{ texture.GetUV(87, 32, 16), texture.GetUV(87, 32, 16), texture.GetUV(87, 32, 16) },   //Grass
 		{ texture.GetUV(29, 32, 16), texture.GetUV(29, 32, 16), texture.GetUV(29, 32, 16) },   //Yellow flower
 		{ texture.GetUV(28, 32, 16), texture.GetUV(28, 32, 16), texture.GetUV(28, 32, 16) },   //Red flower
-		{ texture.GetUV(208, 32, 16), texture.GetUV(208, 32, 16), texture.GetUV(208, 32, 16) },//Stick
+		{ texture.GetUV(308, 32, 16), texture.GetUV(308, 32, 16), texture.GetUV(308, 32, 16) },//Stick
 		{ texture.GetUV(369, 32, 16), texture.GetUV(369, 32, 16), texture.GetUV(369, 32, 16) },//Water
 	};
 
