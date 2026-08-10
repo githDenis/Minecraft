@@ -4,6 +4,8 @@
 #include "World.h"
 #include "PlayerHand.h"
 #include "HeldBlock.h"
+#include "PlayerInventory.h"
+#include "CraftingTableInventory.h"
 
 Application::~Application()
 {
@@ -35,7 +37,7 @@ void Application::Run()
 	playerHandTexture.Create();
 	playerHandTexture.SetImage("E:\\C++\\Minecraft\\Textures\\PlayerHandTexture.jpg");
 
-	UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT] = {
+	BlockUVs uvs = {
 		{ texture.GetUV(0, 32, 16), texture.GetUV(3, 32, 16), texture.GetUV(2, 32, 16) },      //Ground with grass
 		{ texture.GetUV(2, 32, 16), texture.GetUV(2, 32, 16), texture.GetUV(2, 32, 16) },      //Ground
 		{ texture.GetUV(37, 32, 16), texture.GetUV(36, 32, 16), texture.GetUV(37, 32, 16) },   //Tree
@@ -68,7 +70,8 @@ void Application::Run()
 	world.GenerateFolliage();
 	world.GenerateChunksMeshes(uvs);
 
-	player->InitInventory(&textTexture);
+	player->SetPlayerInventory(std::make_unique<PlayerInventory>(player, craftingSystem, window, &textTexture, 
+		PlayerInventory::INVENTORY_WIDTH, PlayerInventory::INVENTORY_HEIGHT));
 	
 	float lastTime = glfwGetTime();
 
@@ -80,6 +83,7 @@ void Application::Run()
 
 		shaderProgram->Use();
 
+		///////////////////////////////////// SPACE ///////////////////////////////////
 		if (inputManager->IsKeyPressed(GLFW_KEY_ESCAPE))
 		{
 			break;
@@ -89,11 +93,19 @@ void Application::Run()
 		{
 			player->Jump();
 		}
+		///////////////////////////////////// SPACE ///////////////////////////////////
 
+
+		///////////////////////////////////// I ///////////////////////////////////
 		if (inputManager->IsKeyPressed(GLFW_KEY_I))
 		{
 			player->UseInventory();
-			
+
+			if (player->IsInteracting())
+			{
+				player->SetInteractingState(false);
+			}
+
 			if (player->IsInventoryUsing())
 			{
 				inputManager->SetCursorPosition(window->GetWidth() / 2, window->GetHeight() / 2);
@@ -103,13 +115,31 @@ void Application::Run()
 				inputManager->SetCursorPosition(window->GetWidth() / 2, window->GetHeight() / 2);
 			}
 		}
+		///////////////////////////////////// I ///////////////////////////////////
 
+
+		///////////////////////////////////// MLB ///////////////////////////////////
 		if (inputManager->IsMouseButtonReleased(GLFW_MOUSE_BUTTON_LEFT))
-		{			
+		{
 			if (player->IsInventoryUsing())
 			{
-				player->ProcessingMouseRelease(&world, &texture, &textTexture, uvs);
-				player->CheckCrafting(&world, &texture, uvs);
+				if (!player->IsInteracting())
+				{
+					player->GetPlayerInventory()->ProcessMouseRelease(&world, &texture, &textTexture, uvs);
+					player->GetPlayerInventory()->CheckCrafting(&world, &texture, uvs);
+				}
+				else
+				{
+					player->GetItemInventory()->ProcessMouseRelease(&world, &texture, &textTexture, uvs);
+					
+					CraftingTableInventory* inventory = dynamic_cast<CraftingTableInventory*>(
+						player->GetItemInventory().get());
+
+					if (inventory)
+					{
+						inventory->CheckCrafting(&world, &texture, uvs);
+					}
+				}
 			}
 			else
 			{
@@ -124,50 +154,97 @@ void Application::Run()
 				player->StartShakingHeldItem();
 				player->DestroyBlock(&world, uvs, &texture, render);
 			}
-			else
-			{
-				player->ProcessingMouseCkick(inputManager, &texture, &textTexture, uvs);
-			}
+
 		}
 
+		if (inputManager->IsMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT))
+		{
+			if (!player->IsInteracting())
+			{
+				player->GetPlayerInventory()->ProcessMouseCkick(inputManager, &texture, &textTexture, uvs);
+			}
+			else
+			{
+				player->GetItemInventory()->ProcessMouseCkick(inputManager, &texture, &textTexture, uvs);
+			}
+		}
+		///////////////////////////////////// MLB ///////////////////////////////////
+
+
+		///////////////////////////////////// MRB ///////////////////////////////////
 		if (inputManager->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
 		{
 			if (!player->IsInventoryUsing())
 			{
-				player->PlaceBlock(&world, render, uvs);
+				BlockType blockType = player->StartLineTracing(&world);
+
+				if (!world.IsBlockInteractable(blockType))
+				{
+					player->PlaceBlock(&world, render, uvs);
+				}
+				else
+				{
+					player->UseInventory();
+					player->SetInteractingState(true);
+
+					if (blockType == BlockType::BT_CRAFTING_TABLE)
+					{
+						player->SetItemInventory(std::make_unique<CraftingTableInventory>(
+							craftingSystem, window,  &textTexture, CraftingTableInventory::INVENTORY_WIDTH,
+							CraftingTableInventory::INVENTORY_HEIGHT));
+						player->CopyItemsFromPlayerToItemInvntory();
+					}
+				}
 			}
 		}
+		///////////////////////////////////// MRB ///////////////////////////////////
 
+
+		///////////////////////////////////// Q ///////////////////////////////////
 		if (inputManager->IsKeyPressed(GLFW_KEY_Q))
 		{
 			if (!player->IsInventoryUsing())
 			{
-				player->ThrowOutItemFromHotbar(&world, &texture, uvs);
+				player->GetPlayerInventory()->ThrowOutItemFromHotbar(&world, &texture, uvs);
 			}
 			else
 			{
-				player->ThrowOutItemFromInventory(inputManager, &world, &texture, uvs);
+				player->GetPlayerInventory()->ThrowOutItemFromInventory(inputManager, &world, &texture, uvs);
 			}
 		}
+		///////////////////////////////////// Q ///////////////////////////////////
 
+
+		///////////////////////////////////// LEFT SHIFT ///////////////////////////////////
 		if (inputManager->IsKeyPressed(GLFW_KEY_LEFT_SHIFT))
 		{
-			if (player->IsItemDragging())
+			if (!player->IsInteracting())
 			{
-				player->SplitItems(&texture, uvs);
+				if (player->GetPlayerInventory()->IsItemDragging())
+				{
+					player->GetPlayerInventory()->SplitItems(&texture, uvs);
+				}
+			}
+			else
+			{
+				if (player->GetItemInventory()->IsItemDragging())
+				{
+					player->GetItemInventory()->SplitItems(&texture, uvs);
+				}
 			}
 		}
+		///////////////////////////////////// LEFT SHIFT ///////////////////////////////////
 
 		int scrollDelta = inputManager->GetMouseScrollDelta();
 
 		if (scrollDelta > 0)
 		{
-			player->SelectLeftItem();
+			player->GetPlayerInventory()->SelectLeftItem();
 		}
 
 		if (scrollDelta < 0)
 		{
-			player->SelectRightItem();
+			player->GetPlayerInventory()->SelectRightItem();
 		}
 
 		static const Color clearColor = { 0.f, 0.5f, 0.8f };
@@ -218,16 +295,27 @@ void Application::Run()
 			inputManager->EnableGamemode();
 			targetActor.SetPenSize(3.f);
 			render->DrawUIActor(targetActor, GL_LINES);
-			player->DrawHotBar(render);
-			player->DrawCurrentItemFrame(render);
+			player->GetPlayerInventory()->ShowHotBar(render);
+			player->GetPlayerInventory()->ShowCurrentItemFrame(render);
 		}
 		else
 		{
 			inputManager->EnableUIMode();
-			player->DrawInventory(render);
-			player->ProcessHoveringForInventory(inputManager, render);
-			player->UpdateDraggingItemPosition(inputManager);
-			player->DrawDraggingItem(render);
+
+			if (!player->IsInteracting())
+			{
+				player->GetPlayerInventory()->Draw(render);
+				player->GetPlayerInventory()->ProcessMouseHovering(inputManager, render);
+				player->GetPlayerInventory()->UpdateDraggingItemPosition(inputManager);
+				player->GetPlayerInventory()->ShowDraggingItem(render);
+			}
+			else
+			{
+				player->GetItemInventory()->Draw(render);
+				player->GetItemInventory()->ProcessMouseHovering(inputManager, render);
+				player->GetItemInventory()->UpdateDraggingItemPosition(inputManager);
+				player->GetItemInventory()->ShowDraggingItem(render);
+			}
 		}
 		glfwSwapBuffers(window->GetHandle());
 		glfwPollEvents();

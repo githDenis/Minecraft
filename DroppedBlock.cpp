@@ -1,7 +1,7 @@
 #include "DroppedBlock.h"
 #include "Player.h"
 
-const char* DroppedBlock::descriptions[Chunk::BLOCKS_COUNT] =
+const char* DroppedBlock::descriptions[BLOCKS_COUNT] =
 {
 	"Ground with grass",
 	"Ground",
@@ -19,16 +19,16 @@ const char* DroppedBlock::descriptions[Chunk::BLOCKS_COUNT] =
 	"Stick",
 };
 
-void DroppedBlock::Init(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], const Texture* texture,
-	BlockClass blockClass, BlockType blockType, const glm::vec3& blockPos)
+void DroppedBlock::Init(BlockUVs& uvs, const Texture* texture, BlockRenderClass blockRenderClass, 
+	BlockType blockType, const glm::vec3& blockPos)
 {
-	if (blockClass == BlockClass::BC_OPAQUE)
+	if (blockRenderClass == BlockRenderClass::BC_OPAQUE)
 	{
 		mesh.GenerateCube();
 		mesh.SetCubeUV(uvs[static_cast<int>(blockType)][0], uvs[static_cast<int>(blockType)][1],
 			uvs[static_cast<int>(blockType)][2]);
 	}
-	else if (blockClass == BlockClass::BC_FOLLIAGE)
+	else if (blockRenderClass == BlockRenderClass::BC_FOLLIAGE)
 	{
 		mesh.GenerateCrossPlanes();
 		mesh.SetCrossPlanesUV(uvs[static_cast<int>(blockType)][0]);
@@ -47,13 +47,13 @@ void DroppedBlock::Init(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], const Tex
 	actor.SetPosition(spawnPos);
 
 	this->blockType = blockType;
-	this->blockClass = blockClass;
+	this->blockRenderClass = blockRenderClass;
 	isAlive = true;
 }
 
 void DroppedBlock::Draw(Render* render)
 {
-	bool isFoliage = blockClass == BlockClass::BC_FOLLIAGE;
+	bool isFoliage = blockRenderClass == BlockRenderClass::BC_FOLLIAGE;
 	render->DrawActor(actor, isFoliage, false);
 }
 
@@ -103,7 +103,7 @@ bool DroppedBlock::ProcessCollisionWithPlayer(class Player* player)
 const char* DroppedBlock::GetBlockText() noexcept
 {
 	int type = static_cast<int>(blockType);
-	return type < Chunk::BLOCKS_COUNT ? descriptions[type] : "";
+	return type < BLOCKS_COUNT ? descriptions[type] : "";
 }
 
 DroppedBlock& DroppedBlock::operator=(const DroppedBlock& another) noexcept
@@ -112,7 +112,7 @@ DroppedBlock& DroppedBlock::operator=(const DroppedBlock& another) noexcept
 	actor = another.actor;
 	isAlive = another.isAlive;
 	blockType = another.blockType;
-	blockClass = another.blockClass;
+	blockRenderClass = another.blockRenderClass;
 	actor.SetMesh(&mesh);
 	return *this;
 }
@@ -123,10 +123,10 @@ DroppedBlock& DroppedBlock::operator=(DroppedBlock&& another) noexcept
 	actor = std::move(another.actor);
 	isAlive = another.isAlive;
 	blockType = another.blockType;
-	blockClass = another.blockClass;
+	blockRenderClass = another.blockRenderClass;
 	actor.SetMesh(&mesh);
 	another.isAlive = false;
 	another.blockType = BlockType::BT_AIR;
-	another.blockClass = BlockClass::BC_OPAQUE;
+	another.blockRenderClass = BlockRenderClass::BC_OPAQUE;
 	return *this;
 }

@@ -8,7 +8,7 @@
 #include "Mesh.h"
 #include "Camera.h"
 #include "Player.h"
-#include "Inventory.h"
+#include "CraftingSystem.h"
 
 const int WINDOW_WIDTH = 1800;
 const int WINDOW_HEIGHT = 900;
@@ -33,11 +33,13 @@ int main()
  	Render render(&window, &shaderProgram, &folliageShaderProgram, &UIShaderProgram);
 
 	Player player(&window, &inputManager);
+	CraftingSystem craftingSystem;
 
 	app.SetWindow(&window);
 	app.SetInputManager(&inputManager);
 	app.SetRender(&render);
 	app.SetPlayer(&player);
+	app.SetCraftingSystem(&craftingSystem);
 	app.InitOpenGLContext();
 
 	// World Shaders

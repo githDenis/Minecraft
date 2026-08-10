@@ -22,7 +22,10 @@ void ItemDescription::Init(float width, float height) noexcept
 
 	actor.SetMesh(&mesh);
 	actor.SetPosition(glm::vec3(0.f, 0.f, 0.f));
+}
 
+void ItemDescription::InitText() noexcept
+{
 	text.SetCharsInRow(10);
 	text.SetCharsInColumn(10);
 	text.SetCharsCount(10 * 10);
@@ -51,4 +54,15 @@ void ItemDescription::Draw(Render* render) noexcept
 		render->DrawUIActor(actor, GL_TRIANGLES);
 		text.Draw(render);
 	}
+}
+
+ItemDescription& ItemDescription::operator=(const ItemDescription& another) noexcept
+{
+	width = another.width;
+	window = another.window;
+	textTexture = another.textTexture;
+	mesh = another.mesh;
+	actor = another.actor;
+	text = another.text;
+	return *this;
 }

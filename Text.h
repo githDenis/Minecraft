@@ -66,6 +66,13 @@ public:
 		startPos = pos;
 	}
 
+	const char* GetStr() noexcept
+	{
+		return buf;
+	}
+
 	void Init();
 	void Draw(Render* render);
+
+	Text& operator=(const Text& another) noexcept;
 };

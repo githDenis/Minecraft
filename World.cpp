@@ -64,7 +64,7 @@ void World::ApplyChanchedBlocks(const glm::vec3& newPos) noexcept
 	}
 }
 
-void World::GenerateChunksMeshes(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
+void World::GenerateChunksMeshes(BlockUVs& uvs) noexcept
 {
 	for (int i = 0; i < CHUNKS_COUNT; i++)
 	{
@@ -74,7 +74,7 @@ void World::GenerateChunksMeshes(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) 
 }
 
 void World::RegenerateWorld(const glm::vec2& newPos, const glm::vec3& playerPos, int dx, int dy,
-	UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
+	BlockUVs& uvs) noexcept
 {
 	static constexpr int leftX = CHUNKS_HORIZONTAL_COUNT - 1;
 	static const int rightX = 0;
@@ -260,7 +260,7 @@ void World::ProcessRotationForDroppedBlocks(float deltaTime) noexcept
 }
 
 void World::ProcessCollisionWithPlayerForDroppedBlocks(class Player* player, Texture* texture,
-	UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
+	BlockUVs& uvs) noexcept
 {
 	for (int i = 0; i < droppedBlocks.GetSize(); i++)
 	{
@@ -268,13 +268,13 @@ void World::ProcessCollisionWithPlayerForDroppedBlocks(class Player* player, Tex
 		{
 			if (droppedBlocks[i].ProcessCollisionWithPlayer(player))
 			{
-				player->AddItemToInventory(droppedBlocks[i], texture, uvs);
+				player->GetPlayerInventory()->AddItem(droppedBlocks[i], texture, uvs);
 			}
 		}
 	}
 }
 
-bool World::PlaceBlock(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], Render* render, const glm::vec3& pos,
+bool World::PlaceBlock(BlockUVs& uvs, Render* render, const glm::vec3& pos,
 	glm::vec3& forwardVector, BlockType blockType) noexcept
 {
 	glm::vec3 start = pos;
@@ -311,8 +311,8 @@ bool World::PlaceBlock(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], Render* re
 	return false;
 }
 
-void World::DestroyBlock(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], const Texture* texture, Render* render,
-	const glm::vec3& pos, const glm::vec3& forwardVector) noexcept
+void World::DestroyBlock(BlockUVs& uvs, const Texture* texture, Render* render, const glm::vec3& pos, 
+	const glm::vec3& forwardVector) noexcept
 {
 	glm::vec3 start = pos;
 	glm::vec3 direction = forwardVector;
@@ -331,7 +331,7 @@ void World::DestroyBlock(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], const Te
 			glm::vec3 placePos{ GetBlockPos(checkPos, pos) };
 			chunkIndex = GetChunkIndex(checkPos, pos);
 
-			BlockClass blockClass = static_cast<BlockClass>(chunks[chunkIndex].GetBlockClass(blockPos));
+			BlockRenderClass blockClass = static_cast<BlockRenderClass>(chunks[chunkIndex].GetBlockRenderClass(blockPos));
 			BlockType blockType = static_cast<BlockType>(chunks[chunkIndex].GetBlockType(blockPos));
 
 			chunks[chunkIndex].PlaceBlock(placePos, BlockType::BT_AIR);
@@ -360,11 +360,16 @@ BlockType World::GetBlockType(const glm::vec3& blockPos, const glm::vec3& player
 	return chunks[chunkIndex].GetBlockType(pos);
 }
 
-BlockClass World::GetBlockClassByType(BlockType type) const noexcept
+BlockRenderClass World::GetBlockRenderClassByType(BlockType type) const noexcept
 {
-	if (type >= BlockType::BT_GROUND_GRASS && type < BlockType::BT_GRASS) return BlockClass::BC_OPAQUE;
-	else if (type >= BlockType::BT_GRASS && type < BlockType::BT_WATER) return BlockClass::BC_FOLLIAGE;
-	else return BlockClass::BC_TRANSPARENT;
+	if (type >= BlockType::BT_GROUND_GRASS && type < BlockType::BT_GRASS) return BlockRenderClass::BC_OPAQUE;
+	else if (type >= BlockType::BT_GRASS && type < BlockType::BT_WATER) return BlockRenderClass::BC_FOLLIAGE;
+	else return BlockRenderClass::BC_TRANSPARENT;
+}
+
+bool World::IsBlockInteractable(BlockType blockType) const noexcept
+{
+	return blockType >= BlockType::BT_CRAFTING_TABLE && blockType < BlockType::BT_GRASS;
 }
 
 glm::vec3 World::GetBlockPos(const glm::vec3& pos, const glm::vec3& playerPos) const noexcept

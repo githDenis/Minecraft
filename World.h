@@ -42,10 +42,9 @@ public:
 	void GenerateChunks(Texture* textures) noexcept;
 	void GenerateFolliage() noexcept;
 	void ApplyChanchedBlocks(const glm::vec3& newPos) noexcept;
-	void GenerateChunksMeshes(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
+	void GenerateChunksMeshes(BlockUVs& uvs) noexcept;
 
-	void RegenerateWorld(const glm::vec2& newPos, const glm::vec3& playerPos, int dx, int dy,
-		UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
+	void RegenerateWorld(const glm::vec2& newPos, const glm::vec3& playerPos, int dx, int dy, BlockUVs& uvs) noexcept;
 	void RegenerateChunkContent(Chunk& ñhunk) noexcept;
 	void ReneretateChunkPosition(const glm::vec2& newPos) noexcept;
 	void DrawChunks(Render* render) noexcept;
@@ -53,16 +52,16 @@ public:
 	void SimulatePhysicsForDroppedBlocks(float deltaTime) noexcept;
 	void ProcessCollisionForDroppedBlocks() noexcept;
 	void ProcessRotationForDroppedBlocks(float deltaTime) noexcept;
-	void ProcessCollisionWithPlayerForDroppedBlocks(class Player* player, Texture* texture,
-		UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
+	void ProcessCollisionWithPlayerForDroppedBlocks(class Player* player, Texture* texture, BlockUVs& uvs) noexcept;
 
-	bool PlaceBlock(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], Render* render, const glm::vec3& pos,
-		glm::vec3& forwardVector, BlockType blockType) noexcept;
-	void DestroyBlock(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], const Texture* texture, Render* render,
-		const glm::vec3& pos, const glm::vec3& forwardVector) noexcept;
+	bool PlaceBlock(BlockUVs& uvs, Render* render, const glm::vec3& pos,glm::vec3& forwardVector, 
+		BlockType blockType) noexcept;
+	void DestroyBlock(BlockUVs& uvs, const Texture* texture, Render* render, const glm::vec3& pos, 
+		const glm::vec3& forwardVector) noexcept;
 
 	BlockType GetBlockType(const glm::vec3& blockPos, const glm::vec3& playerPos) const noexcept;
-	BlockClass GetBlockClassByType(BlockType type) const noexcept;
+	BlockRenderClass GetBlockRenderClassByType(BlockType type) const noexcept;
+	bool IsBlockInteractable(BlockType blockType) const noexcept;
 	glm::vec3 GetBlockPos(const glm::vec3& pos, const glm::vec3& playerPos) const noexcept;
 	glm::vec2 GetChunkPos(const glm::vec3& pos) const noexcept;
 	int GetChunkIndex(const glm::vec3& pos, const glm::vec3& playerPos) const noexcept;

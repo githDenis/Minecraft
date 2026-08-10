@@ -203,7 +203,7 @@ void Chunk::GenerateFolliageType(BlockType type, int intencity) noexcept
 	}
 }
 
-void Chunk::GenerateMeshVerticesAndTextCoords(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
+void Chunk::GenerateMeshVerticesAndTextCoords(BlockUVs& uvs) noexcept
 {
 	opaqueMeshVertexOffset = 0;
 	folliageMeshVertexOffset = 0;
@@ -223,9 +223,9 @@ void Chunk::GenerateMeshVerticesAndTextCoords(UV uvs[Chunk::BLOCKS_COUNT][Chunk:
 				}
 				glm::vec3 blockPos{ static_cast<float>(x), static_cast<float>(y), static_cast<float>(z) };
 
-				BlockClass blockClass = GetBlockClass(glm::vec3{ blockPos });
+				BlockRenderClass blockClass = GetBlockRenderClass(glm::vec3{ blockPos });
 
-				if (blockClass == BlockClass::BC_OPAQUE)
+				if (blockClass == BlockRenderClass::BC_OPAQUE)
 				{
 					AddCubeToMesh(glm::vec3{ blockPos }, opaqueMesh, opaqueMeshVertexOffset);
 					AddCubeTextureCoords(
@@ -234,7 +234,7 @@ void Chunk::GenerateMeshVerticesAndTextCoords(UV uvs[Chunk::BLOCKS_COUNT][Chunk:
 						uvs[static_cast<int>(blockType)][2],
 						opaqueMesh);
 				}
-				else if (blockClass == BlockClass::BC_FOLLIAGE)
+				else if (blockClass == BlockRenderClass::BC_FOLLIAGE)
 				{
 					AddCrossPlanesToMesh(glm::vec3{ blockPos }, folliageMesh, folliageMeshVertexOffset);
 					AddCrossPlanesTextureCoords(uvs[static_cast<int>(blockType)][0], folliageMesh);
@@ -503,7 +503,7 @@ void Chunk::Draw(Render* render)
 	render->DrawActor(transparentActor, false, true);
 }
 
-BlockClass Chunk::GetBlockClass(const glm::vec3& blockPos) const noexcept
+BlockRenderClass Chunk::GetBlockRenderClass(const glm::vec3& blockPos) const noexcept
 {
 	BlockType blockType = static_cast<BlockType>(blockTypes
 		[static_cast<int>(blockPos.x)]
@@ -513,15 +513,15 @@ BlockClass Chunk::GetBlockClass(const glm::vec3& blockPos) const noexcept
 
 	if (blockType >= BlockType::BT_GROUND_GRASS && blockType < BlockType::BT_GRASS)
 	{
-		return BlockClass::BC_OPAQUE;
+		return BlockRenderClass::BC_OPAQUE;
 	}
 	else if (blockType >= BlockType::BT_GRASS && blockType < BlockType::BT_WATER)
 	{
-		return BlockClass::BC_FOLLIAGE;
+		return BlockRenderClass::BC_FOLLIAGE;
 	}
 	else
 	{
-		return BlockClass::BC_TRANSPARENT;
+		return BlockRenderClass::BC_TRANSPARENT;
 	}
 }
 

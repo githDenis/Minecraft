@@ -13,12 +13,12 @@ public:
 	static constexpr float ROTATION_SPEED = 10.f;
 
 private:
-	static const char* descriptions[Chunk::BLOCKS_COUNT];
+	static const char* descriptions[BLOCKS_COUNT];
 
 	Mesh mesh;
 	Actor actor;
 	BlockType blockType = BlockType::BT_AIR;
-	BlockClass blockClass = BlockClass::BC_OPAQUE;
+	BlockRenderClass blockRenderClass = BlockRenderClass::BC_OPAQUE;
 	float velocity = 0.f;
 	bool isOnGround = false;
 	bool isAlive = false;
@@ -49,9 +49,9 @@ public:
 		return blockType;
 	}
 
-	BlockClass GetBlockClass() const noexcept
+	BlockRenderClass GetBlockRenderClass() const noexcept
 	{
-		return blockClass;
+		return blockRenderClass;
 	}
 
 	bool IsAlive() const noexcept
@@ -59,7 +59,7 @@ public:
 		return isAlive;
 	}
 
-	void Init(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], const Texture* texture, BlockClass blockClass, 
+	void Init(BlockUVs& uvs, const Texture* texture, BlockRenderClass blockClass,
 		BlockType blockType, const glm::vec3& blockPos);
 	void Draw(Render* render);
 	void SimulatePhysics(float deltaTime);

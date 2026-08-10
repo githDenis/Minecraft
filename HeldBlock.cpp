@@ -5,12 +5,12 @@ void HeldBlock::SetBlockType(BlockType blockType) noexcept
 	this->blockType = blockType;
 }
 
-void HeldBlock::SetBlockClass(BlockClass blockClass) noexcept
+void HeldBlock::SetBlockRenderClass(BlockRenderClass blockRenderClass) noexcept
 {
-	this->blockClass = blockClass;
+	this->blockRenderClass = blockRenderClass;
 }
 
-void HeldBlock::SetUVS(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
+void HeldBlock::SetUVS(BlockUVs& uvs) noexcept
 {
 	this->uvs[static_cast<unsigned char>(blockType)][0] = uvs[static_cast<unsigned char>(blockType)][0];
 	this->uvs[static_cast<unsigned char>(blockType)][1] = uvs[static_cast<unsigned char>(blockType)][1];
@@ -19,7 +19,7 @@ void HeldBlock::SetUVS(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
 
 void HeldBlock::Init(Texture* texture)
 {
-	if (blockClass == BlockClass::BC_OPAQUE)
+	if (blockRenderClass == BlockRenderClass::BC_OPAQUE)
 	{
 		mesh.GenerateCubeWithOffset(offset);
 		mesh.SetCubeUV(
@@ -43,6 +43,6 @@ void HeldBlock::Init(Texture* texture)
 
 void HeldBlock::Draw(Render* render)
 {
-	bool isFoliage = blockClass == BlockClass::BC_FOLLIAGE;
+	bool isFoliage = blockRenderClass == BlockRenderClass::BC_FOLLIAGE;
 	render->DrawActor(actor, isFoliage, false);
 }

@@ -4,10 +4,32 @@
 
 Player::Player(Window* mainWindow, InputManager* inputManager) noexcept
 {
+	this->mainWindow = mainWindow;
+
 	camera.SetInputManager(inputManager);
 	camera.SetFOV(45.f);
+}
 
-	inventory.SetMainWindow(mainWindow);
+void Player::SetPlayerInventory(std::unique_ptr<PlayerInventory> newInventory)
+{
+	inventory = std::move(newInventory);
+	inventory->InitWindow();
+	inventory->InitUI();
+}
+
+void Player::SetItemInventory(std::unique_ptr<BaseInventory> newInventory)
+{
+	itemInventory = std::move(newInventory);
+	itemInventory->InitWindow();
+	itemInventory->InitUI();
+}
+
+void Player::CopyItemsFromPlayerToItemInvntory()
+{
+	for (int i = 0; i < BaseInventory::LAST_INVENTORY_SLOT_INDEX; i++)
+	{
+		itemInventory->GetSlotByIndex(i) = inventory->GetSlotByIndex(i);
+	}
 }
 
 void Player::SetHandTexture(Texture* texture) noexcept
@@ -50,12 +72,12 @@ void Player::Jump() noexcept
 	yVelocity = JUMP_VELOCITY;
 }
 
-void Player::PlaceBlock(World* world, Render* render, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
+void Player::PlaceBlock(World* world, Render* render, BlockUVs& uvs) noexcept
 {
 	glm::vec3 pos = camera.GetPosition();
 	glm::vec3 forward = camera.GetFrontMovementVector();
 
-	BlockType currentBlockType = inventory.GetCurrentItemBlockType();
+	BlockType currentBlockType = inventory->GetCurrentItemBlockType();
 
 	if (currentBlockType != BlockType::BT_AIR)
 	{
@@ -63,22 +85,17 @@ void Player::PlaceBlock(World* world, Render* render, UV uvs[Chunk::BLOCKS_COUNT
 
 		if (placeResult)
 		{
-			inventory.DecreaseCurrentItem();
+			inventory->DecreaseCurrentItem();
 		}
 	}
 }
 
-void Player::DestroyBlock(World* world, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], const Texture* texture,
+void Player::DestroyBlock(World* world, BlockUVs& uvs, const Texture* texture,
 	Render* render) noexcept
 {
 	glm::vec3 pos = camera.GetPosition();
 	glm::vec3 forward = camera.GetFrontMovementVector();
 	world->DestroyBlock(uvs, texture, render, pos, forward);
-}
-
-void Player::InitInventory(Texture* textTexture) noexcept
-{
-	inventory.Init(textTexture);
 }
 
 void Player::UseInventory() noexcept
@@ -87,40 +104,29 @@ void Player::UseInventory() noexcept
 	camera.SetLockedState(isInventoryUsing);
 }
 
-void Player::DrawInventory(Render* render) noexcept
+BlockType Player::StartLineTracing(World* world) noexcept
 {
-	inventory.ShowInventory(render);
+	glm::vec3 pos = camera.GetPosition();
+	glm::vec3 front = camera.GetFrontMovementVector();
+
+	for (float i = 1.f; i < INTERACT_DISTANCE; i += 0.5f)
+	{
+		glm::vec3 checkPos = pos + front * i;
+
+		BlockType blockType = world->GetBlockType(checkPos, pos);
+
+		if (blockType != BlockType::BT_AIR)
+		{
+			std::cout << "YEAH\n";
+			return blockType;
+		}
+	}
+	return BlockType::BT_AIR;
 }
 
-void Player::DrawHotBar(Render* render) noexcept
+void Player::UpdateHeldItem(BlockUVs& uvs) noexcept
 {
-	inventory.ShowHotBar(render);
-}
-
-void Player::DrawDraggingItem(Render* render) noexcept
-{
-	inventory.ShowDraggingItem(render);
-}
-
-void Player::DrawCurrentItemFrame(Render* render) noexcept
-{
-	inventory.ShowCurrentItemFrame(render);
-}
-
-void Player::AddItemToInventory(DroppedBlock& droppedBlock, Texture* texture, 
-	UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
-{
-	inventory.AddItem(droppedBlock, texture, uvs);
-}
-
-void Player::ProcessHoveringForInventory(InputManager* inputManager, Render* render) noexcept
-{
-	inventory.ProcessMouseHovering(inputManager, render);
-}
-
-void Player::UpdateHeldItem(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
-{
-	BlockType blockType = inventory.GetCurrentItemBlockType();
+	BlockType blockType = inventory->GetCurrentItemBlockType();
 
 	if (blockType == BlockType::BT_AIR)
 	{
@@ -129,12 +135,12 @@ void Player::UpdateHeldItem(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexc
 	}
 	else
 	{
-		BlockClass blockClass = inventory.GetCurrentItemBlockClass();
+		BlockRenderClass blockClass = inventory->GetCurrentItemBlockRenderClass();
 
 		heldBlock.SetBlockType(blockType);
-		heldBlock.SetBlockClass(blockClass);
+		heldBlock.SetBlockRenderClass(blockClass);
 		heldBlock.SetUVS(uvs);
-		heldBlock.Init(inventory.GetCurrentSlot().block.GetTexture());
+		heldBlock.Init(inventory->GetCurrentSlot().block.GetTexture());
 		heldItem = &heldBlock;
 	}
 }
@@ -158,55 +164,6 @@ void Player::DrawHeldItem(Render* render) noexcept
 	heldItem->UpdatePosition(&camera);
 	heldItem->UpdateRotation(&camera);
 	heldItem->Draw(render);
-}
-
-void Player::SelectLeftItem() noexcept
-{
-	inventory.SelectLeftItem();
-}
-
-void Player::SelectRightItem() noexcept
-{
-	inventory.SelectRightItem();
-}
-
-void Player::ProcessingMouseCkick(InputManager* inputManager, 
-	Texture* itemTexture, Texture* textTexture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
-{
-	inventory.ProcessingMouseCkick(inputManager, itemTexture, textTexture, uvs);
-}
-
-void Player::ProcessingMouseRelease(World* world, Texture* texture, Texture* textTexture,
-	UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
-{
-	inventory.ProcessingMouseRelease(world, this, texture, textTexture, uvs);
-}
-
-void Player::UpdateDraggingItemPosition(InputManager* inputManager) noexcept
-{
-	inventory.UpdateDraggingItemPosition(inputManager);
-}
-
-void Player::ThrowOutItemFromInventory(InputManager* inputManger, World* world, Texture* texture,
-	UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
-{
-	inventory.ThrowOutItemFromInventory(inputManger, world, this, texture, uvs);
-}
-
-void Player::ThrowOutItemFromHotbar(World* world, Texture* texture, 
-	UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
-{
-	inventory.ThrowOutItemFromHotbar(world, this, texture, uvs);
-}
-
-void Player::SplitItems(Texture* itemTexture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
-{
-	inventory.SplitItems(itemTexture, uvs);
-}
-
-void Player::CheckCrafting(World* world, Texture* itemTexture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept
-{
-	inventory.CheckCrafting(world, itemTexture, uvs);
 }
 
 bool Player::Colides(World* world, const glm::vec3& blockPos) noexcept

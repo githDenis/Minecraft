@@ -3,7 +3,7 @@
 #include "Framework.h"
 #include "Camera.h"
 #include "World.h"
-#include "Inventory.h"
+#include "PlayerInventory.h"
 #include "DroppedBlock.h"
 #include "PlayerHand.h"
 #include "HeldBlock.h"
@@ -14,18 +14,27 @@ public:
 	float yVelocity = 0.f;
 	static constexpr float GRAVITY = 22.f;
 	static constexpr float JUMP_VELOCITY = 10.f;
+	static constexpr float INTERACT_DISTANCE = 5.f;
 
 private:
+	Window* mainWindow;
 	Camera camera;
-	Inventory inventory;
+	std::unique_ptr<PlayerInventory> inventory;
+	std::unique_ptr<BaseInventory> itemInventory;
 	HeldItem* heldItem;
 	Texture* playerHandTexture;
 	PlayerHand playerHand;
 	HeldBlock heldBlock;
 	bool isOnGround = false;
 	bool isInventoryUsing = false;
+	bool isInteracting = false;
 
 public:
+	void SetInteractingState(bool state) noexcept
+	{
+		isInteracting = state;
+	}
+
 	Camera& GetCamera() noexcept
 	{
 		return camera;
@@ -51,48 +60,42 @@ public:
 		return isInventoryUsing;
 	}
 
-	bool IsItemDragging() const noexcept
+	bool IsInteracting() const noexcept
 	{
-		return inventory.IsItemDragging();
+		return isInteracting;
+	}
+
+	std::unique_ptr<PlayerInventory>& GetPlayerInventory() noexcept
+	{
+		return inventory;
+	}
+
+	std::unique_ptr<BaseInventory>& GetItemInventory() noexcept
+	{
+		return itemInventory;
 	}
 
 	explicit Player(Window* mainWindow, InputManager* inputManager) noexcept;
+
+	void SetPlayerInventory(std::unique_ptr<PlayerInventory> newInventory);
+	void SetItemInventory(std::unique_ptr<BaseInventory> newInventory);
+	void CopyItemsFromPlayerToItemInvntory();
 
 	void SetHandTexture(Texture* texture) noexcept;
 	void UpdateCamera(float deltaTime) noexcept;
 	void ProcessCollision(World* world) noexcept;
 	void UpdatePhysics(float deltaTime) noexcept;
 	void Jump() noexcept;
-	void PlaceBlock(World* world, Render* render, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
-	void DestroyBlock(World* world, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT], const Texture* texture,
-		Render* render) noexcept;
-	void InitInventory(Texture* textTexture) noexcept;
+	void PlaceBlock(World* world, Render* render, BlockUVs& uvs) noexcept;
+	void DestroyBlock(World* world, BlockUVs& uvs, const Texture* texture, Render* render) noexcept;
 	void UseInventory() noexcept;
-	void DrawInventory(Render* render) noexcept;
-	void DrawHotBar(Render* render) noexcept;
-	void DrawDraggingItem(Render* render) noexcept;
-	void DrawCurrentItemFrame(Render* render) noexcept;
-	void AddItemToInventory(DroppedBlock& droppedBlock, Texture* texture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
-	void ProcessHoveringForInventory(InputManager* inputManager, Render* render) noexcept;
-	void UpdateHeldItem(UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
+	BlockType StartLineTracing(World* world) noexcept;
+
+	void UpdateHeldItem(BlockUVs& uvs) noexcept;
 	void StartShakingHeldItem() noexcept;
 	void StopShakingHeldItem() noexcept;
 	void DrawHeldItem(Render* render) noexcept;
-	void SelectLeftItem() noexcept;
-	void SelectRightItem() noexcept;
-	void ProcessingMouseCkick(InputManager* inputManager, Texture* itemTexture, Texture* textTexture,
-		UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
-	void ProcessingMouseRelease(World* world, Texture* texture, Texture* textTexture,
-		UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
-	void UpdateDraggingItemPosition(InputManager* inputManager) noexcept;
-
-	void ThrowOutItemFromInventory(InputManager* inputManger, World* world, Texture* texture,
-		UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
-	void ThrowOutItemFromHotbar(World* world, Texture* texture,
-		UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
-	void SplitItems(Texture* itemTexture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
-	void CheckCrafting(World* world, Texture* itemTexture, UV uvs[Chunk::BLOCKS_COUNT][Chunk::UVS_COUNT]) noexcept;
-
+	
 	bool Colides(World* world, const glm::vec3& blockPos) noexcept;
 	bool ColidesAxis(World* world, const glm::vec3& blockPos) noexcept;
 };

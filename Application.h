@@ -21,7 +21,8 @@ private:
 	ShaderProgram* UIShaderProgram;
 	World world;
 	Player* player;
-	
+	CraftingSystem* craftingSystem;
+
 public:
 	~Application();
 
@@ -53,6 +54,11 @@ public:
 	void SetPlayer(Player* player) noexcept
 	{
 		this->player = player;
+	}
+
+	void SetCraftingSystem(CraftingSystem* craftingSystem) noexcept
+	{
+		this->craftingSystem = craftingSystem;
 	}
 
 	void Init();
