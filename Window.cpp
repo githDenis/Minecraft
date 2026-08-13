@@ -1,8 +1,8 @@
 #include "Window.h"
 
-Window::Window(const char* title, int width, int height) noexcept
+Window::Window(const char* title) noexcept
 {
-	Init(title, width, height);
+	Init(title);
 }
 
 void Window::FramebufferChangeSizeCallback(GLFWwindow* window, int width, int height)
@@ -10,14 +10,19 @@ void Window::FramebufferChangeSizeCallback(GLFWwindow* window, int width, int he
 	glViewport(0, 0, width, height);
 }
 
-void Window::Init(const char* title, int width, int height) noexcept
+void Window::Init(const char* title) noexcept
 {
 	strcpy(this->title, title);
-	this->width = width;
-	this->height = height;
 
-	window = glfwCreateWindow(width, height, title, NULL, NULL);
-	glfwSetWindowPos(window, 50, 50);
+	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+	width = mode->width;
+	height = mode->height;
+
+	//window = glfwCreateWindow(width, height, title, monitor, nullptr);
+	window = glfwCreateWindow(width, height, title, nullptr, nullptr);
+	glfwSetWindowPos(window, 0, 0);
 	glfwSetFramebufferSizeCallback(window, &FramebufferChangeSizeCallback);
 }
 

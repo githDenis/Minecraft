@@ -9,16 +9,16 @@
 
 struct Slot
 {
-	UIMesh mesh;
 	UIActor actor;
 	Text countText;
 	ItemDescription description;
 	DroppedBlock block;
 	int count;
 
+	Slot() noexcept = default;
+
 	Slot& operator=(const Slot& another) noexcept
 	{
-		mesh = another.mesh;
 		actor = another.actor;
 		countText = another.countText;
 		description = another.description;
@@ -37,7 +37,7 @@ public:
 	static constexpr float SLOT_HEIGHT = 0.14f;
 	static constexpr int SLOT_COUNT_IN_ROW = 9;
 	static constexpr int ROW_COUNT = 4;
-	static constexpr float SLOT_PADDING = 0.003f;
+	static constexpr float SLOT_PADDING = 0.01f;
 	static constexpr Color SLOT_COLOR = Color(0.5f, 0.5f, 0.5f);
 	static const int MAX_ITEMS_IN_SLOT = 64;
 	static constexpr float DESCRIPTION_HEIGHT = Text::CHAR_HEIGHT;
@@ -46,7 +46,6 @@ public:
 protected:
 	Window* mainWindow;
 	Texture* textTexture;
-	UIMesh mesh;
 	UIActor actor;
 
 	float width;
@@ -79,5 +78,6 @@ public:
 		BlockUVs& uvs) noexcept = 0;
 	virtual void ProcessMouseHovering(InputManager* inputManager, Render* render) noexcept = 0;
 	virtual void SplitItems(Texture* itemTexture, BlockUVs& uvs) noexcept = 0;
-	virtual Slot& GetSlotByIndex(int index) noexcept = 0;
+	virtual Slot& GetSlotRefByIndex(int index) noexcept = 0;
+	virtual const Slot& GetSlotCopyByIndex(int index) const noexcept = 0;
 };

@@ -34,10 +34,9 @@ void BaseInventory::ResetSlot(Slot& slot) noexcept
 	slot.countText.SetText("");
 	slot.description.SetText("");
 	slot.description.ResetMesh();
-	slot.mesh.GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
-	slot.mesh.SetColor(SLOT_COLOR);
-	slot.mesh.Init();
-	slot.actor.SetMesh(&slot.mesh);
+	slot.actor.GetMesh().GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
+	slot.actor.GetMesh().SetColor(SLOT_COLOR);
+	slot.actor.GetMesh().Init();
 	slot.block = DroppedBlock();
 }
 
@@ -67,11 +66,10 @@ void BaseInventory::SwapSlots(Slot& slot1, Slot& slot2, Texture* itemTexture, Te
 
 	copySlot.block = std::move(draggingSlot.block);
 
-	copySlot.mesh.GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
-	copySlot.mesh.SetRectangleUV(uvs[static_cast<int>(copySlot.block.GetBlockType())][1]);
-	copySlot.mesh.Init();
+	copySlot.actor.GetMesh().GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
+	copySlot.actor.GetMesh().SetRectangleUV(uvs[static_cast<int>(copySlot.block.GetBlockType())][1]);
+	copySlot.actor.GetMesh().Init();
 
-	copySlot.actor.SetMesh(&copySlot.mesh);
 	copySlot.actor.SetTexture(itemTexture);
 
 	copySlot.count = draggingSlot.count;
@@ -91,10 +89,9 @@ void BaseInventory::SwapSlots(Slot& slot1, Slot& slot2, Texture* itemTexture, Te
 
 	slot1.block = std::move(slot2.block);
 
-	slot1.mesh.SetRectangleUV(uvs[static_cast<int>(slot1.block.GetBlockType())][1]);
-	slot1.mesh.Init();
+	slot1.actor.GetMesh().SetRectangleUV(uvs[static_cast<int>(slot1.block.GetBlockType())][1]);
+	slot1.actor.GetMesh().Init();
 
-	slot1.actor.SetMesh(&slot1.mesh);
 	slot1.actor.SetTexture(itemTexture);
 
 	slot1.count = slot2.count;
@@ -114,10 +111,9 @@ void BaseInventory::SwapSlots(Slot& slot1, Slot& slot2, Texture* itemTexture, Te
 
 	slot2.block = std::move(copySlot.block);
 
-	slot2.mesh.SetRectangleUV(uvs[static_cast<int>(slot2.block.GetBlockType())][1]);
-	slot2.mesh.Init();
+	slot2.actor.GetMesh().SetRectangleUV(uvs[static_cast<int>(slot2.block.GetBlockType())][1]);
+	slot2.actor.GetMesh().Init();
 
-	slot2.actor.SetMesh(&slot2.mesh);
 	slot2.actor.SetTexture(itemTexture);
 
 	slot2.count = copySlot.count;

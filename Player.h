@@ -77,9 +77,10 @@ public:
 
 	explicit Player(Window* mainWindow, InputManager* inputManager) noexcept;
 
-	void SetPlayerInventory(std::unique_ptr<PlayerInventory> newInventory);
-	void SetItemInventory(std::unique_ptr<BaseInventory> newInventory);
-	void CopyItemsFromPlayerToItemInvntory();
+	void SetPlayerInventory(std::unique_ptr<PlayerInventory> newInventory) noexcept;
+	void SetItemInventory(std::unique_ptr<BaseInventory> newInventory) noexcept;
+	void CopyItemsFromPlayerToItemInvntory() noexcept;
+	void CopyItemsFromItemToPlayerInvntory() noexcept;
 
 	void SetHandTexture(Texture* texture) noexcept;
 	void UpdateCamera(float deltaTime) noexcept;

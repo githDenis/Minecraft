@@ -32,10 +32,10 @@ public:
 	}
 
 	Window() noexcept {};
-	explicit Window(const char* title, int width, int height) noexcept;
+	explicit Window(const char* title) noexcept;
 	static void FramebufferChangeSizeCallback(GLFWwindow* window, int width, int height);
 
-	void Init(const char* title, int width, int height) noexcept;
+	void Init(const char* title) noexcept;
 	void MakeCurrent() noexcept;
 	void Close() noexcept;
 	void Show();

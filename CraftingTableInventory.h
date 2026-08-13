@@ -25,7 +25,7 @@ public:
 	static constexpr glm::vec3 CRAFTING_TEXT_POS = glm::vec3(-SLOT_WIDTH / 3, 0.75f, 0.f);
 
 	static constexpr glm::vec3 INVENTORY_POS = glm::vec3(0.f, 0.15f, 0.f);
-	static constexpr glm::vec3 START_SLOT_POS = glm::vec3(-0.29f, 0.15f, 0.f);
+	static constexpr glm::vec3 START_SLOT_POS = glm::vec3(-INVENTORY_WIDTH / 4.f + SLOT_PADDING / 4 * SLOT_COUNT_IN_ROW, 0.2f, 0.f);
 	static constexpr int START_HOT_BAR_SLOT_INDEX = SLOT_COUNT_IN_ROW * (ROW_COUNT - 1);
 
 private:
@@ -54,7 +54,8 @@ public:
 		BlockUVs& uvs) noexcept override;
 	virtual void ProcessMouseHovering(InputManager* inputManager, Render* render) noexcept override;
 	virtual void SplitItems(Texture* itemTexture, BlockUVs& uvs) noexcept override;
-	virtual Slot& GetSlotByIndex(int index) noexcept override;
+	virtual Slot& GetSlotRefByIndex(int index) noexcept override;
+	virtual const Slot& GetSlotCopyByIndex(int index) const noexcept override;
 
 	void GenerateSlots(Texture* textTexture) noexcept;
 	void GenerateCraftSlots(Texture* textTexture) noexcept;

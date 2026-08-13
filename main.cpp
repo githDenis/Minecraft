@@ -10,20 +10,17 @@
 #include "Player.h"
 #include "CraftingSystem.h"
 
-const int WINDOW_WIDTH = 1800;
-const int WINDOW_HEIGHT = 900;
-
 int main()
 {
 	Application app;
 	app.Init();
 
+	Window window("Game window");
+	window.MakeCurrent();
+
 	ShaderProgram shaderProgram;
 	ShaderProgram folliageShaderProgram;
 	ShaderProgram UIShaderProgram;
-
-	Window window("Game window", WINDOW_WIDTH, WINDOW_HEIGHT);
-	window.MakeCurrent();
 
 	InputManager inputManager(&window);
 	inputManager.BindMouseCallback();

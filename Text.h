@@ -25,7 +25,6 @@ private:
 	char buf[BUF_SIZE + 1];
 	std::unique_ptr<UV[]> uvs;
 
-	std::array<UIMesh, BUF_SIZE> meshes;
 	std::array<UIActor, BUF_SIZE> actors;
 
 	glm::vec3 startPos;
@@ -73,6 +72,7 @@ public:
 
 	void Init();
 	void Draw(Render* render);
+	void SetText(int value) noexcept;
 
 	Text& operator=(const Text& another) noexcept;
 };

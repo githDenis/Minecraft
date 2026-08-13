@@ -76,10 +76,10 @@ void World::GenerateChunksMeshes(BlockUVs& uvs) noexcept
 void World::RegenerateWorld(const glm::vec2& newPos, const glm::vec3& playerPos, int dx, int dy,
 	BlockUVs& uvs) noexcept
 {
-	static constexpr int leftX = CHUNKS_HORIZONTAL_COUNT - 1;
-	static const int rightX = 0;
-	static constexpr int upY = CHUNKS_VERTICAL_COUNT - 1;
-	static const int downY = 0;
+	constexpr int leftX = CHUNKS_HORIZONTAL_COUNT - 1;
+	constexpr int rightX = 0;
+	constexpr int upY = CHUNKS_VERTICAL_COUNT - 1;
+	constexpr int downY = 0;
 
 	if (dx > 0)
 	{
@@ -96,11 +96,15 @@ void World::RegenerateWorld(const glm::vec2& newPos, const glm::vec3& playerPos,
 		for (int y = 0; y < CHUNKS_VERTICAL_COUNT; y++)
 		{
 			RegenerateChunkContent(chunks[leftX + y * CHUNKS_HORIZONTAL_COUNT]);
+		}
 
-			if (blocksInfo.GetSize() > 0)
-			{
-				ApplyChanchedBlocks(playerPos);
-			}
+		if (blocksInfo.GetSize() > 0)
+		{
+			ApplyChanchedBlocks(playerPos);
+		}
+
+		for (int y = 0; y < CHUNKS_VERTICAL_COUNT; y++)
+		{
 			chunks[leftX + y * CHUNKS_HORIZONTAL_COUNT].GenerateMeshVerticesAndTextCoords(uvs);
 			chunks[leftX + y * CHUNKS_HORIZONTAL_COUNT].InitMesh();
 		}
@@ -121,11 +125,15 @@ void World::RegenerateWorld(const glm::vec2& newPos, const glm::vec3& playerPos,
 		for (int y = 0; y < CHUNKS_VERTICAL_COUNT; y++)
 		{
 			RegenerateChunkContent(chunks[rightX + y * CHUNKS_HORIZONTAL_COUNT]);
+		}
 
-			if (blocksInfo.GetSize() > 0)
-			{
-				ApplyChanchedBlocks(playerPos);
-			}
+		if (blocksInfo.GetSize() > 0)
+		{
+			ApplyChanchedBlocks(playerPos);
+		}
+
+		for (int y = 0; y < CHUNKS_VERTICAL_COUNT; y++)
+		{
 			chunks[rightX + y * CHUNKS_HORIZONTAL_COUNT].GenerateMeshVerticesAndTextCoords(uvs);
 			chunks[rightX + y * CHUNKS_HORIZONTAL_COUNT].InitMesh();
 		}
@@ -146,11 +154,15 @@ void World::RegenerateWorld(const glm::vec2& newPos, const glm::vec3& playerPos,
 		for (int x = 0; x < CHUNKS_HORIZONTAL_COUNT; x++)
 		{
 			RegenerateChunkContent(chunks[x + downY * CHUNKS_HORIZONTAL_COUNT]);
+		}
 
-			if (blocksInfo.GetSize() > 0)
-			{
-				ApplyChanchedBlocks(playerPos);
-			}
+		if (blocksInfo.GetSize() > 0)
+		{
+			ApplyChanchedBlocks(playerPos);
+		}
+
+		for (int x = 0; x < CHUNKS_HORIZONTAL_COUNT; x++)
+		{
 			chunks[x + downY * CHUNKS_HORIZONTAL_COUNT].GenerateMeshVerticesAndTextCoords(uvs);
 			chunks[x + downY * CHUNKS_HORIZONTAL_COUNT].InitMesh();
 		}
@@ -171,11 +183,15 @@ void World::RegenerateWorld(const glm::vec2& newPos, const glm::vec3& playerPos,
 		for (int x = 0; x < CHUNKS_HORIZONTAL_COUNT; x++)
 		{
 			RegenerateChunkContent(chunks[x + upY * CHUNKS_HORIZONTAL_COUNT]);
+		}
 
-			if (blocksInfo.GetSize() > 0)
-			{
-				ApplyChanchedBlocks(playerPos);
-			}
+		if (blocksInfo.GetSize() > 0)
+		{
+			ApplyChanchedBlocks(playerPos);
+		}
+
+		for (int x = 0; x < CHUNKS_HORIZONTAL_COUNT; x++)
+		{
 			chunks[x + upY * CHUNKS_HORIZONTAL_COUNT].GenerateMeshVerticesAndTextCoords(uvs);
 			chunks[x + upY * CHUNKS_HORIZONTAL_COUNT].InitMesh();
 		}

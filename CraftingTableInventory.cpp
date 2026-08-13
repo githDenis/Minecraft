@@ -11,11 +11,9 @@ void CraftingTableInventory::InitWindow()
 	}
 	craftingText.SetMainWindow(mainWindow);
 
-	mesh.GenerateRectangle(width, height, mainWindow->GetWidth(), mainWindow->GetHeight());
-	mesh.SetColor(INVENTORY_COLOR);
-	mesh.Init();
-
-	actor.SetMesh(&mesh);
+	actor.GetMesh().GenerateRectangle(width, height, mainWindow->GetWidth(), mainWindow->GetHeight());
+	actor.GetMesh().SetColor(INVENTORY_COLOR);
+	actor.GetMesh().Init();
 	actor.SetPosition(INVENTORY_POS);
 	actor.SetPenSize(3.f);
 }
@@ -78,7 +76,7 @@ void CraftingTableInventory::ProcessMouseCkick(InputManager* inputManager, Textu
 			{
 				if (i == CRAFT_RESULT_SLOT_INDEX)
 				{
-					//UseCraftRecouses(GetOutputItemCountFromRecipe());
+					UseCraftRecouses(GetOutputItemCountFromRecipe());
 				}
 
 				isItemDragging = true;
@@ -130,14 +128,10 @@ void CraftingTableInventory::ProcessMouseRelease(World* world, Texture* texture,
 
 						slots[i].block = std::move(draggingSlot.block);
 						slots[i].block.SetAliveState(false);
-						slots[i].mesh.SetRectangleUV(uvs[static_cast<int>(blockType)][1]);
-						slots[i].mesh.Init();
-
-						slots[i].actor.SetMesh(&slots[i].mesh);
+						slots[i].actor.GetMesh().SetRectangleUV(uvs[static_cast<int>(blockType)][1]);
+						slots[i].actor.GetMesh().Init();
 						slots[i].actor.SetTexture(texture);
-
-						std::string textCount = std::to_string(slots[i].count);
-						slots[i].countText.SetText(textCount.c_str());
+						slots[i].countText.SetText(slots[i].count);
 
 						const char* blockDescription = slots[i].block.GetBlockText();
 						float desctiptionWidth = strlen(blockDescription) * Text::CHAR_WIDTH / 2;
@@ -150,8 +144,7 @@ void CraftingTableInventory::ProcessMouseRelease(World* world, Texture* texture,
 					if (blockType == slots[i].block.GetBlockType())
 					{
 						slots[i].count += draggingSlot.count;
-						std::string textCount = std::to_string(slots[i].count);
-						slots[i].countText.SetText(textCount.c_str());
+						slots[i].countText.SetText(slots[i].count);
 					}
 					else
 					{
@@ -219,14 +212,10 @@ void CraftingTableInventory::SplitItems(Texture* itemTexture, BlockUVs& uvs) noe
 
 				slots[i].block = std::move(block);
 				slots[i].block.SetAliveState(false);
-				slots[i].mesh.SetRectangleUV(uvs[static_cast<int>(blockType)][1]);
-				slots[i].mesh.Init();
-
-				slots[i].actor.SetMesh(&slots[i].mesh);
+				slots[i].actor.GetMesh().SetRectangleUV(uvs[static_cast<int>(blockType)][1]);
+				slots[i].actor.GetMesh().Init();
 				slots[i].actor.SetTexture(itemTexture);
-
-				std::string textCount = std::to_string(slots[i].count);
-				slots[i].countText.SetText(textCount.c_str());
+				slots[i].countText.SetText(slots[i].count);
 
 				const char* blockDescription = copySlot.block.GetBlockText();
 				float desctiptionWidth = strlen(blockDescription) * Text::CHAR_WIDTH / 2;
@@ -244,7 +233,12 @@ void CraftingTableInventory::SplitItems(Texture* itemTexture, BlockUVs& uvs) noe
 	}
 }
 
-Slot& CraftingTableInventory::GetSlotByIndex(int index) noexcept
+Slot& CraftingTableInventory::GetSlotRefByIndex(int index) noexcept
+{
+	return slots[index];
+}
+
+const Slot& CraftingTableInventory::GetSlotCopyByIndex(int index) const noexcept
 {
 	return slots[index];
 }
@@ -255,9 +249,9 @@ void CraftingTableInventory::GenerateSlots(Texture* textTexture) noexcept
 	{
 		for (int x = 0; x < SLOT_COUNT_IN_ROW; x++)
 		{
-			slots[x + y * SLOT_COUNT_IN_ROW].mesh.GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
-			slots[x + y * SLOT_COUNT_IN_ROW].mesh.SetColor(SLOT_COLOR);
-			slots[x + y * SLOT_COUNT_IN_ROW].mesh.Init();
+			slots[x + y * SLOT_COUNT_IN_ROW].actor.GetMesh().GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
+			slots[x + y * SLOT_COUNT_IN_ROW].actor.GetMesh().SetColor(SLOT_COLOR);
+			slots[x + y * SLOT_COUNT_IN_ROW].actor.GetMesh().Init();
 
 			glm::vec3 slotPos = START_SLOT_POS +
 				glm::vec3(
@@ -271,7 +265,6 @@ void CraftingTableInventory::GenerateSlots(Texture* textTexture) noexcept
 			}
 
 			slots[x + y * SLOT_COUNT_IN_ROW].actor.SetPosition(slotPos);
-			slots[x + y * SLOT_COUNT_IN_ROW].actor.SetMesh(&slots[x + y * SLOT_COUNT_IN_ROW].mesh);
 
 			slots[x + y * SLOT_COUNT_IN_ROW].countText.SetTexture(textTexture);
 			slots[x + y * SLOT_COUNT_IN_ROW].countText.SetCharsInRow(10);
@@ -296,9 +289,9 @@ void CraftingTableInventory::GenerateCraftSlots(Texture* textTexture) noexcept
 		for (int x = 0; x < CRAFT_SLOT_IN_COLUMN; x++)
 		{
 			int index = x + y * CRAFT_SLOT_IN_ROW + (SLOT_COUNT_IN_ROW * ROW_COUNT);
-			slots[index].mesh.GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
-			slots[index].mesh.SetColor(SLOT_COLOR);
-			slots[index].mesh.Init();
+			slots[index].actor.GetMesh().GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
+			slots[index].actor.GetMesh().SetColor(SLOT_COLOR);
+			slots[index].actor.GetMesh().Init();
 
 			glm::vec3 slotPos = START_CRAFT_SLOT_POS +
 				glm::vec3(
@@ -307,7 +300,6 @@ void CraftingTableInventory::GenerateCraftSlots(Texture* textTexture) noexcept
 					0.f);
 
 			slots[index].actor.SetPosition(slotPos);
-			slots[index].actor.SetMesh(&slots[index].mesh);
 
 			slots[index].countText.SetTexture(textTexture);
 			slots[index].countText.SetCharsInRow(10);
@@ -327,12 +319,10 @@ void CraftingTableInventory::GenerateCraftSlots(Texture* textTexture) noexcept
 
 void CraftingTableInventory::GenerateCraftResultSlot(Texture* textTexture) noexcept
 {
-	slots[CRAFT_RESULT_SLOT_INDEX].mesh.GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
-	slots[CRAFT_RESULT_SLOT_INDEX].mesh.SetColor(SLOT_COLOR);
-	slots[CRAFT_RESULT_SLOT_INDEX].mesh.Init();
-
+	slots[CRAFT_RESULT_SLOT_INDEX].actor.GetMesh().GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
+	slots[CRAFT_RESULT_SLOT_INDEX].actor.GetMesh().SetColor(SLOT_COLOR);
+	slots[CRAFT_RESULT_SLOT_INDEX].actor.GetMesh().Init();
 	slots[CRAFT_RESULT_SLOT_INDEX].actor.SetPosition(CRAFT_RESULT_SLOT_POS);
-	slots[CRAFT_RESULT_SLOT_INDEX].actor.SetMesh(&slots[CRAFT_RESULT_SLOT_INDEX].mesh);
 
 	slots[CRAFT_RESULT_SLOT_INDEX].countText.SetTexture(textTexture);
 	slots[CRAFT_RESULT_SLOT_INDEX].countText.SetCharsInRow(10);
@@ -353,10 +343,9 @@ void CraftingTableInventory::InitDraggingSlot(Slot& slot, Texture* itemTexture, 
 {
 	BlockType blockType = slot.block.GetBlockType();
 
-	draggingSlot.mesh.GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
-	draggingSlot.mesh.SetRectangleUV(uvs[static_cast<int>(blockType)][1]);
-	draggingSlot.mesh.Init();
-	draggingSlot.actor.SetMesh(&draggingSlot.mesh);
+	draggingSlot.actor.GetMesh().GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
+	draggingSlot.actor.GetMesh().SetRectangleUV(uvs[static_cast<int>(blockType)][1]);
+	draggingSlot.actor.GetMesh().Init();
 	draggingSlot.actor.SetTexture(itemTexture);
 
 	draggingSlot.countText.SetCharsInRow(10);
@@ -404,9 +393,8 @@ void CraftingTableInventory::CheckCrafting(World* world, Texture* itemTexture, B
 
 	if (isRecipeFound)
 	{
-		slots[CRAFT_RESULT_SLOT_INDEX].mesh.SetRectangleUV(uvs[static_cast<int>(outputBlockType)][1]);
-		slots[CRAFT_RESULT_SLOT_INDEX].mesh.Init();
-		slots[CRAFT_RESULT_SLOT_INDEX].actor.SetMesh(&slots[CRAFT_RESULT_SLOT_INDEX].mesh);
+		slots[CRAFT_RESULT_SLOT_INDEX].actor.GetMesh().SetRectangleUV(uvs[static_cast<int>(outputBlockType)][1]);
+		slots[CRAFT_RESULT_SLOT_INDEX].actor.GetMesh().Init();
 		slots[CRAFT_RESULT_SLOT_INDEX].actor.SetTexture(itemTexture);
 
 		BlockRenderClass blockRenderClass = world->GetBlockRenderClassByType(outputBlockType);
@@ -417,11 +405,7 @@ void CraftingTableInventory::CheckCrafting(World* world, Texture* itemTexture, B
 		slots[CRAFT_RESULT_SLOT_INDEX].block = std::move(newBlock);
 
 		slots[CRAFT_RESULT_SLOT_INDEX].count = GetOutputItemCountFromRecipe() * countCoeff;
-
-		std::string textCount = std::to_string(slots[CRAFT_RESULT_SLOT_INDEX].count);
-		slots[CRAFT_RESULT_SLOT_INDEX].countText.SetText(textCount.c_str());
-
-		slots[CRAFT_RESULT_SLOT_INDEX].countText.SetText(textCount.c_str());
+		slots[CRAFT_RESULT_SLOT_INDEX].countText.SetText(slots[CRAFT_RESULT_SLOT_INDEX].count);
 		slots[CRAFT_RESULT_SLOT_INDEX].countText.Init();
 		return;
 	}
@@ -470,6 +454,7 @@ void CraftingTableInventory::UseCraftRecouses(int count) noexcept
 			if (slots[j].block.GetBlockType() != BlockType::BT_AIR)
 			{
 				slots[j].count--;
+				slots[j].countText.SetText(slots[j].count);
 
 				if (slots[j].count <= 0)
 				{

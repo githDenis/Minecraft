@@ -16,11 +16,9 @@ void ItemDescription::Init(float width, float height) noexcept
 {
 	this->width = width;
 
-	mesh.GenerateRectangle(width, height, window->GetWidth(), window->GetHeight());
-	mesh.SetColor(DESCRIPTION_COLOR);
-	mesh.Init();
-
-	actor.SetMesh(&mesh);
+	actor.GetMesh().GenerateRectangle(width, height, window->GetWidth(), window->GetHeight());
+	actor.GetMesh().SetColor(DESCRIPTION_COLOR);
+	actor.GetMesh().Init();
 	actor.SetPosition(glm::vec3(0.f, 0.f, 0.f));
 }
 
@@ -49,11 +47,8 @@ void ItemDescription::SetText(const char* text) noexcept
 
 void ItemDescription::Draw(Render* render) noexcept
 {
-	if (actor.GetMesh())
-	{
-		render->DrawUIActor(actor, GL_TRIANGLES);
-		text.Draw(render);
-	}
+	render->DrawUIActor(actor, GL_TRIANGLES);
+	text.Draw(render);
 }
 
 ItemDescription& ItemDescription::operator=(const ItemDescription& another) noexcept
@@ -61,8 +56,8 @@ ItemDescription& ItemDescription::operator=(const ItemDescription& another) noex
 	width = another.width;
 	window = another.window;
 	textTexture = another.textTexture;
-	mesh = another.mesh;
 	actor = another.actor;
+	actor.GetMesh().SetUseTextureState(false);
 	text = another.text;
 	return *this;
 }

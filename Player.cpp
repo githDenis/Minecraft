@@ -10,27 +10,39 @@ Player::Player(Window* mainWindow, InputManager* inputManager) noexcept
 	camera.SetFOV(45.f);
 }
 
-void Player::SetPlayerInventory(std::unique_ptr<PlayerInventory> newInventory)
+void Player::SetPlayerInventory(std::unique_ptr<PlayerInventory> newInventory) noexcept
 {
 	inventory = std::move(newInventory);
 	inventory->InitWindow();
 	inventory->InitUI();
 }
 
-void Player::SetItemInventory(std::unique_ptr<BaseInventory> newInventory)
+void Player::SetItemInventory(std::unique_ptr<BaseInventory> newInventory) noexcept
 {
 	itemInventory = std::move(newInventory);
 	itemInventory->InitWindow();
 	itemInventory->InitUI();
 }
 
-void Player::CopyItemsFromPlayerToItemInvntory()
+void Player::CopyItemsFromPlayerToItemInvntory() noexcept
 {
 	for (int i = 0; i < BaseInventory::LAST_INVENTORY_SLOT_INDEX; i++)
 	{
-		itemInventory->GetSlotByIndex(i) = inventory->GetSlotByIndex(i);
+		itemInventory->GetSlotRefByIndex(i) = inventory->GetSlotCopyByIndex(i);
 	}
 }
+
+void Player::CopyItemsFromItemToPlayerInvntory() noexcept
+{
+	if (itemInventory.get())
+	{
+		for (int i = 0; i < BaseInventory::LAST_INVENTORY_SLOT_INDEX; i++)
+		{
+			inventory->GetSlotRefByIndex(i) = itemInventory->GetSlotCopyByIndex(i);
+		}
+	}
+}
+
 
 void Player::SetHandTexture(Texture* texture) noexcept
 {
@@ -117,7 +129,6 @@ BlockType Player::StartLineTracing(World* world) noexcept
 
 		if (blockType != BlockType::BT_AIR)
 		{
-			std::cout << "YEAH\n";
 			return blockType;
 		}
 	}

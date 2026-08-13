@@ -62,21 +62,21 @@ void Render::DrawUIActor(UIActor& actor, int mode)
 	glDisable(GL_CULL_FACE);
 	
 	UIShaderProgram->SetMatrix4VariableValue("model", actor.GetModelMatrix());
-	UIShaderProgram->SetBoolValue("useTexture", actor.GetMesh()->IsUseTexture());
+	UIShaderProgram->SetBoolValue("useTexture", actor.GetMesh().IsUseTexture());
 
-	if (actor.GetMesh()->IsUseTexture())
+	if (actor.GetMesh().IsUseTexture())
 		glBindTexture(GL_TEXTURE_2D, actor.GetTexture()->GetID());
 
-	glBindVertexArray(actor.GetMesh()->GetVAO());
+	glBindVertexArray(actor.GetMesh().GetVAO());
 
 	int vertexCount = 0;
 	if (mode == GL_TRIANGLES)
 	{
-		vertexCount = actor.GetMesh()->GetVertexArraySize() - 2;
+		vertexCount = actor.GetMesh().GetVertexArraySize() - 2;
 	}
 	else
 	{
-		vertexCount = actor.GetMesh()->GetVertexArraySize() / 2;
+		vertexCount = actor.GetMesh().GetVertexArraySize() / 2;
 	}
 	glLineWidth(actor.GetPenSize());
 	glDrawArrays(mode, 0, vertexCount);

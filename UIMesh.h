@@ -14,6 +14,11 @@ private:
 	bool useTexture = false;
 
 public:
+	void SetUseTextureState(bool state) noexcept
+	{
+		useTexture = false;
+	}
+
 	unsigned int GetVAO() const
 	{
 		return VAO;

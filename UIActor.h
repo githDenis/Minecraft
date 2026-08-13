@@ -7,17 +7,12 @@
 class UIActor
 {
 private:
-	UIMesh* mesh;
+	UIMesh mesh;
 	Texture* texture;
 	glm::vec3 pos{ 0.f, 0.f, 0.f };
 	float penSize = 3.f;
 
 public:
-	void SetMesh(UIMesh* mesh) noexcept
-	{
-		this->mesh = mesh;
-	}
-
 	void SetTexture(Texture* texture) noexcept
 	{
 		this->texture = texture;
@@ -28,7 +23,7 @@ public:
 		pos = vector;
 	}
 
-	UIMesh* GetMesh() noexcept
+	UIMesh& GetMesh() noexcept
 	{
 		return mesh;
 	}

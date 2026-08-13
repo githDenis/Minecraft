@@ -24,6 +24,10 @@ void Application::InitOpenGLContext()
 
 void Application::Run()
 {
+	int f = 342;
+	char buf[4];
+	const char* a = itoa(f, buf, 10);
+
 	//16x16 texture
 	Texture texture;
 	texture.Create();
@@ -57,13 +61,10 @@ void Application::Run()
 
 	player->SetHandTexture(&playerHandTexture);
 
-	UIMesh targetMesh;
-	targetMesh.GenerateCrossTarget(window->GetWidth(), window->GetHeight());
-	targetMesh.SetColor(Color(1.f, 1.f, 1.f));
-	targetMesh.Init();
-
 	UIActor targetActor;
-	targetActor.SetMesh(&targetMesh);
+	targetActor.GetMesh().GenerateCrossTarget(window->GetWidth(), window->GetHeight());
+	targetActor.GetMesh().SetColor(Color(1.f, 1.f, 1.f));
+	targetActor.GetMesh().Init();
 
 	world.GenerateChunksPositions(player->GetPosition());
 	world.GenerateChunks(&texture);
@@ -113,6 +114,7 @@ void Application::Run()
 			else
 			{
 				inputManager->SetCursorPosition(window->GetWidth() / 2, window->GetHeight() / 2);
+				player->CopyItemsFromItemToPlayerInvntory();
 			}
 		}
 		///////////////////////////////////// I ///////////////////////////////////
@@ -132,10 +134,7 @@ void Application::Run()
 				{
 					player->GetItemInventory()->ProcessMouseRelease(&world, &texture, &textTexture, uvs);
 					
-					CraftingTableInventory* inventory = dynamic_cast<CraftingTableInventory*>(
-						player->GetItemInventory().get());
-
-					if (inventory)
+					if (auto inventory = dynamic_cast<CraftingTableInventory*>(player->GetItemInventory().get()))
 					{
 						inventory->CheckCrafting(&world, &texture, uvs);
 					}
@@ -189,6 +188,14 @@ void Application::Run()
 
 					if (blockType == BlockType::BT_CRAFTING_TABLE)
 					{
+						static int count = 0;
+						count++;
+
+						if (count >= 2)
+						{
+							count = 0;
+						}
+
 						player->SetItemInventory(std::make_unique<CraftingTableInventory>(
 							craftingSystem, window,  &textTexture, CraftingTableInventory::INVENTORY_WIDTH,
 							CraftingTableInventory::INVENTORY_HEIGHT));

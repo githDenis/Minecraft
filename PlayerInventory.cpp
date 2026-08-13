@@ -13,11 +13,9 @@ void PlayerInventory::InitWindow()
 	}
 	craftingText.SetMainWindow(mainWindow);
 
-	mesh.GenerateRectangle(width, height, mainWindow->GetWidth(), mainWindow->GetHeight());
-	mesh.SetColor(INVENTORY_COLOR);
-	mesh.Init();
-
-	actor.SetMesh(&mesh);
+	actor.GetMesh().GenerateRectangle(width, height, mainWindow->GetWidth(), mainWindow->GetHeight());
+	actor.GetMesh().SetColor(INVENTORY_COLOR);
+	actor.GetMesh().Init();
 	actor.SetPosition(INVENTORY_POS);
 	actor.SetPenSize(3.f);
 }
@@ -133,14 +131,12 @@ void PlayerInventory::ProcessMouseRelease(World* world, Texture* texture, Textur
 
 						slots[i].block = std::move(draggingSlot.block);
 						slots[i].block.SetAliveState(false);
-						slots[i].mesh.SetRectangleUV(uvs[static_cast<int>(blockType)][1]);
-						slots[i].mesh.Init();
+						slots[i].actor.GetMesh().SetRectangleUV(uvs[static_cast<int>(blockType)][1]);
+						slots[i].actor.GetMesh().Init();
 
-						slots[i].actor.SetMesh(&slots[i].mesh);
 						slots[i].actor.SetTexture(texture);
 
-						std::string textCount = std::to_string(slots[i].count);
-						slots[i].countText.SetText(textCount.c_str());
+						slots[i].countText.SetText(slots[i].count);
 
 						const char* blockDescription = slots[i].block.GetBlockText();
 						float desctiptionWidth = strlen(blockDescription) * Text::CHAR_WIDTH / 2;
@@ -153,8 +149,7 @@ void PlayerInventory::ProcessMouseRelease(World* world, Texture* texture, Textur
 					if (blockType == slots[i].block.GetBlockType())
 					{
 						slots[i].count += draggingSlot.count;
-						std::string textCount = std::to_string(slots[i].count);
-						slots[i].countText.SetText(textCount.c_str());
+						slots[i].countText.SetText(slots[i].count);
 					}
 					else
 					{
@@ -185,7 +180,7 @@ void PlayerInventory::ProcessMouseHovering(InputManager* inputManager, Render* r
 		glm::vec3 slotPos = slots[i].actor.GetPosition();
 
 		if ((NDCPos.x >= slotPos.x - SLOT_WIDTH / 4 && NDCPos.x <= slotPos.x + SLOT_WIDTH / 4) &&
-			(NDCPos.y >= slotPos.y - SLOT_HEIGHT / 2 && NDCPos.y <= slotPos.y + SLOT_HEIGHT / 2))
+			(NDCPos.y >= slotPos.y - SLOT_HEIGHT / 4 && NDCPos.y <= slotPos.y + SLOT_HEIGHT))
 		{
 			slots[i].description.SetText(slots[i].block.GetBlockText());
 			slots[i].description.SetPosition(glm::vec3(NDCPos.x, NDCPos.y + 0.1f, 0.f));
@@ -194,7 +189,12 @@ void PlayerInventory::ProcessMouseHovering(InputManager* inputManager, Render* r
 	}
 }
 
-Slot& PlayerInventory::GetSlotByIndex(int index) noexcept
+Slot& PlayerInventory::GetSlotRefByIndex(int index) noexcept
+{
+	return slots[index];
+}
+
+const Slot& PlayerInventory::GetSlotCopyByIndex(int index) const noexcept
 {
 	return slots[index];
 }
@@ -207,9 +207,9 @@ void PlayerInventory::GenerateSlots(Texture* textTexture) noexcept
 	{
 		for (int x = 0; x < SLOT_COUNT_IN_ROW; x++)
 		{
-			slots[x + y * SLOT_COUNT_IN_ROW].mesh.GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
-			slots[x + y * SLOT_COUNT_IN_ROW].mesh.SetColor(SLOT_COLOR);
-			slots[x + y * SLOT_COUNT_IN_ROW].mesh.Init();
+			slots[x + y * SLOT_COUNT_IN_ROW].actor.GetMesh().GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
+			slots[x + y * SLOT_COUNT_IN_ROW].actor.GetMesh().SetColor(SLOT_COLOR);
+			slots[x + y * SLOT_COUNT_IN_ROW].actor.GetMesh().Init();
 
 			glm::vec3 slotPos = START_SLOT_POS +
 				glm::vec3(
@@ -223,7 +223,6 @@ void PlayerInventory::GenerateSlots(Texture* textTexture) noexcept
 			}
 
 			slots[x + y * SLOT_COUNT_IN_ROW].actor.SetPosition(slotPos);
-			slots[x + y * SLOT_COUNT_IN_ROW].actor.SetMesh(&slots[x + y * SLOT_COUNT_IN_ROW].mesh);
 
 			slots[x + y * SLOT_COUNT_IN_ROW].countText.SetTexture(textTexture);
 			slots[x + y * SLOT_COUNT_IN_ROW].countText.SetCharsInRow(10);
@@ -248,9 +247,9 @@ void PlayerInventory::GenerateCraftSlots(Texture* textTexture) noexcept
 		for (int x = 0; x < CRAFT_SLOT_IN_COLUMN; x++)
 		{
 			int index = x + y * CRAFT_SLOT_IN_ROW + (SLOT_COUNT_IN_ROW * ROW_COUNT);
-			slots[index].mesh.GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
-			slots[index].mesh.SetColor(SLOT_COLOR);
-			slots[index].mesh.Init();
+			slots[index].actor.GetMesh().GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
+			slots[index].actor.GetMesh().SetColor(SLOT_COLOR);
+			slots[index].actor.GetMesh().Init();
 
 			glm::vec3 slotPos = START_CRAFT_SLOT_POS +
 				glm::vec3(
@@ -259,7 +258,6 @@ void PlayerInventory::GenerateCraftSlots(Texture* textTexture) noexcept
 					0.f);
 
 			slots[index].actor.SetPosition(slotPos);
-			slots[index].actor.SetMesh(&slots[index].mesh);
 
 			slots[index].countText.SetTexture(textTexture);
 			slots[index].countText.SetCharsInRow(10);
@@ -279,12 +277,11 @@ void PlayerInventory::GenerateCraftSlots(Texture* textTexture) noexcept
 
 void PlayerInventory::GenerateCraftResultSlot(Texture* textTexture) noexcept
 {
-	slots[CRAFT_RESULT_SLOT_INDEX].mesh.GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
-	slots[CRAFT_RESULT_SLOT_INDEX].mesh.SetColor(SLOT_COLOR);
-	slots[CRAFT_RESULT_SLOT_INDEX].mesh.Init();
+	slots[CRAFT_RESULT_SLOT_INDEX].actor.GetMesh().GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
+	slots[CRAFT_RESULT_SLOT_INDEX].actor.GetMesh().SetColor(SLOT_COLOR);
+	slots[CRAFT_RESULT_SLOT_INDEX].actor.GetMesh().Init();
 
 	slots[CRAFT_RESULT_SLOT_INDEX].actor.SetPosition(CRAFT_RESULT_SLOT_POS);
-	slots[CRAFT_RESULT_SLOT_INDEX].actor.SetMesh(&slots[CRAFT_RESULT_SLOT_INDEX].mesh);
 
 	slots[CRAFT_RESULT_SLOT_INDEX].countText.SetTexture(textTexture);
 	slots[CRAFT_RESULT_SLOT_INDEX].countText.SetCharsInRow(10);
@@ -302,11 +299,10 @@ void PlayerInventory::GenerateCraftResultSlot(Texture* textTexture) noexcept
 
 void PlayerInventory::InitCurrentFrame() noexcept
 {
-	currentItemFrameMesh.GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
-	currentItemFrameMesh.SetColor(CURRENT_FRAME_COLOR);
-	currentItemFrameMesh.Init();
+	currentItemFrameActor.GetMesh().GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
+	currentItemFrameActor.GetMesh().SetColor(CURRENT_FRAME_COLOR);
+	currentItemFrameActor.GetMesh().Init();
 
-	currentItemFrameActor.SetMesh(&currentItemFrameMesh);
 	currentItemFrameActor.SetPosition(HOT_BAR_POS);
 	currentItemFrameActor.SetPenSize(10.f);
 }
@@ -316,10 +312,9 @@ void PlayerInventory::InitDraggingSlot(Slot& slot, Texture* itemTexture, Texture
 {
 	BlockType blockType = slot.block.GetBlockType();
 
-	draggingSlot.mesh.GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
-	draggingSlot.mesh.SetRectangleUV(uvs[static_cast<int>(blockType)][1]);
-	draggingSlot.mesh.Init();
-	draggingSlot.actor.SetMesh(&draggingSlot.mesh);
+	draggingSlot.actor.GetMesh().GenerateRectangle(SLOT_WIDTH, SLOT_HEIGHT, mainWindow->GetWidth(), mainWindow->GetHeight());
+	draggingSlot.actor.GetMesh().SetRectangleUV(uvs[static_cast<int>(blockType)][1]);
+	draggingSlot.actor.GetMesh().Init();
 	draggingSlot.actor.SetTexture(itemTexture);
 
 	draggingSlot.countText.SetCharsInRow(10);
@@ -411,16 +406,14 @@ void PlayerInventory::AddItem(DroppedBlock& droppedBlock, Texture* texture, Bloc
 		{
 			slots[i].block = std::move(droppedBlock);
 			slots[i].block.SetAliveState(false);
-			slots[i].mesh.SetRectangleUV(uvs[static_cast<int>(blockType)][1]);
-			slots[i].mesh.Init();
+			slots[i].actor.GetMesh().SetRectangleUV(uvs[static_cast<int>(blockType)][1]);
+			slots[i].actor.GetMesh().Init();
 
-			slots[i].actor.SetMesh(&slots[i].mesh);
 			slots[i].actor.SetTexture(texture);
 
 			slots[i].count++;
 
-			std::string textCount = std::to_string(slots[i].count);
-			slots[i].countText.SetText(textCount.c_str());
+			slots[i].countText.SetText(slots[i].count);
 
 			const char* blockDescription = slots[i].block.GetBlockText();
 			float desctiptionWidth = strlen(blockDescription) * Text::CHAR_WIDTH / 2;
@@ -438,9 +431,7 @@ void PlayerInventory::AddItem(DroppedBlock& droppedBlock, Texture* texture, Bloc
 			slots[i].block = std::move(droppedBlock);
 			slots[i].block.SetAliveState(false);
 			slots[i].count++;
-
-			std::string text = std::to_string(slots[i].count);
-			slots[i].countText.SetText(text.c_str());
+			slots[i].countText.SetText(slots[i].count);
 			break;
 		}
 	}
@@ -478,8 +469,7 @@ void PlayerInventory::DecreaseCurrentItem() noexcept
 	}
 	else
 	{
-		std::string text = std::to_string(slots[currentItem].count);
-		slots[currentItem].countText.SetText(text.c_str());
+		slots[currentItem].countText.SetText(slots[currentItem].count);
 	}
 }
 
@@ -500,8 +490,7 @@ void PlayerInventory::ThrowOutItemFromInventory(InputManager* inputManager, Worl
 				if (slots[i].count > 0)
 				{
 					slots[i].count--;
-					std::string text = std::to_string(slots[i].count);
-					slots[i].countText.SetText(text.c_str());
+					slots[i].countText.SetText(slots[i].count);
 
 					ThrowOutBlockFromSlot(slots[i], world, texture, uvs);
 				}
@@ -522,8 +511,7 @@ void PlayerInventory::ThrowOutItemFromHotbar(World* world, Texture* texture,
 	if (slots[currentItem].count > 0)
 	{
 		slots[currentItem].count--;
-		std::string text = std::to_string(slots[currentItem].count);
-		slots[currentItem].countText.SetText(text.c_str());
+		slots[currentItem].countText.SetText(slots[currentItem].count);
 
 		ThrowOutBlockFromSlot(slots[currentItem], world, texture, uvs);
 	}
@@ -573,14 +561,10 @@ void PlayerInventory::SplitItems(Texture* itemTexture, BlockUVs& uvs) noexcept
 
 				slots[i].block = std::move(block);
 				slots[i].block.SetAliveState(false);
-				slots[i].mesh.SetRectangleUV(uvs[static_cast<int>(blockType)][1]);
-				slots[i].mesh.Init();
-
-				slots[i].actor.SetMesh(&slots[i].mesh);
+				slots[i].actor.GetMesh().SetRectangleUV(uvs[static_cast<int>(blockType)][1]);
+				slots[i].actor.GetMesh().Init();
 				slots[i].actor.SetTexture(itemTexture);
-
-				std::string textCount = std::to_string(slots[i].count);
-				slots[i].countText.SetText(textCount.c_str());
+				slots[i].countText.SetText(slots[i].count);
 
 				const char* blockDescription = copySlot.block.GetBlockText();
 				float desctiptionWidth = strlen(blockDescription) * Text::CHAR_WIDTH / 2;
@@ -620,9 +604,8 @@ void PlayerInventory::CheckCrafting(World* world, Texture* itemTexture, BlockUVs
 
 	if (isRecipeFound)
 	{
-		slots[CRAFT_RESULT_SLOT_INDEX].mesh.SetRectangleUV(uvs[static_cast<int>(outputBlockType)][1]);
-		slots[CRAFT_RESULT_SLOT_INDEX].mesh.Init();
-		slots[CRAFT_RESULT_SLOT_INDEX].actor.SetMesh(&slots[CRAFT_RESULT_SLOT_INDEX].mesh);
+		slots[CRAFT_RESULT_SLOT_INDEX].actor.GetMesh().SetRectangleUV(uvs[static_cast<int>(outputBlockType)][1]);
+		slots[CRAFT_RESULT_SLOT_INDEX].actor.GetMesh().Init();
 		slots[CRAFT_RESULT_SLOT_INDEX].actor.SetTexture(itemTexture);
 
 		BlockRenderClass blockRenderClass = world->GetBlockRenderClassByType(outputBlockType);
@@ -633,11 +616,7 @@ void PlayerInventory::CheckCrafting(World* world, Texture* itemTexture, BlockUVs
 		slots[CRAFT_RESULT_SLOT_INDEX].block = std::move(newBlock);
 
 		slots[CRAFT_RESULT_SLOT_INDEX].count = GetOutputItemCountFromRecipe() * countCoeff;
-
-		std::string textCount = std::to_string(slots[CRAFT_RESULT_SLOT_INDEX].count);
-		slots[CRAFT_RESULT_SLOT_INDEX].countText.SetText(textCount.c_str());
-
-		slots[CRAFT_RESULT_SLOT_INDEX].countText.SetText(textCount.c_str());
+		slots[CRAFT_RESULT_SLOT_INDEX].countText.SetText(slots[CRAFT_RESULT_SLOT_INDEX].count);
 		slots[CRAFT_RESULT_SLOT_INDEX].countText.Init();
 		return;
 	}
@@ -684,6 +663,7 @@ void PlayerInventory::UseCraftRecouses(int count) noexcept
 			if (slots[j].block.GetBlockType() != BlockType::BT_AIR)
 			{
 				slots[j].count--;
+				slots[j].countText.SetText(slots[j].count);
 
 				if (slots[j].count <= 0)
 				{

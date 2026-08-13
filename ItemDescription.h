@@ -13,14 +13,13 @@ private:
 	float width;
 	Window* window;
 	Texture* textTexture;
-	UIMesh mesh;
 	UIActor actor;
 	Text text;
 
 public:
 	void ResetMesh() noexcept
 	{
-		mesh = UIMesh();
+		actor.GetMesh() = UIMesh();
 	}
 
 	void SetWindow(Window* window) noexcept;
