@@ -29,26 +29,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>E:\C++\OpenGL\glad\include;E:\C++\OpenGL\glfw-3.4\include;E:\C++\OpenGL\glm;E:\C++\OpenGL\stb-master;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\C++\OpenGL\glfw-3.4\lib-vc2022;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\OpenGL\glad\include;D:\OpenGL\glfw-3.4\include;D:\OpenGL\glm;D:\OpenGL\stb-master;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\OpenGL\glfw-3.4\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>E:\C++\OpenGL\glad\include;E:\C++\OpenGL\glfw-3.4\include;E:\C++\OpenGL\glm;E:\C++\OpenGL\stb-master;$(IncludePath)</IncludePath>
@@ -139,7 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\OpenGL\glad\src\glad.c" />
+    <ClCompile Include="..\..\..\OpenGL\glad\src\glad.c" />
     <ClCompile Include="Actor.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="BaseInventory.cpp" />
@@ -206,9 +206,6 @@
     <None Include="UIFragmentShader.glsl" />
     <None Include="UIVertexShader.glsl" />
     <None Include="VertexShader.glsl" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="C:\Users\Roma&amp;Denis\Downloads\Wood.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -24,22 +24,18 @@ void Application::InitOpenGLContext()
 
 void Application::Run()
 {
-	int f = 342;
-	char buf[4];
-	const char* a = itoa(f, buf, 10);
-
 	//16x16 texture
 	Texture texture;
 	texture.Create();
-	texture.SetImage("E:\\C++\\Minecraft\\Textures\\Texture.png");
+	texture.SetImage("D:\\C++\\OpenGL Projects\\Minecraft\\Textures\\Texture.png");
 
 	Texture textTexture;
 	textTexture.Create();
-	textTexture.SetImage("E:\\C++\\Minecraft\\Textures\\Font.jpg");
+	textTexture.SetImage("D:\\C++\\OpenGL Projects\\Minecraft\\Textures\\Font.jpg");
 
 	Texture playerHandTexture;
 	playerHandTexture.Create();
-	playerHandTexture.SetImage("E:\\C++\\Minecraft\\Textures\\PlayerHandTexture.jpg");
+	playerHandTexture.SetImage("D:\\C++\\OpenGL Projects\\Minecraft\\Textures\\PlayerHandTexture.jpg");
 
 	BlockUVs uvs = {
 		{ texture.GetUV(0, 32, 16), texture.GetUV(3, 32, 16), texture.GetUV(2, 32, 16) },      //Ground with grass
@@ -102,11 +98,6 @@ void Application::Run()
 		{
 			player->UseInventory();
 
-			if (player->IsInteracting())
-			{
-				player->SetInteractingState(false);
-			}
-
 			if (player->IsInventoryUsing())
 			{
 				inputManager->SetCursorPosition(window->GetWidth() / 2, window->GetHeight() / 2);
@@ -114,7 +105,16 @@ void Application::Run()
 			else
 			{
 				inputManager->SetCursorPosition(window->GetWidth() / 2, window->GetHeight() / 2);
-				player->CopyItemsFromItemToPlayerInvntory();
+
+				if (player->IsInteracting())
+				{
+					player->CopyItemsFromItemToPlayerInvntory();
+				}
+			}
+
+			if (player->IsInteracting())
+			{
+				player->SetInteractingState(false);
 			}
 		}
 		///////////////////////////////////// I ///////////////////////////////////

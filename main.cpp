@@ -42,12 +42,12 @@ int main()
 	// World Shaders
 	Shader vertexShader;
 	vertexShader.Create(ShaderType::ST_VERTEX);
-	vertexShader.ReadShaderFile("E:\\C++\\Minecraft\\VertexShader.glsl");
+	vertexShader.ReadShaderFile("D:\\C++\\OpenGL Projects\\Minecraft\\Shaders\\VertexShader.glsl");
 	vertexShader.Compile();
 
 	Shader fragmentShader;
 	fragmentShader.Create(ShaderType::ST_FRAGMENT);
-	fragmentShader.ReadShaderFile("E:\\C++\\Minecraft\\FragmentShader.glsl");
+	fragmentShader.ReadShaderFile("D:\\C++\\OpenGL Projects\\Minecraft\\Shaders\\FragmentShader.glsl");
 	fragmentShader.Compile();
 
 	shaderProgram.Create();
@@ -60,12 +60,12 @@ int main()
 	// Folliage Shaders
 	Shader folVertexShader;
 	folVertexShader.Create(ShaderType::ST_VERTEX);
-	folVertexShader.ReadShaderFile("E:\\C++\\Minecraft\\FolliageVertexShader.glsl");
+	folVertexShader.ReadShaderFile("D:\\C++\\OpenGL Projects\\Minecraft\\Shaders\\FolliageVertexShader.glsl");
 	folVertexShader.Compile();
 
 	Shader folFragmentShader;
 	folFragmentShader.Create(ShaderType::ST_FRAGMENT);
-	folFragmentShader.ReadShaderFile("E:\\C++\\Minecraft\\FolliageFragmentShader.glsl");
+	folFragmentShader.ReadShaderFile("D:\\C++\\OpenGL Projects\\Minecraft\\Shaders\\FolliageFragmentShader.glsl");
 	folFragmentShader.Compile();
 
 	folliageShaderProgram.Create();
@@ -78,12 +78,12 @@ int main()
 	// UI Shaders
 	Shader UIVertexShader;
 	UIVertexShader.Create(ShaderType::ST_VERTEX);
-	UIVertexShader.ReadShaderFile("E:\\C++\\Minecraft\\UIVertexShader.glsl");
+	UIVertexShader.ReadShaderFile("D:\\C++\\OpenGL Projects\\Minecraft\\Shaders\\UIVertexShader.glsl");
 	UIVertexShader.Compile();
 
 	Shader UIFragmentShader;
 	UIFragmentShader.Create(ShaderType::ST_FRAGMENT);
-	UIFragmentShader.ReadShaderFile("E:\\C++\\Minecraft\\UIFragmentShader.glsl");
+	UIFragmentShader.ReadShaderFile("D:\\C++\\OpenGL Projects\\Minecraft\\Shaders\\UIFragmentShader.glsl");
 	UIFragmentShader.Compile();
 
 	UIShaderProgram.Create();

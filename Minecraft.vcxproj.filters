@@ -16,18 +16,12 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{17544945-359a-4745-8306-39b2505c81d3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Textures">
-      <UniqueIdentifier>{ea04beea-1e9a-4ddf-b1e0-6a7a251c1377}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="Window.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="..\OpenGL\glad\src\glad.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="Application.cpp">
@@ -103,6 +97,9 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="CraftingSystem.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\OpenGL\glad\src\glad.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
@@ -214,10 +211,5 @@
     <None Include="FolliageVertexShader.glsl">
       <Filter>Shaders</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="C:\Users\Roma&amp;Denis\Downloads\Wood.jpg">
-      <Filter>Textures</Filter>
-    </Image>
   </ItemGroup>
 </Project>

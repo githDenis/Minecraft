@@ -9,7 +9,7 @@ class Chunk
 {
 public:
 	static const int CHUNK_WIDTH = 16;
-	static const int CHUNK_HEIGHT = 48;
+	static const int CHUNK_HEIGHT = 32;
 	static const int CHUNK_LENGTH = 16;
 
 	static const int GROUND_LAYER_HEIGHT = 10;
